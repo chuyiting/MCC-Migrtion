@@ -38,10 +38,10 @@ namespace pt_mcc
         torch::Tensor aabbMax = torch::empty({batchSize, 3}, points.options());
 
         // Call the CUDA kernel (passing raw pointers to the tensors)
-        // computeAABB(
-        //     scaleInv, numPoints, batchSize,
-        //     points.data_ptr<float>(), batchIds.data_ptr<int>(),
-        //     aabbMin.data_ptr<float>(), aabbMax.data_ptr<float>());
+        computeAABB(
+            scaleInv, numPoints, batchSize,
+            points.data_ptr<float>(), batchIds.data_ptr<int>(),
+            aabbMin.data_ptr<float>(), aabbMax.data_ptr<float>());
 
         return std::make_tuple(aabbMin, aabbMax);
     }
