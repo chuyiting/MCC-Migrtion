@@ -115,6 +115,6 @@ class TestMyAddOut(TestCase):
 if __name__ == "__main__":
     pts = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
     batch = torch.tensor([1, 2, 3, 4])
-    res = extension_cpp.ops.compute_aabb(pts, batch, 4, True)
-    print(res)
     unittest.main()
+    res = extension_cpp.compute_aabb(pts, batch, 4, True)
+    print(res)
