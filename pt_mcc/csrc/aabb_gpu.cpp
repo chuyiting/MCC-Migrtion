@@ -17,6 +17,10 @@
 namespace pt_mcc
 {
 
+    void computeAABB(
+        const bool pScaleInv, const int pNumPoints, const int pBatchSize,
+        const float *pPoints, const int *pBatchIds, float *pAABBMin, float *pAABBMax);
+
     std::tuple<torch::Tensor, at::Tensor> compute_aabb(
         torch::Tensor points, torch::Tensor batchIds, int64_t batchSize, bool scaleInv)
     {
