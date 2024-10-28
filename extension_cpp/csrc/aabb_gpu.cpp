@@ -15,7 +15,7 @@
 #include <tuple>
 #include <cuda_runtime.h>
 
-namespace pt_ops
+namespace extension_cpp
 {
 
     void computeAABB(
@@ -49,21 +49,14 @@ namespace pt_ops
         return std::make_tuple(aabbMin, aabbMax);
     }
 
-    // Bindings for the Python interface
-    // TORCH_EXTENSION_NAME will be picked up from setup.py or CMakeLists.txt automatically
-    PYBIND11_MODULE(TORCH_EXTENSION_NAME, m)
-    {
-        m.def("compute_aabb", &compute_aabb, "Compute Axis-Aligned Bounding Box");
-    }
-
     // Defines the operators
-    TORCH_LIBRARY(pt_ops, m)
+    TORCH_LIBRARY(extension_cpp, m)
     {
         m.def("compute_aabb(Tensor points, Tensor batchIds, int batchSize, bool scaleInv) -> (Tensor, Tensor)");
     }
 
     // Register implementations
-    TORCH_LIBRARY_IMPL(pt_ops, CUDA, m)
+    TORCH_LIBRARY_IMPL(extension_cpp, CUDA, m)
     {
         m.impl("compute_aabb", &compute_aabb); // Corrected here: Removed description
     }
