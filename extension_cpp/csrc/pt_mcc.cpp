@@ -1,4 +1,4 @@
-#include <torch/script.h>
+#include <torch/extension.h>
 
 namespace extension_cpp
 {
@@ -7,21 +7,22 @@ namespace extension_cpp
     void register_muladd(torch::Library &m);
     void impl_muladd(torch::Library &m);
 
-    // Registers _C as a Python extension module.
-    PYBIND11_MODULE(TORCH_EXTENSION_NAME, m)
-    {
-    }
+}
 
-    // Defines the operators
-    TORCH_LIBRARY(extension_cpp, m)
-    {
-        extension_cpp::register_aabb(m);
-        extension_cpp::register_muladd(m);
-    }
+// Registers _C as a Python extension module.
+PYBIND11_MODULE(TORCH_EXTENSION_NAME, m)
+{
+}
 
-    // Registers CUDA implementations for mymuladd, mymul, myadd_out
-    TORCH_LIBRARY_IMPL(extension_cpp, CPU, m)
-    {
-        extension_cpp::impl_muladd(m);
-    }
+// Defines the operators
+TORCH_LIBRARY(extension_cpp, m)
+{
+    extension_cpp::register_aabb(m);
+    extension_cpp::register_muladd(m);
+}
+
+// Registers CUDA implementations for mymuladd, mymul, myadd_out
+TORCH_LIBRARY_IMPL(extension_cpp, CPU, m)
+{
+    extension_cpp::impl_muladd(m);
 }
