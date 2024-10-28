@@ -79,7 +79,6 @@ namespace pt_mcc
   // Registers CPU implementations for mymuladd, mymul, myadd_out
   TORCH_LIBRARY_IMPL(pt_mcc, CPU, m)
   {
-
     m.impl("mymuladd", &mymuladd_cpu);
     m.impl("mymul", &mymul_cpu);
     m.impl("myadd_out", &myadd_out_cpu);
