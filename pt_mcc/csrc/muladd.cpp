@@ -68,48 +68,12 @@ namespace pt_mcc
     }
   }
 
-  std::tuple<torch::Tensor, at::Tensor> compute_aabb(
-      torch::Tensor points, torch::Tensor batchIds, int64_t batchSize, bool scaleInv)
-  {
-    // Check input tensor dimensions and types
-    TORCH_CHECK(points.dim() == 2, "Points should have 2 dimensions (numPoints, pointComponents)");
-    TORCH_CHECK(points.size(1) >= 3, "Points should have at least 3 components");
-    TORCH_CHECK(batchIds.dim() == 1, "Batch IDs should have 1 dimension (numPoints)");
-    TORCH_INTERNAL_ASSERT(points.device().type() == at::DeviceType::CUDA);
-    TORCH_INTERNAL_ASSERT(batchIds.device().type() == at::DeviceType::CUDA);
-
-    int numPoints = points.size(0);
-    auto pointSize = points.size(1);
-
-    // Ensure batch_ids size matches num_points
-    TORCH_CHECK(batchIds.size(0) == numPoints, "Batch IDs should have the same number of points");
-
-    // Allocate output tensors
-    torch::Tensor aabbMin = torch::empty({batchSize, 3}, points.options());
-    torch::Tensor aabbMax = torch::empty({batchSize, 3}, points.options());
-
-    // Call the CUDA kernel (passing raw pointers to the tensors)
-    // computeAABB(
-    //     scaleInv, numPoints, batchSize,
-    //     points.data_ptr<float>(), batchIds.data_ptr<int>(),
-    //     aabbMin.data_ptr<float>(), aabbMax.data_ptr<float>());
-
-    return std::make_tuple(aabbMin, aabbMax);
-  }
-
-  int64_t test()
-  {
-    return 10;
-  }
-
   // Defines the operators
   void register_muladd(torch::Library &m)
   {
     m.def("mymuladd(Tensor a, Tensor b, float c) -> Tensor");
     m.def("mymul(Tensor a, Tensor b) -> Tensor");
     m.def("myadd_out(Tensor a, Tensor b, Tensor(a!) out) -> ()");
-    m.def("test() -> int");
-    m.def("compute_aabb(Tensor points, Tensor batchIds, int batchSize, bool scaleInv) -> (Tensor, Tensor)");
   }
 
   // Registers CPU implementations for mymuladd, mymul, myadd_out
@@ -119,11 +83,5 @@ namespace pt_mcc
     m.impl("mymuladd", &mymuladd_cpu);
     m.impl("mymul", &mymul_cpu);
     m.impl("myadd_out", &myadd_out_cpu);
-    m.impl("test", &test);
-    m.impl("compute_aabb", &compute_aabb); // define compute_aabb here
-  }
-  TORCH_LIBRARY_IMPL(pt_mcc, CUDA, m)
-  {
-    m.impl("compute_aabb", &compute_aabb); // define compute_aabb here
   }
 }

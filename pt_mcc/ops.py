@@ -1,7 +1,7 @@
 import torch
 from torch import Tensor
 
-__all__ = ["mymuladd", "myadd_out"]
+__all__ = ["mymuladd", "myadd_out", "compute_aabb"]
 
 
 def mymuladd(a: Tensor, b: Tensor, c: float) -> Tensor:
@@ -13,10 +13,6 @@ def compute_aabb(pts: Tensor, batch_ids: Tensor, batch_size: int, inv_inf: bool)
 
 def test():
     return torch.ops.pt_mcc.test()
-
-@torch.library.register_fake("pt_mcc::test")
-def _():
-    return -1
 
 @torch.library.register_fake("pt_mcc::compute_aabb")
 def _(pts, batch_ids, batch_size, scale_inv):
