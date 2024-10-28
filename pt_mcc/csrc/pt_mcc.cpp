@@ -4,6 +4,7 @@ namespace pt_mcc
 {
 
     void register_aabb(torch::Library &m);
+    void register_compute_pdf(torch::Library &m);
     void register_muladd(torch::Library &m);
 }
 
@@ -16,5 +17,6 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m)
 TORCH_LIBRARY(pt_mcc, m)
 {
     pt_mcc::register_aabb(m);
+    pt_mcc::register_compute_pdf(m);
     pt_mcc::register_muladd(m);
 }

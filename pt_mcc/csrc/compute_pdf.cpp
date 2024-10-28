@@ -72,7 +72,7 @@ namespace pt_mcc
         return pdfs;
     }
 
-    void register_aabb(torch::Library &m)
+    void register_compute_pdf(torch::Library &m)
     {
         m.def("compute_pdf(Tensor points, Tensor batch_ids, Tensor start_indexes, Tensor neighbors, Tensor aabb_min, Tensor aabb_max, float window, float radius, int batch_size, bool scale_inv) -> Tensor");
     }
