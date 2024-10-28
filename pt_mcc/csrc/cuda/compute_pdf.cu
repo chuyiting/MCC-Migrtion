@@ -40,10 +40,10 @@ namespace pt_mcc
      */
     __global__ void computePDFs(
         const bool pScaleInv,
-        const float pWindow,
+        const double pWindow,
         const int64_t numSamples,
         const int64_t pNumNeighbors,
-        const float pRadius,
+        const double pRadius,
         const float *__restrict__ pAABBMin,
         const float *__restrict__ pAABBMax,
         const float *__restrict__ pPoints,
@@ -99,10 +99,10 @@ namespace pt_mcc
 
     void computeDPFsCPU(
         const bool scaleInv,
-        const float pWindow,
+        const double pWindow,
         const int64_t numSamples,
         const int64_t pNumNeighbors,
-        const float pRadius,
+        const double pRadius,
         const float *pInPts,
         const int64_t *pInBatchIds,
         const float *pAABBMin,

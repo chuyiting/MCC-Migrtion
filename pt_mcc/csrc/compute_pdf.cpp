@@ -5,10 +5,10 @@ namespace pt_mcc
 {
     void computeDPFsCPU(
         const bool pScaleInv,
-        const float pWindow,
+        const double pWindow,
         const int64_t numSamples,
         const int64_t pNumNeighbors,
-        const float pRadius,
+        const double pRadius,
         const float *pInPts,
         const int64_t *pInBatchIds,
         const float *pAABBMin,
@@ -25,8 +25,8 @@ namespace pt_mcc
         const torch::Tensor &aabb_max,
         const torch::Tensor &start_indexes,
         const torch::Tensor &neighbors,
-        float window,
-        float radius,
+        double window,
+        double radius,
         int64_t batch_size,
         bool scale_inv)
     {
