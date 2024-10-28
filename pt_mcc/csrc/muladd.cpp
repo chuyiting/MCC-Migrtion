@@ -97,7 +97,7 @@ namespace pt_mcc
     return std::make_tuple(aabbMin, aabbMax);
   }
 
-  int test()
+  int64_t test()
   {
     return 10;
   }
