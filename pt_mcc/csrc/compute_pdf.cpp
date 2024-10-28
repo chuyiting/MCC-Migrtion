@@ -78,13 +78,15 @@ namespace pt_mcc
     }
 
     // Register CPU implementations
-    TORCH_LIBRARY_IMPL(pt_mcc, CPU, m){
+    TORCH_LIBRARY_IMPL(pt_mcc, CPU, m)
+    {
 
-        m.impl("compute_pdf", &compute_pdf)}
+        m.impl("compute_pdf", &compute_pdf);
+    }
 
     // Register CUDA implementations
     TORCH_LIBRARY_IMPL(pt_mcc, CUDA, m)
     {
-        m.impl("compute_pdf", &compute_pdf)
+        m.impl("compute_pdf", &compute_pdf);
     }
 }
