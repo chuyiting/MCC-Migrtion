@@ -50,7 +50,7 @@ namespace extension_cpp
 
     void register_aabb(torch::Library &m)
     {
-        m.def("compute_aabb(Tensor points, Tensor batchIds, int batchSize, bool scaleInv) -> int");
+        m.def("compute_aabb", &compute_aabb);
     }
 
     TORCH_LIBRARY_IMPL(extension_cpp, CPU, m)

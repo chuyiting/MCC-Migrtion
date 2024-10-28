@@ -5,8 +5,6 @@ namespace extension_cpp
 
     void register_aabb(torch::Library &m);
     void register_muladd(torch::Library &m);
-    void impl_muladd(torch::Library &m);
-
 }
 
 // Registers _C as a Python extension module.
