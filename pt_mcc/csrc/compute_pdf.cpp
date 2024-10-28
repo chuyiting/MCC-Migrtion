@@ -40,7 +40,7 @@ namespace pt_mcc
         int num_points = points.size(0);
 
         TORCH_CHECK(batch_ids.dim() == 2 && batch_ids.size(1) == 1, "Batch IDs should have shape (N, 1)");
-        TORCH_CHECK(batch_ids.size(0) == numPoints, "batch_ids should match the first dimension of points");
+        TORCH_CHECK(batch_ids.size(0) == num_points, "batch_ids should match the first dimension of points");
 
         TORCH_CHECK(start_indexes.dim() == 2 && start_indexes.size(1) == 1, "Start indexes (Samples) should have shape (N_sample, 1)");
         int num_samples = start_indexes.size(0);
