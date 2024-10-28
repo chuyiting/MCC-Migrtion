@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace extension_cpp
+namespace pt_mcc
 {
 
   at::Tensor mymuladd_cpu(const at::Tensor &a, const at::Tensor &b, double c)
@@ -75,6 +75,8 @@ namespace extension_cpp
     TORCH_CHECK(points.dim() == 2, "Points should have 2 dimensions (numPoints, pointComponents)");
     TORCH_CHECK(points.size(1) >= 3, "Points should have at least 3 components");
     TORCH_CHECK(batchIds.dim() == 1, "Batch IDs should have 1 dimension (numPoints)");
+    TORCH_INTERNAL_ASSERT(points.device().type() == at::DeviceType::GPU);
+    TORCH_INTERNAL_ASSERT(batchIds.device().type() == at::DeviceType::GPU);
 
     int numPoints = points.size(0);
     auto pointSize = points.size(1);
@@ -105,7 +107,7 @@ namespace extension_cpp
   }
 
   // Registers CPU implementations for mymuladd, mymul, myadd_out
-  TORCH_LIBRARY_IMPL(extension_cpp, CPU, m)
+  TORCH_LIBRARY_IMPL(pt_mcc, CPU, m)
   {
 
     m.impl("mymuladd", &mymuladd_cpu);

@@ -16,7 +16,7 @@ from torch.utils.cpp_extension import (
     CUDA_HOME,
 )
 
-library_name = "extension_cpp"
+library_name = "pt_mcc"
 
 
 def get_extensions():

@@ -2,7 +2,7 @@ import torch
 from torch.testing._internal.common_utils import TestCase
 from torch.testing._internal.optests import opcheck
 import unittest
-import extension_cpp
+import pt_mcc
 from torch import Tensor
 from typing import Tuple
 import torch.nn.functional as F
@@ -30,7 +30,7 @@ class TestMyMulAdd(TestCase):
     def _test_correctness(self, device):
         samples = self.sample_inputs(device)
         for args in samples:
-            result = extension_cpp.ops.mymuladd(*args)
+            result = pt_mcc.ops.mymuladd(*args)
             expected = reference_muladd(*args)
             torch.testing.assert_close(result, expected)
 
@@ -45,7 +45,7 @@ class TestMyMulAdd(TestCase):
         samples = self.sample_inputs(device, requires_grad=True)
         for args in samples:
             diff_tensors = [a for a in args if isinstance(a, torch.Tensor) and a.requires_grad]
-            out = extension_cpp.ops.mymuladd(*args)
+            out = pt_mcc.ops.mymuladd(*args)
             grad_out = torch.randn_like(out)
             result = torch.autograd.grad(out, diff_tensors, grad_out)
 
@@ -66,7 +66,7 @@ class TestMyMulAdd(TestCase):
         samples = self.sample_inputs(device, requires_grad=True)
         samples.extend(self.sample_inputs(device, requires_grad=False))
         for args in samples:
-            opcheck(torch.ops.extension_cpp.mymuladd.default, args)
+            opcheck(torch.ops.pt_mcc.mymuladd.default, args)
 
     def test_opcheck_cpu(self):
         self._opcheck("cpu")
@@ -93,7 +93,7 @@ class TestMyAddOut(TestCase):
         samples = self.sample_inputs(device)
         for args in samples:
             result = args[-1]
-            extension_cpp.ops.myadd_out(*args)
+            pt_mcc.ops.myadd_out(*args)
             expected = torch.add(*args[:2])
             torch.testing.assert_close(result, expected)
 
@@ -102,7 +102,7 @@ class TestMyAddOut(TestCase):
         samples = self.sample_inputs(device, requires_grad=True)
         samples.extend(self.sample_inputs(device, requires_grad=False))
         for args in samples:
-            opcheck(torch.ops.extension_cpp.myadd_out.default, args)
+            opcheck(torch.ops.pt_mcc.myadd_out.default, args)
 
     def test_opcheck_cpu(self):
         self._opcheck("cpu")
@@ -115,8 +115,8 @@ class TestMyAddOut(TestCase):
 if __name__ == "__main__":
     pts = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]).cuda()
     batch = torch.tensor([1, 2, 3, 4]).cuda()
-    muladd = extension_cpp.ops.mymuladd(torch.tensor([1,2,3], dtype=torch.float), torch.tensor([1,2,3], dtype=torch.float), 4)
+    muladd = pt_mcc.ops.mymuladd(torch.tensor([1,2,3], dtype=torch.float), torch.tensor([1,2,3], dtype=torch.float), 4)
     print(f'muladd result is: {muladd}')
-    res = extension_cpp.ops.compute_aabb(pts, batch, 4, True)
+    res = pt_mcc.ops.compute_aabb(pts, batch, 4, True)
     print(f'the result is: {res}')
     unittest.main()
