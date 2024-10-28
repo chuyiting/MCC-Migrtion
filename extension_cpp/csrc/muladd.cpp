@@ -76,10 +76,10 @@ namespace extension_cpp
     m.def("myadd_out(Tensor a, Tensor b, Tensor(a!) out) -> ()");
   }
 
-  // Registers CUDA implementations for mymuladd, mymul, myadd_out
-  void impl_muladd(torch::Library &m)
+  // Registers CPU implementations for mymuladd, mymul, myadd_out
+  TORCH_LIBRARY_IMPL(extension_cpp, CPU, m)
   {
-    m.impl("mymuladd", &mymuladd_cpu);
+    em.impl("mymuladd", &mymuladd_cpu);
     m.impl("mymul", &mymul_cpu);
     m.impl("myadd_out", &myadd_out_cpu);
   }

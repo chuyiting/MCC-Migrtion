@@ -20,9 +20,3 @@ TORCH_LIBRARY(extension_cpp, m)
     extension_cpp::register_aabb(m);
     extension_cpp::register_muladd(m);
 }
-
-// Registers CUDA implementations for mymuladd, mymul, myadd_out
-TORCH_LIBRARY_IMPL(extension_cpp, CPU, m)
-{
-    extension_cpp::impl_muladd(m);
-}

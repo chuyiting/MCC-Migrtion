@@ -13,7 +13,6 @@
 
 #include <torch/extension.h>
 #include <tuple>
-#include <cuda_runtime.h>
 
 namespace extension_cpp
 {
@@ -50,6 +49,11 @@ namespace extension_cpp
     }
 
     void register_aabb(torch::Library &m)
+    {
+        m.def("compute_aabb(Tensor points, Tensor batchIds, int batchSize, bool scaleInv) -> (Tensor, Tensor)");
+    }
+
+    TORCH_LIBRARY_IMPL(extension_cpp, CPU, m)
     {
         m.def("compute_aabb", &compute_aabb); // define compute_aabb here
     }
