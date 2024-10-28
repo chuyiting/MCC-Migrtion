@@ -35,6 +35,7 @@ namespace pt_mcc
         auto pointSize = points.size(1);
 
         // Ensure batch_ids size matches num_points
+        TORCH_CHECK(batchIds.dim() == 2 && batchIds.size(1) == 1, "Batch IDs should have shape (N, 1)");
         TORCH_CHECK(batchIds.size(0) == numPoints, "Batch IDs should have the same number of points");
 
         // Allocate output tensors

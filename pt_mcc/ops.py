@@ -1,8 +1,7 @@
 import torch
 from torch import Tensor
 
-__all__ = ["mymuladd", "myadd_out", "compute_aabb"]
-
+__all__ = ["mymuladd", "myadd_out", "compute_aabb", "compute_pdf"]
 
 def mymuladd(a: Tensor, b: Tensor, c: float) -> Tensor:
     """Performs a * b + c in an efficient fused kernel"""
@@ -11,18 +10,8 @@ def mymuladd(a: Tensor, b: Tensor, c: float) -> Tensor:
 def compute_aabb(pts: Tensor, batch_ids: Tensor, batch_size: int, inv_inf: bool):
     return torch.ops.pt_mcc.compute_aabb.default(pts, batch_ids, batch_size, inv_inf)
 
-def test():
-    return torch.ops.pt_mcc.test()
-
-@torch.library.register_fake("pt_mcc::compute_aabb")
-def _(pts, batch_ids, batch_size, scale_inv):
-    torch._check(pts.device == batch_ids.device)
-    torch._check(pts.dim() == 2)
-    torch._check(batch_ids.dim() == 1)
-    torch._check(pts.shape[0] == batch_size.shape[0])
-    torch._check(batch_size.dtype == torch.int)
-    torch._check(scale_inv.dtype == torch.bool)
-    return (torch.empty_like(pts), torch.empty_like(pts))
+def compute_pdf(pts, batch_ids, aabb_min, aabb_max, start_indexes, neighbors, window, radius, batch_size, scale_inv):
+    return torch.ops.pt_mcc.compute_pdf(pts, batch_ids, aabb_min, aabb_max, start_indexes, neighbors, window, radius, batch_size, scale_inv)
 
 # Registers a FakeTensor kernel (aka "meta kernel", "abstract impl")
 # that describes what the properties of the output Tensor are given
@@ -36,6 +25,35 @@ def _(a, b, c):
     torch._check(a.device == b.device)
     return torch.empty_like(a)
 
+@torch.library.register_fake("pt_mcc::compute_aabb")
+def _(pts, batch_ids, batch_size, scale_inv):
+    torch._check(pts.device == batch_ids.device)
+    torch._check(pts.dim() == 2)
+    torch._check(batch_ids.dim() == 2)
+    torch._check(pts.shape[0] == batch_size.shape[0])
+    torch._check(batch_size.dtype == torch.int)
+    torch._check(scale_inv.dtype == torch.bool)
+    return (torch.empty_like(pts), torch.empty_like(pts))
+
+@torch.library.register_fake("pt_mcc::compute_pdf")
+def _(pts, batch_ids, aabb_min, aabb_max, start_indexes, neighbors, window, radius, batch_size, scale_inv):
+    torch._check(pts.device == batch_ids.device)
+    torch._check(pts.dim() == 2)
+    torch._check(batch_ids.dim() == 2)
+    torch._check(aabb_min.dim() == 2)
+    torch._check(aabb_max.dim() == 2)
+    torch._check(start_indexes.dim() == 2)
+    torch._check(neighbors.dim() == 2)
+    torch._check(pts.shape[0] == batch_size.shape[0])
+    torch._check(neighbors.shape[1] == 2)
+    torch._check(aabb_min.shape[0] == batch_size)
+    torch._check(aabb_max.shape[0] == batch_size)
+    torch._check(window.dtype == torch.float)
+    torch._check(radius.dtype == torch.float)
+    torch._check(batch_size.dtype == torch.int)
+    torch._check(scale_inv.dtype == torch.bool)
+    num_neighbors = neighbors.shape[0]
+    return torch.empty((num_neighbors, 1), dtype=torch.float)
 
 def _backward(ctx, grad):
     a, b = ctx.saved_tensors

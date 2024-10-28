@@ -11,7 +11,6 @@ import torch.nn.functional as F
 def reference_muladd(a, b, c):
     return a * b + c
 
-
 class TestMyMulAdd(TestCase):
     def sample_inputs(self, device, *, requires_grad=False):
         def make_tensor(*size):
@@ -113,8 +112,33 @@ class TestMyAddOut(TestCase):
 
 
 if __name__ == "__main__":
+    print('##################### Test compute_aabb #####################')
     pts = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]).cuda()
-    batch = torch.tensor([1, 2, 3, 4]).cuda()
-    res = pt_mcc.ops.compute_aabb(pts, batch, 4, True)
-    print(f'the result is: {res}')
+    batch_ids = torch.tensor([[1], [1], [1], [1]]).cuda()
+    res = pt_mcc.ops.compute_aabb(pts, batch_ids, 4, True)
+    print(f'the result is: {res.shape} {res}\n')
+
+    print('##################### Test compute_pdf #####################')
+    pts = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]).cuda()
+    batch = torch.tensor([[1], [1], [1], [1]]).cuda()
+    aabb_min = torch.tensor([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]).cuda()
+    aabb_max = torch.tensor([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]).cuda()
+    # Define the starting indexes, indicating where each point's neighbors start in the neighbors list
+    start_indexes = torch.tensor([0, 2, 4, 6]).cuda()
+
+    # Define the neighbors list, where each point has two neighbors for simplicity
+    neighbors = torch.tensor([
+        [1, 0], [2, 0],  # Neighbors for point 0
+        [0, 1], [3, 1],  # Neighbors for point 1
+        [0, 2], [3, 2],  # Neighbors for point 2
+        [1, 3], [2, 3]   # Neighbors for point 3
+    ]).cuda()
+
+    # Set other parameters
+    window = 1.0
+    radius = 1.0
+    batch_size = 1
+    scale_inv = True
+    res = pt_mcc.ops.compute_pdf(pts, batch, aabb_min, aabb_max, start_indexes, neighbors, window, radius, batch_size, scale_inv)
+    print(f'the result is: {res}\n')
     unittest.main()
