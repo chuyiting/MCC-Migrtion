@@ -20,7 +20,7 @@
 #define POINT_BLOCK_SIZE 256
 
 ////////////////////////////////////////////////////////////////////////////////// GPU
-namespace extension_cpp
+namespace pt_mcc
 {
     __device__ static float atomicMin(float *address, float val)
     {
