@@ -17,6 +17,11 @@ def test():
 @torch.library.register_fake("pt_mcc::compute_aabb")
 def _(pts, batch_ids, batch_size, scale_inv):
     torch._check(pts.device == batch_ids.device)
+    torch._check(pts.dim() == 2)
+    torch._check(batch_ids.dim() == 1)
+    torch._check(pts.shape[0] == batch_size.shape[0])
+    torch._check(batch_size.dtype == torch.int)
+    torch._check(scale_inv.dtype == torch.bool)
     return (torch.empty_like(pts), torch.empty_like(pts))
 
 # Registers a FakeTensor kernel (aka "meta kernel", "abstract impl")

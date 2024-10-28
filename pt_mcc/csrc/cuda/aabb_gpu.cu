@@ -63,7 +63,7 @@ namespace pt_mcc
         const int pNumPoints,
         const int64_t pBatchSize,
         const float *__restrict__ pPoints,
-        const int *__restrict__ pBatchIds,
+        const int64_t *__restrict__ pBatchIds,
         float *__restrict__ pAABBMin,
         float *__restrict__ pAABBMax)
     {
@@ -131,9 +131,9 @@ namespace pt_mcc
     void computeAABB(
         const bool pScaleInv,
         const int pNumPoints,
-        const int pBatchSize,
+        const int64_t pBatchSize,
         const float *pPoints,
-        const int *pBatchIds,
+        const int64_t *pBatchIds,
         float *pAABBMin,
         float *pAABBMax)
     {
