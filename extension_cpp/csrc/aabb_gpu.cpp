@@ -49,15 +49,8 @@ namespace extension_cpp
         return std::make_tuple(aabbMin, aabbMax);
     }
 
-    // Defines the operators
-    TORCH_LIBRARY(extension_cpp, m)
+    void register_aabb(torch::Library &m)
     {
-        m.def("compute_aabb(Tensor points, Tensor batchIds, int batchSize, bool scaleInv) -> (Tensor, Tensor)");
-    }
-
-    // Register implementations
-    TORCH_LIBRARY_IMPL(extension_cpp, CUDA, m)
-    {
-        m.impl("compute_aabb", &compute_aabb); // Corrected here: Removed description
+        m.def("compute_aabb", &compute_aabb); // define compute_aabb here
     }
 }
