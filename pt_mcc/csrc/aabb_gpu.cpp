@@ -54,7 +54,7 @@ namespace pt_mcc
     // Register CPU implementations
     TORCH_LIBRARY_IMPL(pt_mcc, CPU, m)
     {
-        m.impl("mymuladd", &mymuladd_cpu);
+        m.impl("compute_aabb", &compute_aabb);
     }
 
     // Register CUDA implementations
