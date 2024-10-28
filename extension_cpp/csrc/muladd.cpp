@@ -79,7 +79,7 @@ namespace extension_cpp
   // Registers CPU implementations for mymuladd, mymul, myadd_out
   TORCH_LIBRARY_IMPL(extension_cpp, CPU, m)
   {
-    em.impl("mymuladd", &mymuladd_cpu);
+    m.impl("mymuladd", &mymuladd_cpu);
     m.impl("mymul", &mymul_cpu);
     m.impl("myadd_out", &myadd_out_cpu);
   }
