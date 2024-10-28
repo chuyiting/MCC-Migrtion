@@ -137,7 +137,7 @@ if __name__ == "__main__":
     # Set other parameters
     window = 1.0
     radius = 1.0
-    batch_size = 1
+    batch_size = 4
     scale_inv = True
     res = pt_mcc.ops.compute_pdf(pts, batch, aabb_min, aabb_max, start_indexes, neighbors, window, radius, batch_size, scale_inv)
     print(f'the result is: {res}\n')
