@@ -15,13 +15,13 @@ namespace extension_cpp
     // Defines the operators
     TORCH_LIBRARY(extension_cpp, m)
     {
-        pt_ops::register_aabb(m);
-        pt_ops::register_muladd(m);
+        extension_cpp::register_aabb(m);
+        extension_cpp::register_muladd(m);
     }
 
     // Registers CUDA implementations for mymuladd, mymul, myadd_out
     TORCH_LIBRARY_IMPL(extension_cpp, CPU, m)
     {
-        pt_ops::impl_muladd(m);
+        extension_cpp::impl_muladd(m);
     }
 }
