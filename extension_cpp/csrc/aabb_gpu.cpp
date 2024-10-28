@@ -45,16 +45,16 @@ namespace extension_cpp
         //     points.data_ptr<float>(), batchIds.data_ptr<int>(),
         //     aabbMin.data_ptr<float>(), aabbMax.data_ptr<float>());
 
-        return std::make_tuple(aabbMin, aabbMax);
+        return 10;
     }
 
     void register_aabb(torch::Library &m)
     {
-        m.def("compute_aabb(Tensor points, Tensor batchIds, int batchSize, bool scaleInv) -> (Tensor, Tensor)");
+        m.def("compute_aabb(Tensor points, Tensor batchIds, int batchSize, bool scaleInv) -> int");
     }
 
     TORCH_LIBRARY_IMPL(extension_cpp, CPU, m)
     {
-        m.def("compute_aabb", &compute_aabb); // define compute_aabb here
+        m.impl("compute_aabb", &compute_aabb); // define compute_aabb here
     }
 }
