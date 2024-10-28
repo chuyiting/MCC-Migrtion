@@ -122,4 +122,8 @@ namespace pt_mcc
     m.impl("test", &test);
     m.impl("compute_aabb", &compute_aabb); // define compute_aabb here
   }
+  TORCH_LIBRARY_IMPL(pt_mcc, CUDA, m)
+  {
+    m.impl("compute_aabb", &compute_aabb); // define compute_aabb here
+  }
 }
