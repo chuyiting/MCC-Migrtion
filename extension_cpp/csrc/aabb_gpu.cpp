@@ -21,7 +21,7 @@ namespace extension_cpp
         const bool pScaleInv, const int pNumPoints, const int pBatchSize,
         const float *pPoints, const int *pBatchIds, float *pAABBMin, float *pAABBMax);
 
-    int compute_aabb(
+    std::tuple<torch::Tensor, at::Tensor> compute_aabb(
         torch::Tensor points, torch::Tensor batchIds, int64_t batchSize, bool scaleInv)
     {
         // Check input tensor dimensions and types
@@ -45,12 +45,12 @@ namespace extension_cpp
         //     points.data_ptr<float>(), batchIds.data_ptr<int>(),
         //     aabbMin.data_ptr<float>(), aabbMax.data_ptr<float>());
 
-        return 10;
+        return std::make_tuple(aabbMin, aabbMax);
     }
 
     void register_aabb(torch::Library &m)
     {
-        m.def("compute_aabb", &compute_aabb);
+        m.def("compute_aabb(Tensor points, Tensor batchIds, int batchSize, bool scaleInv) -> (Tensor, Tensor)");
     }
 
     TORCH_LIBRARY_IMPL(extension_cpp, CPU, m)
