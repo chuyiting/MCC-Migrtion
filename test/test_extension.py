@@ -116,7 +116,7 @@ if __name__ == "__main__":
     pts = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]).cuda()
     batch_ids = torch.tensor([[1], [1], [1], [1]]).cuda()
     res = pt_mcc.ops.compute_aabb(pts, batch_ids, 4, True)
-    print(f'the result is: {res.shape} {res}\n')
+    print(f'the result is: {res[0].shape} {res}\n')
 
     print('##################### Test compute_pdf #####################')
     pts = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]).cuda()
