@@ -8,6 +8,16 @@ def mymuladd(a: Tensor, b: Tensor, c: float) -> Tensor:
     """Performs a * b + c in an efficient fused kernel"""
     return torch.ops.pt_mcc.mymuladd.default(a, b, c)
 
+def compute_aabb(pts: Tensor, batch_ids: Tensor, batch_size: int, inv_inf: bool):
+    return torch.ops.pt_mcc.compute_aabb.default(pts, batch_ids, batch_size, inv_inf)
+
+def test():
+    return torch.ops.pt_mcc.test()
+
+@torch.library.register_fake("pt_mcc::test")
+def _():
+    return -1
+
 @torch.library.register_fake("pt_mcc::compute_aabb")
 def _(pts, batch_ids, batch_size, scale_inv):
     torch._check(pts.device == batch_ids.device)

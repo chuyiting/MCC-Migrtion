@@ -97,12 +97,18 @@ namespace pt_mcc
     return std::make_tuple(aabbMin, aabbMax);
   }
 
+  int test()
+  {
+    return 10;
+  }
+
   // Defines the operators
   void register_muladd(torch::Library &m)
   {
     m.def("mymuladd(Tensor a, Tensor b, float c) -> Tensor");
     m.def("mymul(Tensor a, Tensor b) -> Tensor");
     m.def("myadd_out(Tensor a, Tensor b, Tensor(a!) out) -> ()");
+    m.def("test() -> int");
     m.def("compute_aabb(Tensor points, Tensor batchIds, int batchSize, bool scaleInv) -> (Tensor, Tensor)");
   }
 
@@ -113,6 +119,7 @@ namespace pt_mcc
     m.impl("mymuladd", &mymuladd_cpu);
     m.impl("mymul", &mymul_cpu);
     m.impl("myadd_out", &myadd_out_cpu);
+    m.impl("test", &test);
     m.impl("compute_aabb", &compute_aabb); // define compute_aabb here
   }
 }
