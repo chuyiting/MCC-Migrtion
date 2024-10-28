@@ -19,6 +19,15 @@
 
 #define POINT_BLOCK_SIZE 256
 
+/*
+Implementation:
+The AABB for a batch of point clouds is computed by iterating through the points,
+determining their corresponding batch, and using atomic operations to find the
+minimum and maximum values across all threads. The use of atomic operations ensures
+thread safety when updating shared memory locations, allowing for correct computation
+of the bounding box even with concurrent access.
+*/
+
 ////////////////////////////////////////////////////////////////////////////////// GPU
 namespace pt_mcc
 {
