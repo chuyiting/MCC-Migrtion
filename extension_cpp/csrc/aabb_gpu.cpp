@@ -50,11 +50,11 @@ namespace extension_cpp
 
     void register_aabb(torch::Library &m)
     {
-        m.def("mymuladd(Tensor points, Tensor batchIds, int batchSize, bool scaleInv) -> (Tensor, Tensor)");
+        m.def("compute_aabb(Tensor points, Tensor batchIds, int batchSize, bool scaleInv) -> (Tensor, Tensor)");
     }
 
     TORCH_LIBRARY_IMPL(extension_cpp, CPU, m)
     {
-        m.impl("mymuladd", &compute_aabb); // define compute_aabb here
+        m.impl("compute_aabb", &compute_aabb); // define compute_aabb here
     }
 }

@@ -113,10 +113,10 @@ class TestMyAddOut(TestCase):
 
 
 if __name__ == "__main__":
-    pts = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
-    batch = torch.tensor([1, 2, 3, 4])
-    muladd = extension_cpp.ops.compute_aabb(torch.tensor([1,2,3], dtype=torch.float), torch.tensor([1,2,3], dtype=torch.float), 4)
+    pts = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]).cuda()
+    batch = torch.tensor([1, 2, 3, 4]).cuda()
+    muladd = extension_cpp.ops.mymuladd(torch.tensor([1,2,3], dtype=torch.float), torch.tensor([1,2,3], dtype=torch.float), 4)
     print(f'muladd result is: {muladd}')
-    # res = extension_cpp.ops.compute_aabb(pts, batch, 4, True)
-    # print(f'the result is: {res}')
+    res = extension_cpp.ops.compute_aabb(pts, batch, 4, True)
+    print(f'the result is: {res}')
     unittest.main()

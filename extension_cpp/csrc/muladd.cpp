@@ -71,7 +71,7 @@ namespace extension_cpp
   // Defines the operators
   void register_muladd(torch::Library &m)
   {
-    m.def("compute_aabb(Tensor a, Tensor b, float c) -> Tensor");
+    m.def("mymuladd(Tensor a, Tensor b, float c) -> Tensor");
     m.def("mymul(Tensor a, Tensor b) -> Tensor");
     m.def("myadd_out(Tensor a, Tensor b, Tensor(a!) out) -> ()");
   }
@@ -79,7 +79,7 @@ namespace extension_cpp
   // Registers CPU implementations for mymuladd, mymul, myadd_out
   TORCH_LIBRARY_IMPL(extension_cpp, CPU, m)
   {
-    m.impl("compute_aabb", &mymuladd_cpu);
+    m.impl("mymuladd", &mymuladd_cpu);
     m.impl("mymul", &mymul_cpu);
     m.impl("myadd_out", &myadd_out_cpu);
   }
