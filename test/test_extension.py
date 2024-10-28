@@ -124,7 +124,7 @@ if __name__ == "__main__":
     aabb_min = torch.tensor([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]).cuda()
     aabb_max = torch.tensor([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]).cuda()
     # Define the starting indexes, indicating where each point's neighbors start in the neighbors list
-    start_indexes = torch.tensor([0, 2, 4, 6]).cuda()
+    start_indexes = torch.tensor([[0], [2], [4], [6]]).cuda()
 
     # Define the neighbors list, where each point has two neighbors for simplicity
     neighbors = torch.tensor([
