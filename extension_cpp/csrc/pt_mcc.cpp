@@ -3,7 +3,7 @@
 namespace extension_cpp
 {
 
-    void register_aabb(torch::Library &m);
+    // void register_aabb(torch::Library &m);
     void register_muladd(torch::Library &m);
 }
 
@@ -15,6 +15,6 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m)
 // Defines the operators
 TORCH_LIBRARY(extension_cpp, m)
 {
-    extension_cpp::register_aabb(m);
+    // extension_cpp::register_aabb(m);
     extension_cpp::register_muladd(m);
 }
