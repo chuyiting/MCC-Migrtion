@@ -61,7 +61,7 @@ namespace pt_mcc
     __global__ void comp_AABB(
         const bool pScaleInv,
         const int pNumPoints,
-        const int pBatchSize,
+        const int64_t pBatchSize,
         const float *__restrict__ pPoints,
         const int *__restrict__ pBatchIds,
         float *__restrict__ pAABBMin,

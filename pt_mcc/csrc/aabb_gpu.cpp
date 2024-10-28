@@ -22,7 +22,7 @@ namespace pt_mcc
         const float *pPoints, const int *pBatchIds, float *pAABBMin, float *pAABBMax);
 
     std::tuple<torch::Tensor, at::Tensor> compute_aabb(
-        torch::Tensor points, torch::Tensor batchIds, int32_t batchSize, bool scaleInv)
+        torch::Tensor points, torch::Tensor batchIds, int64_t batchSize, bool scaleInv)
     {
         // Check input tensor dimensions and types
         TORCH_CHECK(points.dim() == 2, "Points should have 2 dimensions (numPoints, pointComponents)");
