@@ -27,7 +27,6 @@ namespace pt_mcc
         // Check input tensor dimensions and types
         TORCH_CHECK(points.dim() == 2, "Points should have 2 dimensions (numPoints, pointComponents)");
         TORCH_CHECK(points.size(1) >= 3, "Points should have at least 3 components");
-        TORCH_CHECK(batchIds.dim() == 1, "Batch IDs should have 1 dimension (numPoints)");
         TORCH_INTERNAL_ASSERT(points.device().type() == at::DeviceType::CUDA);
         TORCH_INTERNAL_ASSERT(batchIds.device().type() == at::DeviceType::CUDA);
 
