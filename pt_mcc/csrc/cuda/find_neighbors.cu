@@ -36,7 +36,7 @@ namespace pt_mcc
      *  @param  pPoints2            List of points from where to find neighbors.
      *  @param  pCellIndexs         Indexs of the grid cells.
      *  @param  pOutNeigbors        Output parameter with the number of neighbors of each point.
-     *  @param  pOutNumNeigbors     Output parameter with the total number of neighbors.
+     *  @param  pOutNumNeighbors     Output parameter with the total number of neighbors.
      */
     __global__ void countNeighbors(
         const bool pScaleInv,
@@ -50,7 +50,7 @@ namespace pt_mcc
         const float *__restrict__ pPoints2,
         const int *__restrict__ pCellIndexs,
         int *__restrict__ pOutNeigbors,
-        int *__restrict__ pOutNumNeigbors)
+        int *__restrict__ pOutNumNeighbors)
     {
         __shared__ int blockTotalNeighbors;
 
@@ -113,8 +113,8 @@ namespace pt_mcc
 
         if (threadIdx.x == 0)
         {
-            atomicAdd(&pOutNumNeigbors[0], blockTotalNeighbors);
-            printf("Total neighbors after atomicAdd: %d\n", pOutNumNeigbors[0]);
+            atomicAdd(&pOutNumNeighbors[0], blockTotalNeighbors);
+            printf("Total neighbors after atomicAdd: %d\n", pOutNumNeighbors[0]);
         }
     }
 
