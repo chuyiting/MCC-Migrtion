@@ -150,8 +150,8 @@ if __name__ == "__main__":
     # Define cell_indices in 5D: [batch_size, pNumCells, pNumCells, pNumCells, 2]
     # For simplicity, assume each cell contains exactly one point (start and end indices are consecutive)
     cell_indices = torch.tensor([[
-        [[[0, 1], [1, 2]], [[2, 3], [3, 3]]],
-        [[[3, 3], [3, 3]], [[3, 3], [3, 3]]]
+        [[[0, 1], [1, 2]], [[2, 3], [2, 3]]],
+        [[[0, 3], [1, 3]], [[2, 3], [2, 3]]]
     ]], dtype=torch.int32)  # Batch 0, 2x2x2 cells
 
     aabb_min = torch.tensor([[0.0, 0.0, 0.0]], dtype=torch.float32)  # Minimum AABB for batch 0
