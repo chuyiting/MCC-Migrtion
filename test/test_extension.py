@@ -181,7 +181,7 @@ if __name__ == "__main__":
     print(f'output features: {res}')
     res.retain_grad()
     res.backward(grad)
-    print(f'grad: {res.grad}')
+    print(f'grad: {features.grad}')
 
 
     unittest.main()
