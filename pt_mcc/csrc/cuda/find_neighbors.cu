@@ -18,7 +18,7 @@
 #include "cuda_kernel_utils.h"
 
 #define POINT_BLOCK_SIZE 4
-#define POINT_BLOCK_PACK_SIZE 256
+#define POINT_BLOCK_PACK_SIZE 4
 
 ////////////////////////////////////////////////////////////////////////////////// GPU
 namespace pt_mcc
