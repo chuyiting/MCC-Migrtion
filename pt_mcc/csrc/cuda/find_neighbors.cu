@@ -311,6 +311,7 @@ namespace pt_mcc
 
         int totalNeighborsCPU = 0;
         cudaMemcpy(&totalNeighborsCPU, totalNeighbors, sizeof(int), cudaMemcpyDeviceToHost);
+        printf("Pointer to totalNeighbors: %p\n", (void *)totalNeighbors);
         gpuErrchk(cudaFree(totalNeighbors));
 
 #ifdef PRINT_CONV_INFO
