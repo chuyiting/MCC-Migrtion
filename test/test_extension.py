@@ -144,7 +144,7 @@ if __name__ == "__main__":
 
     print('##################### Test find_neighbors #####################')
     pts = torch.tensor([[0.1, 0.2, 0.3],[0.5, 0.5, 0.5], [0.7, 0.7, 0.7], [0.9, 0.9, 0.9]], dtype=torch.float32)  
-    batch_ids = torch.tensor([[0], [0], [0]], dtype=torch.int32)  # All points belong to batch 0
+    batch_ids = torch.tensor([[0], [0], [0], [0]], dtype=torch.int32)  # All points belong to batch 0
     pts2 = torch.tensor([[0.15, 0.25, 0.35], [0.55, 0.55, 0.55], [0.7, 0.7, 0.7], [0.95, 0.95, 0.95]], dtype=torch.float32)  # Points in the second set to check as potential neighbors
 
     # Define cell_indices in 5D: [batch_size, pNumCells, pNumCells, pNumCells, 2]
