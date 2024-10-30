@@ -80,30 +80,30 @@ namespace pt_mcc
             int zCell = max(min((int)floor((centralCoords[2] - pAABBMinPoint[currBatchId * 3 + 2]) / cellSize), pNumCells - 1), 0);
 
             int neighborIter = 0;
-            for (int i = 0; i < 27; ++i)
-            {
-                int currCellIndex[3] = {xCell + cellOffsets[i][0], yCell + cellOffsets[i][1], zCell + cellOffsets[i][2]};
-                if (currCellIndex[0] >= 0 && currCellIndex[0] < pNumCells &&
-                    currCellIndex[1] >= 0 && currCellIndex[1] < pNumCells &&
-                    currCellIndex[2] >= 0 && currCellIndex[2] < pNumCells)
-                {
-                    int cellIndexFlat = currBatchId * pNumCells * pNumCells * pNumCells + currCellIndex[0] * pNumCells * pNumCells + currCellIndex[1] * pNumCells + currCellIndex[2];
-                    int initIndex = pCellIndexs[cellIndexFlat * 2];
-                    int endIndex = pCellIndexs[cellIndexFlat * 2 + 1];
+            // for (int i = 0; i < 27; ++i)
+            // {
+            //     int currCellIndex[3] = {xCell + cellOffsets[i][0], yCell + cellOffsets[i][1], zCell + cellOffsets[i][2]};
+            //     if (currCellIndex[0] >= 0 && currCellIndex[0] < pNumCells &&
+            //         currCellIndex[1] >= 0 && currCellIndex[1] < pNumCells &&
+            //         currCellIndex[2] >= 0 && currCellIndex[2] < pNumCells)
+            //     {
+            //         int cellIndexFlat = currBatchId * pNumCells * pNumCells * pNumCells + currCellIndex[0] * pNumCells * pNumCells + currCellIndex[1] * pNumCells + currCellIndex[2];
+            //         int initIndex = pCellIndexs[cellIndexFlat * 2];
+            //         int endIndex = pCellIndexs[cellIndexFlat * 2 + 1];
 
-                    for (int j = initIndex; j < endIndex; ++j)
-                    {
-                        int currPointIndex = j * 3;
-                        float currentCoords[3] = {pPoints2[currPointIndex], pPoints2[currPointIndex + 1], pPoints2[currPointIndex + 2]};
-                        float diffVector[3] = {currentCoords[0] - centralCoords[0], currentCoords[1] - centralCoords[1], currentCoords[2] - centralCoords[2]};
-                        float pointDist = sqrt(diffVector[0] * diffVector[0] + diffVector[1] * diffVector[1] + diffVector[2] * diffVector[2]);
-                        if (pointDist < scaledRadius)
-                        {
-                            neighborIter++;
-                        }
-                    }
-                }
-            }
+            //         for (int j = initIndex; j < endIndex; ++j)
+            //         {
+            //             int currPointIndex = j * 3;
+            //             float currentCoords[3] = {pPoints2[currPointIndex], pPoints2[currPointIndex + 1], pPoints2[currPointIndex + 2]};
+            //             float diffVector[3] = {currentCoords[0] - centralCoords[0], currentCoords[1] - centralCoords[1], currentCoords[2] - centralCoords[2]};
+            //             float pointDist = sqrt(diffVector[0] * diffVector[0] + diffVector[1] * diffVector[1] + diffVector[2] * diffVector[2]);
+            //             if (pointDist < scaledRadius)
+            //             {
+            //                 neighborIter++;
+            //             }
+            //         }
+            //     }
+            // }
 
             pOutNeighbors[currentIndex] = neighborIter;
             atomicAdd(&blockTotalNeighbors, neighborIter);

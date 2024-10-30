@@ -149,28 +149,9 @@ if __name__ == "__main__":
 
     # Define cell_indices in 5D: [batch_size, pNumCells, pNumCells, pNumCells, 2]
     # For simplicity, assume each cell contains exactly one point (start and end indices are consecutive)
-    cell_indices = torch.tensor(
-    [
-        [
-            [
-                [[0, 1]],  # Cell (0, 0, 0)
-                [[1, 2]],  # Cell (0, 0, 1)
-                [[2, 3]],  # Cell (0, 0, 2)
-            ],
-            [
-                [[0, 1]],  # Cell (0, 1, 0)
-                [[1, 2]],  # Cell (0, 1, 1)
-                [[2, 3]],  # Cell (0, 1, 2)
-            ],
-            [
-                [[0, 1]],  # Cell (0, 2, 0)
-                [[1, 2]],  # Cell (0, 2, 1)
-                [[2, 3]],  # Cell (0, 2, 2)
-            ],
-        ]
-    ],  # Repeat for batch_size
-    dtype=torch.int32
-    ).cuda()  # current cuda implementation needs at least 3x3x3 cells...
+    cell_indices = torch.tensor([[
+        [[[0, 2]]]
+    ]], dtype=torch.int32).cuda()  # Batch 0, 1x1x1 cells
 
     aabb_min = torch.tensor([[0.0, 0.0, 0.0]], dtype=torch.float32).cuda()  # Minimum AABB for batch 0
 
