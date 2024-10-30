@@ -353,7 +353,17 @@ namespace pt_mcc
         numBlocksPointsPack += (pNumPoints % POINT_BLOCK_PACK_SIZE != 0) ? 1 : 0;
         int numBlocksPointsPack2 = numBlocksPointsPack / POINT_BLOCK_PACK_SIZE;
         numBlocksPointsPack2 += (numBlocksPointsPack % POINT_BLOCK_PACK_SIZE != 0) ? 1 : 0;
+        printf("numBlocksPointsPack: %d\n", numBlocksPointsPack);
 
+        // Check the value of pAuxBuffOffsets pointer
+        printf("pAuxBuffOffsets pointer: %p\n", (void *)pAuxBuffOffsets);
+
+        // Check if pAuxBuffOffsets is NULL (indicating allocation failure)
+        if (pAuxBuffOffsets == nullptr)
+        {
+            printf("Error: pAuxBuffOffsets is NULL!\n");
+            return; // or handle the error appropriately
+        }
         gpuErrchk(cudaMemset(pAuxBuffOffsets, 0, sizeof(int) * numBlocksPointsPack));
         gpuErrchk(cudaMemset(pAuxBuffOffsets2, 0, sizeof(int) * numBlocksPointsPack2));
 
