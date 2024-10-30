@@ -17,7 +17,7 @@
 
 #include "cuda_kernel_utils.h"
 
-#define POINT_BLOCK_SIZE 1
+#define POINT_BLOCK_SIZE 128
 #define POINT_BLOCK_PACK_SIZE 256
 
 ////////////////////////////////////////////////////////////////////////////////// GPU
@@ -307,6 +307,7 @@ namespace pt_mcc
         countNeighbors<<<numBlocksPoints, POINT_BLOCK_SIZE>>>(pScaleInv, pNumPoints, pNumCells,
                                                               pRadius, pAABBMin, pAABBMax, pInPts, pInBatchIds, pInPts2, pCellIndexs, pStartIndex, totalNeighbors);
 
+        cudaDeviceSynchronize();
         gpuErrchk(cudaPeekAtLastError());
         printf("totalNeighbors: %p\n", (void *)totalNeighbors); // Pointer to totalNeighbors: 0x7f0cf7600000
         int totalNeighborsCPU = 0;

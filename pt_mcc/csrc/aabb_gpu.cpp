@@ -31,7 +31,7 @@ namespace pt_mcc
         TORCH_INTERNAL_ASSERT(batchIds.device().type() == at::DeviceType::CUDA);
 
         int numPoints = points.size(0);
-        auto pointSize = points.size(1);
+        // auto pointSize = points.size(1);
 
         // Ensure batch_ids size matches num_points
         TORCH_CHECK(batchIds.dim() == 2 && batchIds.size(1) == 1, "Batch IDs should have shape (N, 1)");
