@@ -49,7 +49,7 @@ namespace pt_mcc
     std::tuple<torch::Tensor, torch::Tensor, torch::Tensor> poisson_sampling(
         const torch::Tensor &points,
         const torch::Tensor &batch_ids,
-        const torch::Tensor &cell_indexs,
+        const torch::Tensor &cell_indices,
         const torch::Tensor &aabb_min,
         const torch::Tensor &aabb_max,
         double radius,
@@ -67,9 +67,9 @@ namespace pt_mcc
         TORCH_CHECK(aabb_max.dim() == 2 && aabb_max.size(0) == batch_size && aabb_max.size(1) == 3, "aabb_max should have dimensions (B, 3)");
 
         int num_points = points.size(0);
-        int num_cells = cell_indexs.size(1);
+        int num_cells = cell_indices.size(1);
 
-        torch::tmp_pts = torch::empty({num_points, 3}, points.options());
+        torch::Tensor tmp_pts = torch::empty({num_points, 3}, points.options());
         torch::Tensor tmp_batchs = torch::empty({num_points, 1}, batch_ids.options());
         torch::Tensor tmp_indexs = torch::empty({num_points, 1}, batch_ids.options());
         torch::Tensor tmp_used_bool = torch::empty({num_points, 1}, torch::kBool);
@@ -78,7 +78,7 @@ namespace pt_mcc
             scale_inv, radius, num_points, batch_size, num_cells,
             aabb_min.data_ptr<float>(), aabb_max.data_ptr<float>(),
             points.data_ptr<float>(), batch_ids.data_ptr<int>(),
-            cell_indexs.data_ptr<int>(), tmp_pts.data_ptr<float>(),
+            cell_indices.data_ptr<int>(), tmp_pts.data_ptr<float>(),
             tmp_batchs.data_ptr<int>(), tmp_indexs.data_ptr<int>(),
             tmp_used_bool.data_ptr<bool>);
 
