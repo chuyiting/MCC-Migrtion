@@ -74,7 +74,7 @@ namespace pt_mcc
         int num_cells = cell_indices.size(1);
 
         // Allocate output tensor for start indexes
-        torch::Tensor start_indexes = torch::zeros({num_points, 1}, torch::dtype(torch::kInt32));
+        torch::Tensor start_indexes = torch::zeros({num_points, 1}, torch::TensorOptions().dtype(torch::kInt32).device(torch::kCUDA));
         int *start_indexes_ptr = start_indexes.data_ptr<int>();
 
         unsigned int num_neighbors = countNeighborsCPU(scale_inv, num_points, num_cells, radius,

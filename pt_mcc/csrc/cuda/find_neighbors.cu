@@ -66,7 +66,6 @@ namespace pt_mcc
         {
             int currBatchId = pBatchIds[currentIndex];
             int pointIndex = currentIndex * 3;
-            printf("currBatchId: %d, pointIndex: %d\n", currBatchId, pointIndex);
 
             float maxAabbSize = max(max(
                                         pAABBMaxPoint[currBatchId * 3] - pAABBMinPoint[currBatchId * 3],
@@ -79,7 +78,6 @@ namespace pt_mcc
             int xCell = max(min((int)floor((centralCoords[0] - pAABBMinPoint[currBatchId * 3]) / cellSize), pNumCells - 1), 0);
             int yCell = max(min((int)floor((centralCoords[1] - pAABBMinPoint[currBatchId * 3 + 1]) / cellSize), pNumCells - 1), 0);
             int zCell = max(min((int)floor((centralCoords[2] - pAABBMinPoint[currBatchId * 3 + 2]) / cellSize), pNumCells - 1), 0);
-            printf("cell coord: (%d, %d, %d)\n", xCell, yCell, zCell);
 
             int neighborIter = 0;
             for (int i = 0; i < 27; ++i)
@@ -107,20 +105,15 @@ namespace pt_mcc
                 }
             }
 
-            printf("current index: %d\n", currentIndex);
             pOutNeighbors[currentIndex] = neighborIter;
-            printf("before add to block count\n");
             atomicAdd(&blockTotalNeighbors, neighborIter);
-            printf("add to block count\n");
         }
 
         __syncthreads();
 
         if (threadIdx.x == 0)
         {
-            printf("before add res back to pOutNumNeighbors\n");
             atomicAdd(&pOutNumNeighbors[0], blockTotalNeighbors);
-            printf("add res back to pOutNumNeighbors\n");
         }
     }
 
