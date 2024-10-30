@@ -179,6 +179,7 @@ if __name__ == "__main__":
     num_feature = features.shape[1]
     grad = torch.ones(num_sampled_point, num_feature, dtype=torch.float).cuda()
     print(f'output features: {res}')
+    res.retain_grad()
     res.backward(grad)
     print(f'grad: {res.grad}')
 
