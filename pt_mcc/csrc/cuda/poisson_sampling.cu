@@ -197,7 +197,7 @@ namespace pt_mcc
         // Init device symbols.
         int cellOffsetsPoolCPU[27][3] = {
             {1, 1, -1}, {0, -1, 1}, {0, 1, 1}, {0, 1, 0}, {0, 0, 1}, {0, -1, 0}, {-1, 1, -1}, {0, -1, -1}, {1, 0, 0}, {1, -1, 1}, {1, 0, 1}, {-1, 1, 1}, {-1, 0, 0}, {1, -1, -1}, {0, 1, -1}, {-1, -1, 0}, {-1, 1, 0}, {0, 0, 0}, {0, 0, -1}, {1, 1, 0}, {1, 0, -1}, {1, -1, 0}, {-1, 0, 1}, {1, 1, 1}, {-1, 0, -1}, {-1, -1, -1}, {-1, -1, 1}};
-        cudaMemcpyToSymbol(cellOffsetsPool, cellOffsetsPoolCPU, 27 * 3 * sizeof(int));
+        gpuErrchk(cudaMemcpyToSymbol(cellOffsetsPool, cellOffsetsPoolCPU, 27 * 3 * sizeof(int)));
         int numSelectedPointsCPU = 0;
 
         gpuErrchk(cudaMemset(pAuxBoolBuffer, 0, sizeof(bool) * pNumPoints));
