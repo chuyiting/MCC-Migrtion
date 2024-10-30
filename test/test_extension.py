@@ -161,8 +161,9 @@ if __name__ == "__main__":
     scale_inv = False  # Do not scale radius by AABB size
 
     # Call the find_neighbors function
-    neighbors = pt_mcc.ops.find_neighbors(pts, batch_ids, pts2, cell_indices, aabb_min, aabb_max, radius, batch_size, scale_inv)
-    print(neighbors.cpu())
+    start_idx, neigh_idx = pt_mcc.ops.find_neighbors(pts, batch_ids, pts2, cell_indices, aabb_min, aabb_max, radius, batch_size, scale_inv)
+    print(start_idx.cpu())
+    print(neigh_idx.cpu())
     # print('Skip the test for find_neighbors for now... Find issues later...')
 
     print('##################### Test poisson_sampling #####################')
