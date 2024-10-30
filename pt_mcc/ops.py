@@ -13,6 +13,9 @@ def compute_aabb(pts: Tensor, batch_ids: Tensor, batch_size: int, inv_inf: bool)
 def compute_pdf(pts, batch_ids, aabb_min, aabb_max, start_indexes, neighbors, window, radius, batch_size, scale_inv):
     return torch.ops.pt_mcc.compute_pdf(pts, batch_ids, aabb_min, aabb_max, start_indexes, neighbors, window, radius, batch_size, scale_inv)
 
+def find_neighbors(pts, batch_ids, pts2, cell_indices, aabb_min, aabb_max, radius, batch_size, scale_inv):
+    return torch.ops.pt_mcc.find_neighbors(pts, batch_ids, pts2, cell_indices, aabb_min, aabb_max, radius, batch_size, scale_inv)
+
 # Registers a FakeTensor kernel (aka "meta kernel", "abstract impl")
 # that describes what the properties of the output Tensor are given
 # the properties of the input Tensor. The FakeTensor kernel is necessary
@@ -54,6 +57,26 @@ def _(pts, batch_ids, aabb_min, aabb_max, start_indexes, neighbors, window, radi
     torch._check(scale_inv.dtype == torch.bool)
     num_neighbors = neighbors.shape[0]
     return torch.empty((num_neighbors, 1), dtype=torch.float)
+
+@torch.library.register_fake("pt_mcc::find_neighbors")
+def _(pts, batch_ids, pts2, cell_indices, aabb_min, aabb_max, radius, batch_size, scale_inv):
+    torch._check(pts.device == batch_ids.device)
+    torch._check(pts.dim() == 2)
+    torch._check(pts2.dim() == 2)
+    torch._check(cell_indices.dim() == 5 and cell_indices.shape[0] == batch_size)
+
+    torch._check(batch_ids.dim() == 2)
+    torch._check(aabb_min.dim() == 2)
+    torch._check(aabb_max.dim() == 2)
+    torch._check(aabb_min.shape[0] == batch_size)
+    torch._check(aabb_max.shape[0] == batch_size)
+    torch._check(radius.dtype == torch.float)
+    torch._check(batch_size.dtype == torch.int)
+    torch._check(scale_inv.dtype == torch.bool)
+
+    num_pts = pts.shape[0]
+    num_neigh = 100 # just some placeholder, it will be different for different input
+    return torch.empty((num_pts, 1), dtype=torch.int), torch.empty((num_neigh, 1), dtype=torch.int)
 
 def _backward(ctx, grad):
     a, b = ctx.saved_tensors
