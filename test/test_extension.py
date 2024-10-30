@@ -172,7 +172,7 @@ if __name__ == "__main__":
 
     print('##################### Test get_sampled_features(pts_indices, features) #####################')
     pts_indices = torch.tensor([0, 3], dtype=torch.int).cuda()
-    features = torch.Tensor([[0, 0, 0], [1, 1, 1], [2, 2, 2], [3, 3, 3]], dtype=torch.float).cuda()
+    features = torch.Tensor([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [2.0, 2.0, 2.0], [3.0, 3.0, 3.0]], dtype=torch.float32).cuda()
     features.requires_grad_()
     res = pt_mcc.ops.get_sampled_features(pts_indices, features)
     num_sampled_point = pts_indices.shape[0]
