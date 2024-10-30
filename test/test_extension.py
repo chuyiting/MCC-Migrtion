@@ -162,12 +162,12 @@ if __name__ == "__main__":
 
     # Call the find_neighbors function
     neighbors = pt_mcc.ops.find_neighbors(pts, batch_ids, pts2, cell_indices, aabb_min, aabb_max, radius, batch_size, scale_inv)
-    print(neighbors)
+    print(neighbors.cpu())
     # print('Skip the test for find_neighbors for now... Find issues later...')
 
     print('##################### Test poisson_sampling #####################')
     res = pt_mcc.ops.poisson_sampling(pts, batch_ids, cell_indices, aabb_min, aabb_max, radius, batch_size, scale_inv)
-    print(res.cpu())
+    print(res)
 
     print('##################### Test get_sampled_features(pts_indices, features) #####################')
     pts_indices = torch.tensor([0, 3], dtype=torch.int).cuda()
