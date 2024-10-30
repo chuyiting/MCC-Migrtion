@@ -81,7 +81,7 @@ namespace pt_mcc
                                                        points_ptr, batch_ids_ptr, points2_ptr, cell_indices_ptr, aabb_min_ptr, aabb_max_ptr, start_indexes_ptr);
 
         // Allocate output tensor for neighbor indexes
-        torch::Tensor neigh_indexes = torch::zeros({static_cast<int64_t>(num_neighbors), 2}, torch::dtype(torch::kInt32));
+        torch::Tensor neigh_indexes = torch::zeros({static_cast<int64_t>(num_neighbors), 2}, torch::TensorOptions().dtype(torch::kInt32).device(torch::kCUDA));
         int *neigh_indexes_ptr = neigh_indexes.data_ptr<int>();
 
         // Allocate temporary buffers
