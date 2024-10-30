@@ -114,7 +114,6 @@ namespace pt_mcc
         if (threadIdx.x == 0)
         {
             atomicAdd(&pOutNumNeighbors[0], blockTotalNeighbors);
-            printf("Total neighbors after atomicAdd: %d\n", pOutNumNeighbors[0]);
         }
     }
 
