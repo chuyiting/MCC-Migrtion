@@ -1,6 +1,5 @@
 #include <torch/extension.h>
 #include <cuda_runtime.h>
-#include "cuda_kernel_utils.h"
 
 namespace pt_mcc
 {
