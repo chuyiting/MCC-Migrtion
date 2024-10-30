@@ -73,7 +73,7 @@ namespace pt_mcc
         torch::Tensor tmp_pts = torch::empty({num_points, 3}, points.options());
         torch::Tensor tmp_batchs = torch::empty({num_points, 1}, batch_ids.options());
         torch::Tensor tmp_indexs = torch::empty({num_points, 1}, batch_ids.options());
-        torch::Tensor tmp_used_bool = torch::empty({num_points, 1}, torch::kBool);
+        torch::Tensor tmp_used_bool = torch::empty({num_points, 1}, torch::kBool, torch::device(torch::kCUDA));
         // Calculate the size in bytes
         size_t total_size = tmp_used_bool.numel() * tmp_used_bool.element_size();
         // Print the size
