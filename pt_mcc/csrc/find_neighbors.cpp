@@ -77,9 +77,9 @@ namespace pt_mcc
         torch::Tensor start_indexes = torch::zeros({num_points, 1}, torch::dtype(torch::kInt32));
         int *start_indexes_ptr = start_indexes.data_ptr<int>();
 
-        unsigned int num_neighbors = min(countNeighborsCPU(scale_inv, num_points, num_cells, radius,
-                                                           points_ptr, batch_ids_ptr, points2_ptr, cell_indices_ptr, aabb_min_ptr, aabb_max_ptr, start_indexes_ptr),
-                                         1);
+        unsigned int num_neighbors = std::max(countNeighborsCPU(scale_inv, num_points, num_cells, radius,
+                                                                points_ptr, batch_ids_ptr, points2_ptr, cell_indices_ptr, aabb_min_ptr, aabb_max_ptr, start_indexes_ptr),
+                                              1);
 
         // Allocate output tensor for neighbor indexes
         torch::Tensor neigh_indexes = torch::zeros({static_cast<int64_t>(num_neighbors), 2}, torch::dtype(torch::kInt32));
