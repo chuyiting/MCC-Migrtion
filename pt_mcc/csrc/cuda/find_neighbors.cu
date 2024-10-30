@@ -79,6 +79,7 @@ namespace pt_mcc
             int xCell = max(min((int)floor((centralCoords[0] - pAABBMinPoint[currBatchId * 3]) / cellSize), pNumCells - 1), 0);
             int yCell = max(min((int)floor((centralCoords[1] - pAABBMinPoint[currBatchId * 3 + 1]) / cellSize), pNumCells - 1), 0);
             int zCell = max(min((int)floor((centralCoords[2] - pAABBMinPoint[currBatchId * 3 + 2]) / cellSize), pNumCells - 1), 0);
+            printf("cell coord: (%f, %f, %f)\n", xCell, yCell, zCell);
 
             int neighborIter = 0;
             for (int i = 0; i < 27; ++i)
@@ -106,6 +107,7 @@ namespace pt_mcc
                 }
             }
 
+            printf("current index: %d\n", currentIndex);
             pOutNeighbors[currentIndex] = neighborIter;
             atomicAdd(&blockTotalNeighbors, neighborIter);
         }
