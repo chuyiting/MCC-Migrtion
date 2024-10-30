@@ -150,14 +150,13 @@ if __name__ == "__main__":
     # Define cell_indices in 5D: [batch_size, pNumCells, pNumCells, pNumCells, 2]
     # For simplicity, assume each cell contains exactly one point (start and end indices are consecutive)
     cell_indices = torch.tensor([[
-        [[[0, 1], [1, 2]], [[2, 3], [2, 3]]],
-        [[[0, 3], [1, 3]], [[2, 3], [2, 3]]]
-    ]], dtype=torch.int32)  # Batch 0, 2x2x2 cells
+        [[[0, 2]]]
+    ]], dtype=torch.int32)  # Batch 0, 1x1x1 cells
 
     aabb_min = torch.tensor([[0.0, 0.0, 0.0]], dtype=torch.float32)  # Minimum AABB for batch 0
 
     aabb_max = torch.tensor([[1.0, 1.0, 1.0]], dtype=torch.float32)  # Maximum AABB for batch 0
-    radius = 0.2  # Radius for neighbor search
+    radius = 0.5  # Radius for neighbor search
     batch_size = 1  # Single batch
     scale_inv = False  # Do not scale radius by AABB size
 
