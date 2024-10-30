@@ -296,13 +296,12 @@ namespace pt_mcc
             {1, 1, 1}, {0, 1, 1}, {-1, 1, 1}, {1, 0, 1}, {0, 0, 1}, {-1, 0, 1}, {1, -1, 1}, {0, -1, 1}, {-1, -1, 1}, {1, 1, 0}, {0, 1, 0}, {-1, 1, 0}, {1, 0, 0}, {0, 0, 0}, {-1, 0, 0}, {1, -1, 0}, {0, -1, 0}, {-1, -1, 0}, {1, 1, -1}, {0, 1, -1}, {-1, 1, -1}, {1, 0, -1}, {0, 0, -1}, {-1, 0, -1}, {1, -1, -1}, {0, -1, -1}, {-1, -1, -1}};
         cudaMemcpyToSymbol(cellOffsets, cellOffsetsCPU, 27 * 3 * sizeof(int));
 
-        int numBlocksPoints = pNumPoints / POINT_BLOCK_SIZE;
-        numBlocksPoints += (pNumPoints % POINT_BLOCK_SIZE != 0) ? 1 : 0;
+        int numBlocksPoints = (pNumPoints + POINT_BLOCK_SIZE - 1) / POINT_BLOCK_SIZE;
 
         // Find the neighbors for each point.
         int *totalNeighbors;
         gpuErrchk(cudaMalloc(&totalNeighbors, sizeof(int)));
-        cudaMemset(totalNeighbors, 0, sizeof(int));
+        gpuErrchk(cudaMemset(totalNeighbors, 0, sizeof(int)));
 
         countNeighbors<<<numBlocksPoints, POINT_BLOCK_SIZE>>>(pScaleInv, pNumPoints, pNumCells,
                                                               pRadius, pAABBMin, pAABBMax, pInPts, pInBatchIds, pInPts2, pCellIndexs, pStartIndex, totalNeighbors);
@@ -310,9 +309,9 @@ namespace pt_mcc
         gpuErrchk(cudaPeekAtLastError());
 
         int totalNeighborsCPU = 0;
-        cudaMemcpy(&totalNeighborsCPU, totalNeighbors, sizeof(int), cudaMemcpyDeviceToHost);
-        printf("Pointer to totalNeighbors: %p\n", (void *)totalNeighbors);
-        gpuErrchk(cudaFree(totalNeighbors));
+        gpuErrchk(cudaMemcpy(&totalNeighborsCPU, totalNeighbors, sizeof(int), cudaMemcpyDeviceToHost));
+        printf("Pointer to totalNeighbors: %p\n", (void *)totalNeighbors); // Pointer to totalNeighbors: 0x7f0cf7600000
+        gpuErrchk(cudaFree(totalNeighbors));                               // an illegal memory access was encountered /workspace/MCC-Pytorch/pt_mcc/csrc/cuda/find_neighbors.cu 315
 
 #ifdef PRINT_CONV_INFO
         printf("Forward Num points: %d | Neighbors: %d\n", pNumPoints, totalNeighborsCPU);
