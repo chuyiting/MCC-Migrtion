@@ -162,6 +162,8 @@ if __name__ == "__main__":
 
     # Call the find_neighbors function
     start_idx, neigh_idx = pt_mcc.ops.find_neighbors(pts, batch_ids, pts2, cell_indices, aabb_min, aabb_max, radius, batch_size, scale_inv)
+    print (start_idx.device)
+    print (neigh_idx.device)
     print(start_idx.cpu())
     print(neigh_idx.cpu())
     # print('Skip the test for find_neighbors for now... Find issues later...')
