@@ -65,6 +65,8 @@
     "queue": "cpp",
     "ratio": "cpp",
     "stack": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "hash_map": "cpp",
+    "list": "cpp"
   }
 }

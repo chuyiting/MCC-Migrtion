@@ -307,7 +307,6 @@ namespace pt_mcc
                                                               pRadius, pAABBMin, pAABBMax, pInPts, pInBatchIds, pInPts2, pCellIndexs, pStartIndex, totalNeighbors);
 
         gpuErrchk(cudaPeekAtLastError());
-        printf("totalNeighbors: %p\n", (void *)totalNeighbors); // Pointer to totalNeighbors: 0x7f0cf7600000
         int totalNeighborsCPU = 0;
         gpuErrchk(cudaMemcpy(&totalNeighborsCPU, totalNeighbors, sizeof(int), cudaMemcpyDeviceToHost)); // an illegal memory access was encountered /workspace/MCC-Pytorch/pt_mcc/csrc/cuda/find_neighbors.cu
         gpuErrchk(cudaFree(totalNeighbors));
