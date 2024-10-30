@@ -17,8 +17,8 @@
 
 #include "cuda_kernel_utils.h"
 
-#define POINT_BLOCK_SIZE 4
-#define POINT_BLOCK_PACK_SIZE 4
+#define POINT_BLOCK_SIZE 1
+#define POINT_BLOCK_PACK_SIZE 256
 
 ////////////////////////////////////////////////////////////////////////////////// GPU
 namespace pt_mcc
@@ -306,17 +306,12 @@ namespace pt_mcc
 
         countNeighbors<<<numBlocksPoints, POINT_BLOCK_SIZE>>>(pScaleInv, pNumPoints, pNumCells,
                                                               pRadius, pAABBMin, pAABBMax, pInPts, pInBatchIds, pInPts2, pCellIndexs, pStartIndex, totalNeighbors);
-        cudaError_t kernelError = cudaGetLastError();
-        if (kernelError != cudaSuccess)
-        {
-            printf("Kernel launch failed: %s\n", cudaGetErrorString(kernelError));
-        }
 
         gpuErrchk(cudaPeekAtLastError());
         printf("totalNeighbors: %p\n", (void *)totalNeighbors); // Pointer to totalNeighbors: 0x7f0cf7600000
         int totalNeighborsCPU = 0;
-        gpuErrchk(cudaMemcpy(&totalNeighborsCPU, totalNeighbors, sizeof(int), cudaMemcpyDeviceToHost));
-        gpuErrchk(cudaFree(totalNeighbors)); // an illegal memory access was encountered /workspace/MCC-Pytorch/pt_mcc/csrc/cuda/find_neighbors.cu 315
+        gpuErrchk(cudaMemcpy(&totalNeighborsCPU, totalNeighbors, sizeof(int), cudaMemcpyDeviceToHost)); // an illegal memory access was encountered /workspace/MCC-Pytorch/pt_mcc/csrc/cuda/find_neighbors.cu
+        gpuErrchk(cudaFree(totalNeighbors));
 
 #ifdef PRINT_CONV_INFO
         printf("Forward Num points: %d | Neighbors: %d\n", pNumPoints, totalNeighborsCPU);
