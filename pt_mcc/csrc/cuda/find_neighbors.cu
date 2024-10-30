@@ -79,7 +79,7 @@ namespace pt_mcc
             // int yCell = max(min((int)floor((centralCoords[1] - pAABBMinPoint[currBatchId * 3 + 1]) / cellSize), pNumCells - 1), 0);
             // int zCell = max(min((int)floor((centralCoords[2] - pAABBMinPoint[currBatchId * 3 + 2]) / cellSize), pNumCells - 1), 0);
 
-            // int neighborIter = 0;
+            int neighborIter = 0;
             // for (int i = 0; i < 27; ++i)
             // {
             //     int currCellIndex[3] = {xCell + cellOffsets[i][0], yCell + cellOffsets[i][1], zCell + cellOffsets[i][2]};
