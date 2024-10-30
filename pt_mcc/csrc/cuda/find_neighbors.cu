@@ -17,7 +17,7 @@
 
 #include "cuda_kernel_utils.h"
 
-#define POINT_BLOCK_SIZE 128
+#define POINT_BLOCK_SIZE 4
 #define POINT_BLOCK_PACK_SIZE 256
 
 ////////////////////////////////////////////////////////////////////////////////// GPU
@@ -35,7 +35,7 @@ namespace pt_mcc
      *  @param  pBatchIds           List of batch ids.
      *  @param  pPoints2            List of points from where to find neighbors.
      *  @param  pCellIndexs         Indexs of the grid cells.
-     *  @param  pOutNeigbors        Output parameter with the number of neighbors of each point.
+     *  @param  pOutNeighbors        Output parameter with the number of neighbors of each point.
      *  @param  pOutNumNeighbors     Output parameter with the total number of neighbors.
      */
     __global__ void countNeighbors(
@@ -49,7 +49,7 @@ namespace pt_mcc
         const int *__restrict__ pBatchIds,
         const float *__restrict__ pPoints2,
         const int *__restrict__ pCellIndexs,
-        int *__restrict__ pOutNeigbors,
+        int *__restrict__ pOutNeighbors,
         int *__restrict__ pOutNumNeighbors)
     {
         __shared__ int blockTotalNeighbors;
@@ -105,7 +105,7 @@ namespace pt_mcc
                 }
             }
 
-            pOutNeigbors[currentIndex] = neighborIter;
+            pOutNeighbors[currentIndex] = neighborIter;
             atomicAdd(&blockTotalNeighbors, neighborIter);
         }
 
@@ -206,7 +206,7 @@ namespace pt_mcc
      *  @param  pStartIndexsOffset      List with the first level offset to teh start indices.
      *  @param  pStartIndexsOffset2     List with the second level offset to teh start indices.
      *  @param  pStartIndexs            Input/Output parameter with the list of the starting indices in the neighboring list.
-     *  @param  pOutNeigbors            Output parameter with the list neighbors of each point.
+     *  @param  pOutNeighbors            Output parameter with the list neighbors of each point.
      */
     __global__ void findNeighbors(
         const bool pScaleInv,
@@ -223,7 +223,7 @@ namespace pt_mcc
         const int *__restrict__ pStartIndexsOffset,
         const int *__restrict__ pStartIndexsOffset2,
         int *__restrict__ pStartIndexs,
-        int *__restrict__ pOutNeigbors)
+        int *__restrict__ pOutNeighbors)
     {
         int currentIndex = threadIdx.x + blockIdx.x * blockDim.x;
         if (currentIndex < pNumPoints)
@@ -267,8 +267,8 @@ namespace pt_mcc
                         float pointDist = sqrt(diffVector[0] * diffVector[0] + diffVector[1] * diffVector[1] + diffVector[2] * diffVector[2]);
                         if (pointDist < scaledRadius)
                         {
-                            pOutNeigbors[neighborIndex * 2 + neighborIter] = j;
-                            pOutNeigbors[neighborIndex * 2 + neighborIter + 1] = currentIndex;
+                            pOutNeighbors[neighborIndex * 2 + neighborIter] = j;
+                            pOutNeighbors[neighborIndex * 2 + neighborIter + 1] = currentIndex;
                             neighborIter += 2;
                         }
                     }
