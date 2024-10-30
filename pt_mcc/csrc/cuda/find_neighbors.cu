@@ -311,22 +311,7 @@ namespace pt_mcc
         countNeighbors<<<numBlocksPoints, POINT_BLOCK_SIZE>>>(pScaleInv, pNumPoints, pNumCells,
                                                               pRadius, pAABBMin, pAABBMax, pInPts, pInBatchIds, pInPts2, pCellIndexs, pStartIndex, totalNeighbors);
 
-        gpuErrchk(cudaPeekAtLastError());
-        cudaPointerAttributes attributes;
-        gpuErrchk(cudaPointerGetAttributes(&attributes, totalNeighbors));
-
-        if (attributes.memoryType == cudaMemoryTypeDevice)
-        {
-            std::cout << "The pointer is on the GPU." << std::endl;
-        }
-        else if (attributes.memoryType == cudaMemoryTypeHost)
-        {
-            std::cout << "The pointer is on the CPU." << std::endl;
-        }
-        else
-        {
-            std::cout << "The pointer is in an unknown memory type." << std::endl;
-        }
+        gpuErrchk(cudaGetLastError());
 
         int totalNeighborsCPU = 0;
         gpuErrchk(cudaMemcpy(&totalNeighborsCPU, totalNeighbors, sizeof(int), cudaMemcpyDeviceToHost)); // an illegal memory access was encountered /workspace/MCC-Pytorch/pt_mcc/csrc/cuda/find_neighbors.cu
