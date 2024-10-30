@@ -110,6 +110,7 @@ namespace pt_mcc
             printf("current index: %d\n", currentIndex);
             pOutNeighbors[currentIndex] = neighborIter;
             atomicAdd(&blockTotalNeighbors, neighborIter);
+            printf("add to block count\n");
         }
 
         __syncthreads();
@@ -117,6 +118,7 @@ namespace pt_mcc
         if (threadIdx.x == 0)
         {
             atomicAdd(&pOutNumNeighbors[0], blockTotalNeighbors);
+            printf("add res back to pOutNumNeighbors\n");
         }
     }
 
@@ -310,6 +312,22 @@ namespace pt_mcc
                                                               pRadius, pAABBMin, pAABBMax, pInPts, pInBatchIds, pInPts2, pCellIndexs, pStartIndex, totalNeighbors);
 
         gpuErrchk(cudaPeekAtLastError());
+        cudaPointerAttributes attributes;
+        gpuErrchk(cudaPointerGetAttributes(&attributes, totalNeighbors));
+
+        if (attributes.memoryType == cudaMemoryTypeDevice)
+        {
+            std::cout << "The pointer is on the GPU." << std::endl;
+        }
+        else if (attributes.memoryType == cudaMemoryTypeHost)
+        {
+            std::cout << "The pointer is on the CPU." << std::endl;
+        }
+        else
+        {
+            std::cout << "The pointer is in an unknown memory type." << std::endl;
+        }
+
         int totalNeighborsCPU = 0;
         gpuErrchk(cudaMemcpy(&totalNeighborsCPU, totalNeighbors, sizeof(int), cudaMemcpyDeviceToHost)); // an illegal memory access was encountered /workspace/MCC-Pytorch/pt_mcc/csrc/cuda/find_neighbors.cu
         gpuErrchk(cudaFree(totalNeighbors));
