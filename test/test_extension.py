@@ -156,7 +156,7 @@ if __name__ == "__main__":
     aabb_min = torch.tensor([[0.0, 0.0, 0.0]], dtype=torch.float32)  # Minimum AABB for batch 0
 
     aabb_max = torch.tensor([[1.0, 1.0, 1.0]], dtype=torch.float32)  # Maximum AABB for batch 0
-    radius = 0.5  # Radius for neighbor search
+    radius = 1  # Radius for neighbor search
     batch_size = 1  # Single batch
     scale_inv = False  # Do not scale radius by AABB size
 
