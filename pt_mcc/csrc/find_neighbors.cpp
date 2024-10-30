@@ -87,8 +87,8 @@ namespace pt_mcc
         // Allocate temporary buffers
         int tmp_buff1_size, tmp_buff2_size;
         computeAuxiliarBuffersSize(num_points, &tmp_buff1_size, &tmp_buff2_size);
-        torch::Tensor tmp_buff1 = torch::empty({tmp_buff1_size}, torch::dtype(torch::kInt32));
-        torch::Tensor tmp_buff2 = torch::empty({tmp_buff2_size}, torch::dtype(torch::kInt32));
+        torch::Tensor tmp_buff1 = torch::empty({tmp_buff1_size}, torch::TensorOptions().dtype(torch::kInt32).device(torch::kCUDA));
+        torch::Tensor tmp_buff2 = torch::empty({tmp_buff2_size}, torch::TensorOptions().dtype(torch::kInt32).device(torch::kCUDA));
         int *tmp_buff1_ptr = tmp_buff1.data_ptr<int>();
         int *tmp_buff2_ptr = tmp_buff2.data_ptr<int>();
 

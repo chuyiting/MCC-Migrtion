@@ -74,10 +74,6 @@ namespace pt_mcc
         torch::Tensor tmp_batchs = torch::empty({num_points, 1}, batch_ids.options());
         torch::Tensor tmp_indexs = torch::empty({num_points, 1}, batch_ids.options());
         torch::Tensor tmp_used_bool = torch::empty({num_points, 1}, torch::TensorOptions().dtype(torch::kBool).device(torch::kCUDA));
-        // Calculate the size in bytes
-        size_t total_size = tmp_used_bool.numel() * tmp_used_bool.element_size();
-        // Print the size
-        std::cout << "Size of tmp_used_bool tensor: " << total_size << " bytes" << std::endl;
 
         int num_sel_samples = samplePointCloud(
             scale_inv, radius, num_points, batch_size, num_cells,
