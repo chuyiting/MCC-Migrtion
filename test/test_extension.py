@@ -114,8 +114,8 @@ class TestMyAddOut(TestCase):
 if __name__ == "__main__":
     print('##################### Test compute_aabb #####################')
     pts = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]).cuda()
-    batch_ids = torch.tensor([[1], [1], [1], [1]]).cuda()
-    res = pt_mcc.ops.compute_aabb(pts, batch_ids, 4, True)
+    batch_ids = torch.tensor([[0], [0], [0], [0]]).cuda()
+    res = pt_mcc.ops.compute_aabb(pts, batch_ids, 1, True)
     print(f'the result is: {res[0].shape} {res}\n')
 
     print('##################### Test compute_pdf #####################')
@@ -168,5 +168,17 @@ if __name__ == "__main__":
     print('##################### Test poisson_sampling #####################')
     res = pt_mcc.ops.poisson_sampling(pts, batch_ids, cell_indices, aabb_min, aabb_max, radius, batch_size, scale_inv)
     print(res)
+
+    print('##################### Test get_sampled_features(pts_indices, features) #####################')
+    pts_indices = torch.tensor([0, 3], dtype=torch.int).cuda()
+    features = torch.Tensor([[0, 0, 0], [1, 1, 1], [2, 2, 2], [3, 3, 3]], dtype=torch.float, requires_grad=True).cuda()
+    res = pt_mcc.ops.get_sampled_features(pts_indices, features)
+    num_sampled_point = pts_indices.shape[0]
+    num_feature = features.shape[1]
+    grad = torch.ones(num_sampled_point, num_feature, dtype=torch.float).cuda()
+    print(f'output features: {res}')
+    res.backward(grad)
+    print(f'grad: {res.grad}')
+
 
     unittest.main()

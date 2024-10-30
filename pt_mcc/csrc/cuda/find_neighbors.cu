@@ -66,6 +66,7 @@ namespace pt_mcc
         {
             int currBatchId = pBatchIds[currentIndex];
             int pointIndex = currentIndex * 3;
+            printf("currBatchId: %d, pointIndex: %d\n", currBatchId, pointIndex);
 
             float maxAabbSize = max(max(
                                         pAABBMaxPoint[currBatchId * 3] - pAABBMinPoint[currBatchId * 3],
