@@ -134,7 +134,7 @@ namespace pt_mcc
     {
         m.def("poisson_sampling(Tensor points, Tensor batch_ids, Tensor cell_indices, Tensor aabb_min, Tensor aabb_max, float radius, int batch_size, bool scale_inv) -> (Tensor, Tensor, Tensor)");
         m.def("get_sampled_features(Tensor pts_indices, Tensor features) ->  Tensor)");
-        m.def("get_sampled_features_grad(Tensor pts_indices, Tensor features, Tensor sampled_features_grad) ->  Tensor)");
+        m.def("get_sampled_features_grad(Tensor pts_indices, Tensor features, Tensor sampled_features_grad) ->  Tensor");
     }
 
     // Register CPU implementations
