@@ -62,52 +62,52 @@ namespace pt_mcc
         __syncthreads();
 
         int currentIndex = threadIdx.x + blockIdx.x * blockDim.x;
-        // if (currentIndex < pNumPoints)
-        // {
-        //     int currBatchId = pBatchIds[currentIndex];
-        //     int pointIndex = currentIndex * 3;
+        if (currentIndex < pNumPoints)
+        {
+            int currBatchId = pBatchIds[currentIndex];
+            int pointIndex = currentIndex * 3;
 
-        //     float maxAabbSize = max(max(
-        //                                 pAABBMaxPoint[currBatchId * 3] - pAABBMinPoint[currBatchId * 3],
-        //                                 pAABBMaxPoint[currBatchId * 3 + 1] - pAABBMinPoint[currBatchId * 3 + 1]),
-        //                             pAABBMaxPoint[currBatchId * 3 + 2] - pAABBMinPoint[currBatchId * 3 + 2]);
-        //     float cellSize = maxAabbSize / (float)pNumCells;
-        //     float scaledRadius = (pScaleInv) ? pRadius * maxAabbSize : pRadius;
+            float maxAabbSize = max(max(
+                                        pAABBMaxPoint[currBatchId * 3] - pAABBMinPoint[currBatchId * 3],
+                                        pAABBMaxPoint[currBatchId * 3 + 1] - pAABBMinPoint[currBatchId * 3 + 1]),
+                                    pAABBMaxPoint[currBatchId * 3 + 2] - pAABBMinPoint[currBatchId * 3 + 2]);
+            float cellSize = maxAabbSize / (float)pNumCells;
+            float scaledRadius = (pScaleInv) ? pRadius * maxAabbSize : pRadius;
 
-        //     float centralCoords[3] = {pPoints[pointIndex], pPoints[pointIndex + 1], pPoints[pointIndex + 2]};
-        //     int xCell = max(min((int)floor((centralCoords[0] - pAABBMinPoint[currBatchId * 3]) / cellSize), pNumCells - 1), 0);
-        //     int yCell = max(min((int)floor((centralCoords[1] - pAABBMinPoint[currBatchId * 3 + 1]) / cellSize), pNumCells - 1), 0);
-        //     int zCell = max(min((int)floor((centralCoords[2] - pAABBMinPoint[currBatchId * 3 + 2]) / cellSize), pNumCells - 1), 0);
+            float centralCoords[3] = {pPoints[pointIndex], pPoints[pointIndex + 1], pPoints[pointIndex + 2]};
+            int xCell = max(min((int)floor((centralCoords[0] - pAABBMinPoint[currBatchId * 3]) / cellSize), pNumCells - 1), 0);
+            int yCell = max(min((int)floor((centralCoords[1] - pAABBMinPoint[currBatchId * 3 + 1]) / cellSize), pNumCells - 1), 0);
+            int zCell = max(min((int)floor((centralCoords[2] - pAABBMinPoint[currBatchId * 3 + 2]) / cellSize), pNumCells - 1), 0);
 
-        //     int neighborIter = 0;
-        //     for (int i = 0; i < 27; ++i)
-        //     {
-        //         int currCellIndex[3] = {xCell + cellOffsets[i][0], yCell + cellOffsets[i][1], zCell + cellOffsets[i][2]};
-        //         if (currCellIndex[0] >= 0 && currCellIndex[0] < pNumCells &&
-        //             currCellIndex[1] >= 0 && currCellIndex[1] < pNumCells &&
-        //             currCellIndex[2] >= 0 && currCellIndex[2] < pNumCells)
-        //         {
-        //             int cellIndexFlat = currBatchId * pNumCells * pNumCells * pNumCells + currCellIndex[0] * pNumCells * pNumCells + currCellIndex[1] * pNumCells + currCellIndex[2];
-        //             int initIndex = pCellIndexs[cellIndexFlat * 2];
-        //             int endIndex = pCellIndexs[cellIndexFlat * 2 + 1];
+            int neighborIter = 0;
+            for (int i = 0; i < 27; ++i)
+            {
+                int currCellIndex[3] = {xCell + cellOffsets[i][0], yCell + cellOffsets[i][1], zCell + cellOffsets[i][2]};
+                if (currCellIndex[0] >= 0 && currCellIndex[0] < pNumCells &&
+                    currCellIndex[1] >= 0 && currCellIndex[1] < pNumCells &&
+                    currCellIndex[2] >= 0 && currCellIndex[2] < pNumCells)
+                {
+                    int cellIndexFlat = currBatchId * pNumCells * pNumCells * pNumCells + currCellIndex[0] * pNumCells * pNumCells + currCellIndex[1] * pNumCells + currCellIndex[2];
+                    int initIndex = pCellIndexs[cellIndexFlat * 2];
+                    int endIndex = pCellIndexs[cellIndexFlat * 2 + 1];
 
-        //             for (int j = initIndex; j < endIndex; ++j)
-        //             {
-        //                 int currPointIndex = j * 3;
-        //                 float currentCoords[3] = {pPoints2[currPointIndex], pPoints2[currPointIndex + 1], pPoints2[currPointIndex + 2]};
-        //                 float diffVector[3] = {currentCoords[0] - centralCoords[0], currentCoords[1] - centralCoords[1], currentCoords[2] - centralCoords[2]};
-        //                 float pointDist = sqrt(diffVector[0] * diffVector[0] + diffVector[1] * diffVector[1] + diffVector[2] * diffVector[2]);
-        //                 if (pointDist < scaledRadius)
-        //                 {
-        //                     neighborIter++;
-        //                 }
-        //             }
-        //         }
-        //     }
+                    for (int j = initIndex; j < endIndex; ++j)
+                    {
+                        int currPointIndex = j * 3;
+                        float currentCoords[3] = {pPoints2[currPointIndex], pPoints2[currPointIndex + 1], pPoints2[currPointIndex + 2]};
+                        float diffVector[3] = {currentCoords[0] - centralCoords[0], currentCoords[1] - centralCoords[1], currentCoords[2] - centralCoords[2]};
+                        float pointDist = sqrt(diffVector[0] * diffVector[0] + diffVector[1] * diffVector[1] + diffVector[2] * diffVector[2]);
+                        if (pointDist < scaledRadius)
+                        {
+                            neighborIter++;
+                        }
+                    }
+                }
+            }
 
-        //     pOutNeighbors[currentIndex] = neighborIter;
-        //     atomicAdd(&blockTotalNeighbors, neighborIter);
-        // }
+            pOutNeighbors[currentIndex] = neighborIter;
+            atomicAdd(&blockTotalNeighbors, neighborIter);
+        }
 
         __syncthreads();
 
@@ -353,17 +353,7 @@ namespace pt_mcc
         numBlocksPointsPack += (pNumPoints % POINT_BLOCK_PACK_SIZE != 0) ? 1 : 0;
         int numBlocksPointsPack2 = numBlocksPointsPack / POINT_BLOCK_PACK_SIZE;
         numBlocksPointsPack2 += (numBlocksPointsPack % POINT_BLOCK_PACK_SIZE != 0) ? 1 : 0;
-        printf("numBlocksPointsPack: %d\n", numBlocksPointsPack);
 
-        // Check the value of pAuxBuffOffsets pointer
-        printf("pAuxBuffOffsets pointer: %p\n", (void *)pAuxBuffOffsets);
-
-        // Check if pAuxBuffOffsets is NULL (indicating allocation failure)
-        if (pAuxBuffOffsets == nullptr)
-        {
-            printf("Error: pAuxBuffOffsets is NULL!\n");
-            return; // or handle the error appropriately
-        }
         gpuErrchk(cudaMemset(pAuxBuffOffsets, 0, sizeof(int) * numBlocksPointsPack));
         gpuErrchk(cudaMemset(pAuxBuffOffsets2, 0, sizeof(int) * numBlocksPointsPack2));
 
