@@ -18,7 +18,7 @@ namespace pt_mcc
         float *pSelectedPts,
         int *pSelectedBatchIds,
         int *pSelectedIndexs,
-        int *pAuxBoolBuffer);
+        bool *pAuxBoolBuffer);
 
     void copyPoints(
         float *pSelectedPts,
@@ -72,7 +72,7 @@ namespace pt_mcc
         torch::Tensor tmp_pts = torch::empty({num_points, 3}, points.options());
         torch::Tensor tmp_batchs = torch::empty({num_points, 1}, batch_ids.options());
         torch::Tensor tmp_indexs = torch::empty({num_points, 1}, batch_ids.options());
-        torch::Tensor tmp_used_bool = torch::empty({num_points, 1}, batch_ids.options());
+        torch::Tensor tmp_used_bool = torch::empty({num_points, 1}, torch::kBool);
 
         int num_sel_samples = samplePointCloud(
             scale_inv, radius, num_points, batch_size, num_cells,
@@ -80,7 +80,7 @@ namespace pt_mcc
             points.data_ptr<float>(), batch_ids.data_ptr<int>(),
             cell_indices.data_ptr<int>(), tmp_pts.data_ptr<float>(),
             tmp_batchs.data_ptr<int>(), tmp_indexs.data_ptr<int>(),
-            tmp_used_bool.data_ptr<int>);
+            tmp_used_bool.data_ptr<bool>());
 
         torch::Tensor out_pts = torch::empty({num_sel_samples, 3}, points.options());
         torch::Tensor out_batchs = torch::empty({num_sel_samples, 1}, batch_ids.options());

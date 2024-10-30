@@ -63,7 +63,7 @@ namespace pt_mcc
         const float *__restrict__ pPoints,
         const int *__restrict__ pBatchIds,
         const int *__restrict__ pCellIndexs,
-        int *__restrict__ pAuxBooleanBuffer,
+        bool *__restrict__ pAuxBooleanBuffer,
         float *__restrict__ pOutSampledPoints,
         int *__restrict__ pOutSampleBatchIds,
         int *__restrict__ pOutSampleIndexs,
@@ -116,7 +116,7 @@ namespace pt_mcc
 
                 if (!collision)
                 {
-                    pAuxBooleanBuffer[i] = 1; // use int instead of true for pytorch compatibility
+                    pAuxBooleanBuffer[i] = true;
                     int finalPointIndex = atomicAdd(&pOutNumSelectedPoints[0], 1);
                     pOutSampledPoints[finalPointIndex * 3] = centralCoords[0];
                     pOutSampledPoints[finalPointIndex * 3 + 1] = centralCoords[1];
@@ -192,7 +192,7 @@ namespace pt_mcc
         float *pSelectedPts,
         int *pSelectedBatchIds,
         int *pSelectedIndexs,
-        int *pAuxBoolBuffer)
+        bool *pAuxBoolBuffer)
     {
         // Init device symbols.
         int cellOffsetsPoolCPU[27][3] = {
@@ -200,7 +200,7 @@ namespace pt_mcc
         cudaMemcpyToSymbol(cellOffsetsPool, cellOffsetsPoolCPU, 27 * 3 * sizeof(int));
         int numSelectedPointsCPU = 0;
 
-        gpuErrchk(cudaMemset(pAuxBoolBuffer, 0, sizeof(int) * pNumPoints));
+        gpuErrchk(cudaMemset(pAuxBoolBuffer, 0, sizeof(bool) * pNumPoints));
 
         int *numSelectedPoints;
         gpuErrchk(cudaMalloc(&numSelectedPoints, sizeof(int)));
@@ -276,4 +276,5 @@ namespace pt_mcc
         selectFeatureSamplesGrad<<<pNumSampledPoints, PT_BLOCK_SIZE>>>(pNumSampledPoints, pNumFeatures, pInPointsIndexs, pInOutFeatureGrad, pOutInFeaturesGradients);
         gpuErrchk(cudaPeekAtLastError());
     }
+
 }
