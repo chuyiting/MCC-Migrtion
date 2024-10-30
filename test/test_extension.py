@@ -143,19 +143,19 @@ if __name__ == "__main__":
     print(f'the result is: {res}\n')
 
     print('##################### Test find_neighbors #####################')
-    pts = torch.tensor([[0.1, 0.2, 0.3],[0.5, 0.5, 0.5], [0.7, 0.7, 0.7], [0.9, 0.9, 0.9]], dtype=torch.float32)  
-    batch_ids = torch.tensor([[0], [0], [0], [0]], dtype=torch.int32)  # All points belong to batch 0
-    pts2 = torch.tensor([[0.15, 0.25, 0.35], [0.55, 0.55, 0.55], [0.7, 0.7, 0.7], [0.95, 0.95, 0.95]], dtype=torch.float32)  # Points in the second set to check as potential neighbors
+    pts = torch.tensor([[0.1, 0.2, 0.3],[0.5, 0.5, 0.5], [0.7, 0.7, 0.7], [0.9, 0.9, 0.9]], dtype=torch.float32).cuda()
+    batch_ids = torch.tensor([[0], [0], [0], [0]], dtype=torch.int32).cuda()  # All points belong to batch 0
+    pts2 = torch.tensor([[0.15, 0.25, 0.35], [0.55, 0.55, 0.55], [0.7, 0.7, 0.7], [0.95, 0.95, 0.95]], dtype=torch.float32).cuda()  # Points in the second set to check as potential neighbors
 
     # Define cell_indices in 5D: [batch_size, pNumCells, pNumCells, pNumCells, 2]
     # For simplicity, assume each cell contains exactly one point (start and end indices are consecutive)
     cell_indices = torch.tensor([[
         [[[0, 2]]]
-    ]], dtype=torch.int32)  # Batch 0, 1x1x1 cells
+    ]], dtype=torch.int32).cuda()  # Batch 0, 1x1x1 cells
 
-    aabb_min = torch.tensor([[0.0, 0.0, 0.0]], dtype=torch.float32)  # Minimum AABB for batch 0
+    aabb_min = torch.tensor([[0.0, 0.0, 0.0]], dtype=torch.float32).cuda()  # Minimum AABB for batch 0
 
-    aabb_max = torch.tensor([[1.0, 1.0, 1.0]], dtype=torch.float32)  # Maximum AABB for batch 0
+    aabb_max = torch.tensor([[1.0, 1.0, 1.0]], dtype=torch.float32).cuda()  # Maximum AABB for batch 0
     radius = 1  # Radius for neighbor search
     batch_size = 1  # Single batch
     scale_inv = False  # Do not scale radius by AABB size
