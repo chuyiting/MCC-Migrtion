@@ -37,6 +37,67 @@ def _get_sampled_features_backward(ctx, grad):
     
     return None, grad_features
 
+def sort_points_step1(pts, batch_ids, aabb_min, aabb_max, batch_size, cell_size, scale_inv):
+    return torch.ops.pt_mcc.sort_points_step1(pts, batch_ids, aabb_min, aabb_max, batch_size, cell_size, scale_inv)
+
+
+def sort_points_step2(pts, batch_ids, features, keys, indices, aabb_min, aabb_max, batch_size, cell_size, scale_inv):
+    return torch.ops.pt_mcc.sort_points_step2(pts, batch_ids, features, keys, indices, aabb_min, aabb_max, batch_size, cell_size, scale_inv)
+
+def _setup_sort_points_step2_context(ctx, inputs, output):
+    _, _, _, _, new_indices, _, _, _, _, _ = inputs
+    saved_new_indices = None
+
+    if ctx.needs_input_grad[0] or ctx.needs_input_grad[2]:
+        saved_new_indices = new_indices
+    ctx.save_for_backward(saved_new_indices)
+
+def _sort_points_step2_backward(ctx, grad):
+    new_indices = ctx.saved_tensors
+    ptsGrad, inFeatureGrad = torch.ops.pt_mcc.sort_points_step2_grad(new_indices, grad[0], grad[2])
+    
+    return ptsGrad, None, inFeatureGrad, None, None, None, None, None, None, None
+
+def sort_features(features, indices):
+    return torch.ops.pt_mcc.sort_features_back_grad(indices, features)
+
+def _setup_sort_features_context(ctx, inputs, output):
+    features, _ = inputs
+    saved_features = None
+    if ctx.needs_input_grad[1]:
+        saved_features = features
+    ctx.save_for_backward(saved_features)
+
+def _sort_features_backward(ctx, grad):
+    features = ctx.saved_tensors
+    grad_indices = None
+    if ctx.needs_input_grad[1]:
+        grad_indices = torch.ops.pt_mcc.sort_features_back(grad, features)
+    
+    return None, grad_indices
+
+def sort_features_back(features, indices):
+    return torch.ops.pt_mcc.sort_features_back(features, indices)
+
+def _setup_sort_features_back_context(ctx, inputs, output):
+    _, indices = inputs
+    saved_indices = None
+    if ctx.needs_input_grad[0]:
+        saved_indices = indices
+    ctx.save_for_backward(saved_indices)
+
+def _sort_features_back_backward(ctx, grad):
+    indices = ctx.saved_tensors
+    grad_features = None
+    if ctx.needs_input_grad[0]:
+        grad_features = torch.ops.pt_mcc.sort_features_back_grad(indices, grad)
+    
+    return grad_features, None
+
+    
+def transform_indices(start_indices, new_indices):
+    return torch.ops.pt_mcc.transform_indices(start_indices, new_indices)
+
 
 # Registers a FakeTensor kernel (aka "meta kernel", "abstract impl")
 # that describes what the properties of the output Tensor are given
@@ -130,6 +191,28 @@ def _(pts_indices, features):
     num_features = features.shape[1]
     return torch.empty((num_sampled_points, num_features), dtype=torch.float)
 
+@torch.library.register_fake("pt_mcc::sort_points_step1")
+def _(pts, batch_ids, aabb_min, aabb_max, batch_size, cell_size, scale_inv):
+    num_pts = pts.shape[0]
+    return torch.empty((num_pts), dtype=torch.int), torch.empty((num_pts), dtype=torch.int)
+
+@torch.library.register_fake("pt_mcc::sort_points_step2")
+def _(pts, batch_ids, features, keys, indices, aabb_min, aabb_max, batch_size, cell_size, scale_inv):
+    num_cells = 100 # just some placeholder
+    return torch.empty_like(pts), torch.empty_like(batch_ids), torch.empty_like(features), torch.empty((batch_size, num_cells, num_cells, num_cells, 2))
+
+@torch.library.register_fake("pt_mcc::sort_features")
+def _(features, indices):
+    return torch.empty_like(features)
+
+@torch.library.register_fake("pt_mcc::sort_features_back")
+def _(features, indices):
+    return torch.empty_like(features)
+
+@torch.library.register_fake("pt_mcc::transform_indices")
+def _(start_indices, new_indices):
+    return torch.empty_like(start_indices)
+
 def _backward(ctx, grad):
     a, b = ctx.saved_tensors
     grad_a, grad_b = None, None
@@ -159,6 +242,14 @@ torch.library.register_autograd(
 torch.library.register_autograd(
     "pt_mcc::get_sampled_features", _get_sampled_features_backward, setup_context=_setup_get_sampled_features_context)
 
+torch.library.register_autograd(
+    "pt_mcc::sort_points_step2", _sort_points_step2_backward, setup_context=_setup_sort_points_step2_context)
+
+torch.library.register_autograd(
+    "pt_mcc::sort_features", _sort_features_backward, setup_context=_setup_sort_features_context)
+
+torch.library.register_autograd(
+    "pt_mcc::sort_features_back", _sort_features_back_backward, setup_context=_setup_sort_features_back_context)
 
 @torch.library.register_fake("pt_mcc::mymul")
 def _(a, b):

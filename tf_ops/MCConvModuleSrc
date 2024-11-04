@@ -34,12 +34,14 @@ def _sort_points_step2_grad(op, *grads):
 
 def sort_features(inFeatures, indexs):
     return MCConv_module.sort_features_back_grad(indexs, inFeatures)
+
 @tf.RegisterGradient("SortFeaturesBackGrad")
 def _sort_features_grad(op, grads):
     return  [None, MCConv_module.sort_features_back(grads, op.inputs[0])]
 
 def sort_features_back(inFeatures, indexs):
     return MCConv_module.sort_features_back(inFeatures, indexs)
+
 @tf.RegisterGradient("SortFeaturesBack")
 def _sort_features_back_grad(op, grads):
     return  [MCConv_module.sort_features_back_grad(op.inputs[1], grads), None]
