@@ -17,7 +17,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m)
 {
 }
 
-// Defines the operators
+// Defines the operatorss
 TORCH_LIBRARY(pt_mcc, m)
 {
     pt_mcc::register_aabb(m);

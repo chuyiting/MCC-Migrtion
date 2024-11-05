@@ -176,15 +176,15 @@ namespace pt_mcc
                         in_bias_hidd2.dim() == 1 && in_weights_hidd2.size(1) == in_bias_hidd2.size(0) &&
                         in_weights_hidd2.size(1) == in_weights_hidd1.size(1),
                     "Second hidden layer dimensions are incorrect");
-        TORCH_CHECK(in_weights_out_layer.dim() == 2 && in_weights_out_layer.size(0) == BLOCK_MLP_SIZE &&
-                        in_bias_out_layer.dim() == 1 && in_weights_out_layer.size(1) == in_bias_out_layer.size(0),
+        TORCH_CHECK(in_weights_out.dim() == 2 && in_weights_out.size(0) == BLOCK_MLP_SIZE &&
+                        in_bias_out.dim() == 1 && in_weights_out.size(1) == in_bias_out.size(0),
                     "Output layer dimensions are incorrect");
-        TORCH_CHECK(in_weights_out_layer.size(1) % in_features.size(1) == 0,
+        TORCH_CHECK(in_weights_out.size(1) % in_features.size(1) == 0,
                     "Output layer output neurons must be a multiple of input features");
 
         if (!combin)
         {
-            TORCH_CHECK(in_weights_out_layer.size(1) == in_features.size(1),
+            TORCH_CHECK(in_weights_out.size(1) == in_features.size(1),
                         "If combin is false, input and output features must match");
         }
         TORCH_CHECK(in_out_feature_grads.dim() == 2 && in_out_feature_grads.size(0) == in_samples.size(0) &&
