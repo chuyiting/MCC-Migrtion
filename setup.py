@@ -17,6 +17,7 @@ from torch.utils.cpp_extension import (
 )
 
 library_name = "pt_mcc"
+BLOCK_MLP_SIZE = 8 # TODO find a way to pass in as argument and can be picked up by pip install .
 
 
 def get_extensions():
@@ -33,9 +34,11 @@ def get_extensions():
         "cxx": [
             "-O3" if not debug_mode else "-O0",
             "-fdiagnostics-color=always",
+            f"-DBLOCK_MLP_SIZE={BLOCK_MLP_SIZE}",
         ],
         "nvcc": [
             "-O3" if not debug_mode else "-O0",
+            f"-DBLOCK_MLP_SIZE={BLOCK_MLP_SIZE}",
         ],
     }
     if debug_mode:

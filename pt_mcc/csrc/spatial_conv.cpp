@@ -1,6 +1,8 @@
 #include <torch/extension.h>
 
-#define BLOCK_MLP_SIZE 128 // Example size; adjust as needed
+#ifndef BLOCK_MLP_SIZE
+#define BLOCK_MLP_SIZE 8
+#endif
 
 namespace pt_mcc
 {
@@ -63,6 +65,9 @@ namespace pt_mcc
         float *pBiases1Grads,
         float *pBiases2Grads,
         float *pBiasesOutGrads);
+
+    int get_block_size(){
+        return BLOCK_MLP_SIZE}
 
     torch::Tensor spatial_conv(
         torch::Tensor in_points, torch::Tensor in_features, torch::Tensor batch_ids, torch::Tensor in_pdfs,
@@ -242,7 +247,8 @@ namespace pt_mcc
     void register_spatial_connv(torch::Library &m)
     {
         m.def("spatial_conv(Tensor in_points, Tensor in_features, Tensor batch_ids, Tensor in_pdfs, Tensor in_samples, Tensor start_index, Tensor packed_neigh, Tensor in_aabb_min, Tensor in_aabb_max, Tensor in_weights_hidd1, Tensor in_weights_hidd2, Tensor in_weights_out, Tensor in_bias_hidd1, Tensor in_bias_hidd2, Tensor in_bias_out, int num_out_features, bool combin, int batch_size, float radius, bool scale_inv, bool avg) -> Tensor");
-        m.def("spatial_conv_grad(Tensor in_points, Tensor in_features, Tensor batch_ids, Tensor in_pdfs, Tensor in_samples, Tensor start_index, Tensor packed_neigh, Tensor in_aabb_min, Tensor in_aabb_max, Tensor in_weights_hidd1, Tensor in_weights_hidd2, Tensor in_weights_out, Tensor in_bias_hidd1, Tensor in_bias_hidd2, Tensor in_bias_out, int num_out_features, bool combin, int batch_size, float radius, bool scale_inv, bool avg) -> (Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor)");
+        m.def("spatial_conv_grad(Tensor in_points, Tensor in_features, Tensor batch_ids, Tensor in_pdfs, Tensor in_samples, Tensor start_index, Tensor packed_neigh, Tensor in_aabb_min, Tensor in_aabb_max, Tensor in_weights_hidd1, Tensor in_weights_hidd2, Tensor in_weights_out, Tensor in_bias_hidd1, Tensor in_bias_hidd2, Tensor in_bias_out, Tensor in_out_feature_grads, int num_out_features, bool combin, int batch_size, float radius, bool scale_inv, bool avg) -> (Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor)");
+        m.def("get_block_size", &get_block_size);
     }
 
     // Register CUDA implementations

@@ -17,10 +17,9 @@ import math
 import tensorflow as tf
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
-sys.path.append(os.path.join(ROOT_DIR, 'tf_ops'))
 sys.path.append(os.path.join(ROOT_DIR, 'utils'))
-from MCConvBuilder import PointHierarchy, ConvolutionBuilder
-from MCNetworkUtils import MLP_2_hidden, batch_norm_RELU_drop_out, conv_1x1 
+from utils.MCConvBuilder import PointHierarchy, ConvolutionBuilder
+from utils.MCNetworkUtils import MLP_2_hidden, batch_norm_RELU_drop_out, conv_1x1 
 
 def create_network(points, batchIds, features, numInputFeatures, batchSize, k, numOutCat, isTraining, 
     keepProbConv, keepProbFull, useConvDropOut = False, useDropOutFull = True):

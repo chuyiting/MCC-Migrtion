@@ -124,6 +124,7 @@ def _setup_spatial_conv_context(ctx, inputs, output):
     saved_radius = None
     saved_scale_inv = None
     saved_avg = None
+    saved_out_features = None
     if ctx.needs_input_grad[0]:
         saved_points = in_points
         saved_features = in_features
@@ -154,10 +155,13 @@ def _spatial_conv_backward(ctx, grad):
 
     if ctx.needs_input_grad[1]:
         featureGrads, weights1Grads, biases1Grads, weights2Grads, biases2Grads, weightsOutGrads, biasesOutGrads = \
-            torch.ops.pt_mcc.spatial_conv_grad(in_points, in_features, batch_ids, in_pdfs, in_samples, start_index, packed_neigh, in_aabb_min, in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out, in_bias_hidd1, in_bias_hidd2, in_bias_out, num_out_features, combin, batch_size, radius, scale_inv, avg)
+            torch.ops.pt_mcc.spatial_conv_grad(in_points, in_features, batch_ids, in_pdfs, in_samples, start_index, packed_neigh, in_aabb_min, in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out, in_bias_hidd1, in_bias_hidd2, in_bias_out, grad, num_out_features, combin, batch_size, radius, scale_inv, avg)
     
     return None, featureGrads, None, None, None, None, None, None, None, weights1Grads, weights2Grads, weightsOutGrads,biases1Grads, biases2Grads, biasesOutGrads, None, None, None, None, None, None
 
+
+def get_block_size():
+    return torch.ops.pt_mcc.get_block_size()
 
 # Registers a FakeTensor kernel (aka "meta kernel", "abstract impl")
 # that describes what the properties of the output Tensor are given
@@ -277,7 +281,10 @@ def _(start_indices, new_indices):
 def _(in_points, in_features, batch_ids, in_pdfs, in_samples, start_index, packed_neigh, in_aabb_min, in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out, in_bias_hidd1, in_bias_hidd2, in_bias_out, num_out_features, combin, batch_size, radius, scale_inv, avg):
     num_samples = in_samples.shape[0]
     return torch.empty({num_samples, num_out_features})
-   
+
+@torch.library.register_fake("pt_mcc:get_block_size")
+def _():
+    return 8
 
 def _backward(ctx, grad):
     a, b = ctx.saved_tensors

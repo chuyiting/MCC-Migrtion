@@ -17,7 +17,7 @@ import tensorflow as tf
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 sys.path.append(os.path.join(ROOT_DIR, 'tf_ops'))
-from MCConvModule import compute_aabb, sort_points_step1, sort_points_step2, sort_features, sort_features_back, \
+from pt_mcc.ops import compute_aabb, sort_points_step1, sort_points_step2, sort_features, sort_features_back, \
     compute_pdf, poisson_sampling, get_sampled_features, spatial_conv, get_block_size, transform_indices, find_neighbors
 
 
