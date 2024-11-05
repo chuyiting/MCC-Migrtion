@@ -18,6 +18,7 @@
 #include "cuda_kernel_utils.h"
 
 #define EXECUTION_BLOCK_MLP_SIZE 128
+#define BLOCK_MLP_SIZE 128
 
 ////////////////////////////////////////////////////////////////////////////////// GPU
 namespace pt_mcc
