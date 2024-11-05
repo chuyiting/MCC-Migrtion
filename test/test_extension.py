@@ -182,4 +182,40 @@ if __name__ == "__main__":
     res.backward(grad)
     print(f'grad: {features.grad}')
 
+    print('##################### Test sort_points_step1 #####################')
+    batch_size = 2
+    num_points = 4
+    cell_size = 0.5
+    scale_inv = True
+
+    # Example input tensors
+    pts = torch.tensor([[0.1, 0.2, 0.3],
+                        [0.9, 0.8, 0.7],
+                        [0.4, 0.5, 0.6],
+                        [1.0, 1.1, 1.2]], dtype=torch.float32, device="cuda")
+    
+    batch_ids = torch.tensor([[0], [0], [1], [1]], dtype=torch.int32, device="cuda")
+
+    aabb_min = torch.tensor([[0.0, 0.0, 0.0],
+                                [0.5, 0.5, 0.5]], dtype=torch.float32, device="cuda")
+    
+    aabb_max = torch.tensor([[1.0, 1.0, 1.0],
+                                [1.5, 1.5, 1.5]], dtype=torch.float32, device="cuda")
+
+    # Run the function
+    keys, new_indices = pt_mcc.ops.sort_points_step1(pts, batch_ids, aabb_min, aabb_max, batch_size, cell_size, scale_inv)
+    print(f'keys: {keys.cpu()}')
+    print(f'new_indices: {new_indices.cpu()}')
+
+    print('##################### Test sort_points_step2 #####################')
+    features = torch.tensor([[0.0, 0.0, 0.0],
+                        [1.0, 1.0, 1.0],
+                        [2.0, 2.0, 2.0],
+                        [3.0, 3.0, 3.0]], dtype=torch.float32, device="cuda")
+    out_points, out_batch_ids, out_features, out_cell_indices = pt_mcc.ops.sort_points_step2(pts, batch_ids, features, keys, new_indices, aabb_min, aabb_max, batch_size, cell_size, scale_inv)
+    print(f'out points: {out_points}')
+    print(f'out batch ids: {out_batch_ids}')
+    print(f'out features: {out_features}')
+    print(f'out cell indices: {out_cell_indices}')
+
     unittest.main()

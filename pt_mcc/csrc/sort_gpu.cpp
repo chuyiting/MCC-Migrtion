@@ -82,6 +82,9 @@ namespace pt_mcc
         const int *pInNewIndexs,
         int *pOutIndexs);
 
+    /**
+     * Did not fully grasp the implementation details, but the idea is to sort each poinnt into a 3D grid cell
+     */
     std::tuple<torch::Tensor, torch::Tensor> sort_points_step1(
         const torch::Tensor &points,
         const torch::Tensor &batch_ids,
@@ -135,7 +138,9 @@ namespace pt_mcc
 
         return std::make_tuple(keys, new_indices);
     }
-
+    /**
+     * Apply the sorted indices computed from sort_points_step1 to sort the points, batch_ids, features, and cell_indices
+     */
     std::vector<torch::Tensor> sort_points_step2(
         torch::Tensor points, torch::Tensor batch_ids,
         torch::Tensor features, torch::Tensor keys,

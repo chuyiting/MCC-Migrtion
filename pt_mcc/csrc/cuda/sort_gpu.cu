@@ -24,7 +24,7 @@
 namespace pt_mcc
 {
     /**
-     *  Method to compute the key of each point.
+     *  Method to compute the key (index in the 3D grid space) of each point.
      *  @param  pNumPoints      Number of points.
      *  @param  pBatchSize      Size of the batch.
      *  @param  pNumCells       Number of cells of the grid.
@@ -89,10 +89,10 @@ namespace pt_mcc
      */
     __global__ void propagate_offsets(
         const bool pStep1,
-        const int pNumOffsets,
-        const int pNumOffsets2,
-        int *__restrict__ pOffsets,
-        int *__restrict__ pOffsets2)
+        const int pNumOffsets,       // total number of cells
+        const int pNumOffsets2,      // total number of cells / OFFSET_BLOCK_SIZE
+        int *__restrict__ pOffsets,  // Counnters
+        int *__restrict__ pOffsets2) // AuxBuff
     {
         __shared__ int groupCounter[OFFSET_BLOCK_SIZE];
 
@@ -101,12 +101,12 @@ namespace pt_mcc
         int currGlobalCounter = threadIdx.x + blockIdx.x * blockDim.x;
 
         // Update the shared memory.
-        if (currGlobalCounter < pNumOffsets)
+        if (currGlobalCounter < pNumOffsets) // in case the block is not full!
             groupCounter[currCounter] = pOffsets[currGlobalCounter];
         else
             groupCounter[currCounter] = 0;
 
-        // SIMD scan.
+        // SIMD scan. Parallel prefix sum on groupCounter
         for (int i = 1; i <= OFFSET_BLOCK_SIZE / 2; i *= 2)
         {
             __syncthreads();
@@ -134,7 +134,7 @@ namespace pt_mcc
         if (currGlobalCounter < pNumOffsets)
         {
             if (currCounter > 0)
-                pOffsets[currGlobalCounter] = groupCounter[currCounter - 1];
+                pOffsets[currGlobalCounter] = groupCounter[currCounter - 1]; // save accum sum not including itself
             else
                 pOffsets[currGlobalCounter] = 0;
         }
@@ -481,11 +481,16 @@ namespace pt_mcc
         cudaMemset(pAuxBuffOffsets, 0, numOffsets * sizeof(int));
         cudaMemset(pAuxBuffOffsets2, 0, numOffsets2 * sizeof(int));
 
+        // first store the Grid ID for each points in pKeys (empty and created in cpp file)
         calc_key<<<numBlocksPoints, POINT_BLOCK_SIZE>>>(
             pNumPoints, pBatchSize, pNumCells, pAABBMin, pAABBMax, pPoints, pBatchIds, pKeys);
+        // save number of points in each cell in pAuxBuffCounters (batch_size, num_cell, num_cell, num_cell)
         update_counters<<<numBlocksPoints, POINT_BLOCK_SIZE>>>(pNumPoints, pKeys, pAuxBuffCounters);
+        // save accum sum not including itself within each block to the second last argumet; save total sum for each block in the last argument
         propagate_offsets<<<numOffsets, OFFSET_BLOCK_SIZE>>>(true, totalNumCells, numOffsets, pAuxBuffCounters, pAuxBuffOffsets);
+        // when first argument set to false, it does an additional accumulation across chunks/blocks
         propagate_offsets<<<numOffsets2, OFFSET_BLOCK_SIZE>>>(false, numOffsets, numOffsets2, pAuxBuffOffsets, pAuxBuffOffsets2);
+        // pNewIndexs: local index from pAuxBuffCounters + offset from offset1 + offsets from offsets2
         determine_new_index<<<numBlocksPoints, POINT_BLOCK_SIZE>>>(pNumPoints, pKeys, pAuxBuffCounters, pAuxBuffOffsets,
                                                                    pAuxBuffOffsets2, pNewIndexs);
     }

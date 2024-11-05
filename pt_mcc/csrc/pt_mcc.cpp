@@ -23,6 +23,6 @@ TORCH_LIBRARY(pt_mcc, m)
     pt_mcc::register_compute_pdf(m);
     pt_mcc::register_find_neighbors(m);
     pt_mcc::register_poisson_sampling(m);
-    pt_mcc::register_sort(torch::Library & m);
+    pt_mcc::register_sort(m);
     pt_mcc::register_muladd(m);
 }
