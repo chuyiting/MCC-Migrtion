@@ -415,7 +415,7 @@ namespace pt_mcc
 
     int determineNumCells(
         const bool pScaleInv,
-        const int pBatchSize,
+        const int64_t pBatchSize,
         const float pCellSize,
         const float *pAABBMin,
         const float *pAABBMax)
@@ -440,7 +440,7 @@ namespace pt_mcc
     }
 
     void computeAuxiliarBuffersSize(
-        const int pBatchSize,
+        const int64_t pBatchSize,
         const int pNumCells,
         int *PBufferSize1,
         int *PBufferSize2,
@@ -497,7 +497,7 @@ namespace pt_mcc
 
     void sortPointsStep2GPUKernel(
         const int pNumPoints,
-        const int pBatchSize,
+        const int64_t pBatchSize,
         const int pNumFeatures,
         const int pNumCells,
         const float *pPoints,

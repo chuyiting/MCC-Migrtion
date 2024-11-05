@@ -33,7 +33,7 @@ namespace pt_mcc
 
     void sortPointsStep2GPUKernel(
         const int pNumPoints,
-        const int pBatchSize,
+        const int64_t pBatchSize,
         const int pNumFeatures,
         const int pNumCells,
         const float *pPoints,
