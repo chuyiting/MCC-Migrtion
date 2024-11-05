@@ -18,18 +18,18 @@ namespace pt_mcc
         int *bufferSize3);
 
     void sortPointsStep1GPUKernel(
-        const int numPoints,
-        const int64_t batchSize,
-        const int numCells,
-        const float *aabbMin,
-        const float *aabbMax,
-        const float *points,
-        const int *batchIds,
-        int *auxBuffCounters,
-        int *auxBuffOffsets,
-        int *auxBuffOffsets2,
-        int *keys,
-        int *newIndices);
+        const int pNumPoints,
+        const int64_t pBatchSize,
+        const int pNumCells,
+        const float *pAABBMin,
+        const float *pAABBMax,
+        const float *pPoints,
+        const int *pBatchIds,
+        int *pAuxBuffCounters,
+        int *pAuxBuffOffsets,
+        int *pAuxBuffOffsets2,
+        int *pKeys,
+        int *pNewIndexs);
 
     void sortPointsStep2GPUKernel(
         const int pNumPoints,

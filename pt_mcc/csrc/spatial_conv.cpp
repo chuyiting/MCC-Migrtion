@@ -80,10 +80,10 @@ namespace pt_mcc
         TORCH_CHECK(in_points.dim() == 2 && in_points.size(1) == 3, "in_points must be of shape (num_points, 3)");
         int num_points = in_points.size(0);
 
-        TORCH_CHECK(in_features.dim() == 2 && in_features.size(0) == in_points.size(0), "in_features must be of shape (num_points, num_in_features)");
+        TORCH_CHECK(in_features.dim() == 2 && in_features.size(0) == num_points, "in_features must be of shape (num_points, num_in_features)");
         int num_in_features = in_features.size(1);
 
-        TORCH_CHECK(batch_ids.dim() == 2 && batch_ids.size(1) == 1 && batch_ids.size(0) == in_points.size(0), "batch_ids must be of shape (num_points, 1)");
+        TORCH_CHECK(batch_ids.dim() == 2 && batch_ids.size(1) == 1 && batch_ids.size(0) == num_points, "batch_ids must be of shape (num_points, 1)");
         TORCH_CHECK(in_pdfs.dim() == 2 && in_pdfs.size(1) == 1, "in_pdfs must be of shape (num_neighs, 1)");
         int num_neighs = in_pdfs.size(0);
 
