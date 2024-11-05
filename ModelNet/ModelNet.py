@@ -24,7 +24,7 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 sys.path.append(os.path.join(ROOT_DIR, 'models'))
 sys.path.append(os.path.join(ROOT_DIR, 'utils'))
 
-from PyUtils import visualize_progress
+from utils.PyUtils import visualize_progress
 from ModelNetDataSet import ModelNetDataSet
 
 current_milli_time = lambda: time.time() * 1000.0

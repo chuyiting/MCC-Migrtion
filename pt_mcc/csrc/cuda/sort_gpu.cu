@@ -416,7 +416,7 @@ namespace pt_mcc
     int determineNumCells(
         const bool pScaleInv,
         const int64_t pBatchSize,
-        const float pCellSize,
+        const double pCellSize,
         const float *pAABBMin,
         const float *pAABBMax)
     {

@@ -71,7 +71,7 @@ setup(
     packages=find_packages(),
     ext_modules=get_extensions(),
     install_requires=["torch"],
-    description="Example of PyTorch cpp and CUDA extensions",
+    description="Torch cpp and CUDA extensions for MCC project",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/pytorch/extension-cpp",
