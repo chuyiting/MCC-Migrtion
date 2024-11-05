@@ -455,7 +455,7 @@ namespace pt_mcc
 
     void sortPointsStep1GPUKernel(
         const int pNumPoints,
-        const int pBatchSize,
+        const int64_t pBatchSize,
         const int pNumCells,
         const float *pAABBMin,
         const float *pAABBMax,
