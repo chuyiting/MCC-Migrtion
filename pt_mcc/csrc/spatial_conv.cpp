@@ -1,5 +1,4 @@
 #include <torch/extension.h>
-#include <vector>
 
 #define BLOCK_MLP_SIZE 128 // Example size; adjust as needed
 
@@ -126,7 +125,7 @@ namespace pt_mcc
         return out_conv_features;
     }
 
-    std::vector<torch::Tensor> spatial_conv_grad(
+    std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor> spatial_conv_grad(
         torch::Tensor in_points,
         torch::Tensor in_features,
         torch::Tensor batch_ids,

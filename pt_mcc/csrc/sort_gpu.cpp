@@ -1,5 +1,4 @@
 #include <torch/extension.h>
-#include <vector>
 
 namespace pt_mcc
 {
@@ -141,7 +140,7 @@ namespace pt_mcc
     /**
      * Apply the sorted indices computed from sort_points_step1 to sort the points, batch_ids, features, and cell_indices
      */
-    std::vector<torch::Tensor> sort_points_step2(
+    std::tuple<torch::Tensor, torch::Tensor, torch::Tensor, torch::Tensor> sort_points_step2(
         torch::Tensor points, torch::Tensor batch_ids,
         torch::Tensor features, torch::Tensor keys,
         torch::Tensor new_indices, torch::Tensor aabb_min,
