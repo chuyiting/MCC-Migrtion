@@ -8,6 +8,7 @@ namespace pt_mcc
     void register_find_neighbors(torch::Library &m);
     void register_poisson_sampling(torch::Library &m);
     void register_sort(torch::Library &m);
+    void register_spatial_connv(torch::Library &m);
     void register_muladd(torch::Library &m);
 }
 
@@ -24,5 +25,6 @@ TORCH_LIBRARY(pt_mcc, m)
     pt_mcc::register_find_neighbors(m);
     pt_mcc::register_poisson_sampling(m);
     pt_mcc::register_sort(m);
+    pt_mcc::register_spatial_connv(m);
     pt_mcc::register_muladd(m);
 }

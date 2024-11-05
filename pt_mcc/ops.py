@@ -98,6 +98,66 @@ def _sort_features_back_backward(ctx, grad):
 def transform_indices(start_indices, new_indices):
     return torch.ops.pt_mcc.transform_indices(start_indices, new_indices)
 
+def spatial_conv(in_points, in_features, batch_ids, in_pdfs, in_samples, start_index, packed_neigh, in_aabb_min, in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out, in_bias_hidd1, in_bias_hidd2, in_bias_out, num_out_features, combin, batch_size, radius, scale_inv, avg):
+    return torch.ops.pt_mcc.spatial_conv(in_points, in_features, batch_ids, in_pdfs, in_samples, start_index, packed_neigh, in_aabb_min, in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out, in_bias_hidd1, in_bias_hidd2, in_bias_out, num_out_features, combin, batch_size, radius, scale_inv, avg)
+        
+def _setup_spatial_conv_context(ctx, inputs, output):
+    in_points, in_features, batch_ids, in_pdfs, in_samples, start_index, packed_neigh, in_aabb_min, in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out, in_bias_hidd1, in_bias_hidd2, in_bias_out, num_out_features, combin, batch_size, radius, scale_inv, avg = inputs
+    saved_points = None
+    saved_features = None
+    saved_batch_ids = None
+    saved_pdfs = None
+    saved_sampled = None
+    saved_start_index = None
+    saved_packed_neigh = None
+    saved_aabb_min = None
+    saved_aabb_max = None
+    saved_weights_hidd1 = None
+    saved_weights_hidd2 = None
+    saved_weights_out = None
+    saved_bias_hidd1 = None
+    saved_bias_hidd2 = None
+    saved_bias_out = None
+    saved_num_out_features = None
+    saved_combin = None
+    saved_batch_size = None
+    saved_radius = None
+    saved_scale_inv = None
+    saved_avg = None
+    if ctx.needs_input_grad[0]:
+        saved_points = in_points
+        saved_features = in_features
+        saved_batch_ids = batch_ids
+        saved_pdfs = in_pdfs
+        saved_sampled = in_samples
+        saved_start_index = start_index
+        saved_packed_neigh = packed_neigh
+        saved_aabb_min = in_aabb_min
+        saved_aabb_max = in_aabb_max
+        saved_weights_hidd1 = in_weights_hidd1
+        saved_weights_hidd2 = in_weights_hidd2
+        saved_weights_out = in_weights_out
+        saved_bias_hidd1 = in_bias_hidd1
+        saved_bias_hidd2 = in_bias_hidd2
+        saved_bias_out = in_bias_out
+        saved_num_out_features = num_out_features
+        saved_combin = combin
+        saved_batch_size = batch_size
+        saved_radius = radius
+        saved_scale_inv = scale_inv
+        saved_avg = avg
+    ctx.save_for_backward(saved_points, saved_features, saved_batch_ids, saved_pdfs, saved_sampled, saved_start_index, saved_packed_neigh, saved_aabb_min, saved_aabb_max, saved_weights_hidd1, saved_weights_hidd2, saved_weights_out, saved_bias_hidd1, saved_bias_hidd2, saved_bias_out, saved_num_out_features, saved_combin, saved_batch_size, saved_radius, saved_scale_inv, saved_avg)
+
+def _spatial_conv_backward(ctx, grad):
+    in_points, in_features, batch_ids, in_pdfs, in_samples, start_index, packed_neigh, in_aabb_min, in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out, in_bias_hidd1, in_bias_hidd2, in_bias_out, num_out_features, combin, batch_size, radius, scale_inv, avg = ctx.saved_tensors
+    grad_features = None
+
+    if ctx.needs_input_grad[1]:
+        featureGrads, weights1Grads, biases1Grads, weights2Grads, biases2Grads, weightsOutGrads, biasesOutGrads = \
+            torch.ops.pt_mcc.spatial_conv_grad(in_points, in_features, batch_ids, in_pdfs, in_samples, start_index, packed_neigh, in_aabb_min, in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out, in_bias_hidd1, in_bias_hidd2, in_bias_out, num_out_features, combin, batch_size, radius, scale_inv, avg)
+    
+    return None, featureGrads, None, None, None, None, None, None, None, weights1Grads, weights2Grads, weightsOutGrads,biases1Grads, biases2Grads, biasesOutGrads, None, None, None, None, None, None
+
 
 # Registers a FakeTensor kernel (aka "meta kernel", "abstract impl")
 # that describes what the properties of the output Tensor are given
@@ -213,6 +273,12 @@ def _(features, indices):
 def _(start_indices, new_indices):
     return torch.empty_like(start_indices)
 
+@torch.library.register_fake("pt_mcc::spatial_conv")
+def _(in_points, in_features, batch_ids, in_pdfs, in_samples, start_index, packed_neigh, in_aabb_min, in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out, in_bias_hidd1, in_bias_hidd2, in_bias_out, num_out_features, combin, batch_size, radius, scale_inv, avg):
+    num_samples = in_samples.shape[0]
+    return torch.empty({num_samples, num_out_features})
+   
+
 def _backward(ctx, grad):
     a, b = ctx.saved_tensors
     grad_a, grad_b = None, None
@@ -250,6 +316,9 @@ torch.library.register_autograd(
 
 torch.library.register_autograd(
     "pt_mcc::sort_features_back", _sort_features_back_backward, setup_context=_setup_sort_features_back_context)
+
+torch.library.register_autograd(
+    "pt_mcc::spatial_conv", _spatial_conv_backward ,setup_context=_setup_spatial_conv_context)
 
 @torch.library.register_fake("pt_mcc::mymul")
 def _(a, b):
