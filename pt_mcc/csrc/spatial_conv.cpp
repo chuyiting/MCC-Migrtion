@@ -242,8 +242,8 @@ namespace pt_mcc
 
     void register_spatial_connv(torch::Library &m)
     {
-        m.def("spatial_conv(Tensor in_points, Tensor in_features, Tensor batch_ids, Tensor in_pdfs, Tensor in_samples, Tensor start_index, Tensor packed_neigh, Tensor in_aabb_min, Tensor in_aabb_max, Tensor in_weights_hidd1, Tensor in_weights_hidd2, Tensor in_weights_out, Tensor in_bias_hidd1, Tensor in_bias_hidd2, Tensor in_bias_out, int num_out_features, bool combin, int batch_size, double radius, bool scale_inv, bool avg) -> Tensor");
-        m.def("spatial_conv_grad(Tensor in_points, Tensor in_features, Tensor batch_ids, Tensor in_pdfs, Tensor in_samples, Tensor start_index, Tensor packed_neigh, Tensor in_aabb_min, Tensor in_aabb_max, Tensor in_weights_hidd1, Tensor in_weights_hidd2, Tensor in_weights_out, Tensor in_bias_hidd1, Tensor in_bias_hidd2, Tensor in_bias_out, int num_out_features, bool combin, int batch_size, double radius, bool scale_inv, bool avg) -> (Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor)");
+        m.def("spatial_conv(Tensor in_points, Tensor in_features, Tensor batch_ids, Tensor in_pdfs, Tensor in_samples, Tensor start_index, Tensor packed_neigh, Tensor in_aabb_min, Tensor in_aabb_max, Tensor in_weights_hidd1, Tensor in_weights_hidd2, Tensor in_weights_out, Tensor in_bias_hidd1, Tensor in_bias_hidd2, Tensor in_bias_out, int num_out_features, bool combin, int batch_size, float radius, bool scale_inv, bool avg) -> Tensor");
+        m.def("spatial_conv_grad(Tensor in_points, Tensor in_features, Tensor batch_ids, Tensor in_pdfs, Tensor in_samples, Tensor start_index, Tensor packed_neigh, Tensor in_aabb_min, Tensor in_aabb_max, Tensor in_weights_hidd1, Tensor in_weights_hidd2, Tensor in_weights_out, Tensor in_bias_hidd1, Tensor in_bias_hidd2, Tensor in_bias_out, int num_out_features, bool combin, int batch_size, float radius, bool scale_inv, bool avg) -> (Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor)");
     }
 
     // Register CUDA implementations

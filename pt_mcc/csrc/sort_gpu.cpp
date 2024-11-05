@@ -342,8 +342,8 @@ namespace pt_mcc
 
     void register_sort(torch::Library &m)
     {
-        m.def("sort_points_step1(Tensor points, Tensor batch_ids, Tensor aabb_min, Tensor aabb_max, int batch_size, double cell_size, bool scale_inv) -> (Tensor, Tensor)");
-        m.def("sort_points_step2(Tensor points, Tensor batch_ids, Tensor features, Tensor keys, Tensor new_indices, Tensor aabb_min, Tensor aabb_max, int batch_size, double cell_size, bool scale_inv) -> (Tensor, Tensor, Tensor, Tensor)");
+        m.def("sort_points_step1(Tensor points, Tensor batch_ids, Tensor aabb_min, Tensor aabb_max, int batch_size, float cell_size, bool scale_inv) -> (Tensor, Tensor)");
+        m.def("sort_points_step2(Tensor points, Tensor batch_ids, Tensor features, Tensor keys, Tensor new_indices, Tensor aabb_min, Tensor aabb_max, int batch_size, float cell_size, bool scale_inv) -> (Tensor, Tensor, Tensor, Tensor)");
         m.def("sort_points_step2_grad(Tensor new_indices, Tensor output_grad, Tensor output_feature_grad) -> (Tensor, Tensor)");
         m.def("sort_features_back(Tensor features, Tensor new_indices) -> Tensor");
         m.def("sort_features_back_grad(Tensor new_indices, Tensor output_feature_grad) -> Tensor");
