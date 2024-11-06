@@ -6,15 +6,15 @@ namespace pt_mcc
     void computeDPFsCPU(
         const bool pScaleInv,
         const double pWindow,
-        const int64_t numSamples,
-        const int64_t pNumNeighbors,
+        const int numSamples,
+        const int pNumNeighbors,
         const double pRadius,
         const float *pInPts,
-        const int64_t *pInBatchIds,
+        const int *pInBatchIds,
         const float *pAABBMin,
         const float *pAABBMax,
-        const int64_t *pStartIndexs,
-        const int64_t *pPackedIndexs,
+        const int *pStartIndexs,
+        const int *pPackedIndexs,
         float *pPDFs);
 
     // Define the computePDF function
@@ -62,11 +62,11 @@ namespace pt_mcc
         computeDPFsCPU(
             scale_inv, window, num_samples, num_neighbors, radius,
             points.data_ptr<float>(),
-            batch_ids.data_ptr<int64_t>(),
+            batch_ids.data_ptr<int>(),
             aabb_min.data_ptr<float>(),
             aabb_max.data_ptr<float>(),
-            start_indexes.data_ptr<int64_t>(),
-            neighbors.data_ptr<int64_t>(),
+            start_indexes.data_ptr<int>(),
+            neighbors.data_ptr<int>(),
             pdfs.data_ptr<float>());
 
         return pdfs;

@@ -41,15 +41,15 @@ namespace pt_mcc
     __global__ void computePDFs(
         const bool pScaleInv,
         const double pWindow,
-        const int64_t numSamples,
-        const int64_t pNumNeighbors,
+        const int numSamples,
+        const int pNumNeighbors,
         const double pRadius,
         const float *__restrict__ pAABBMin,
         const float *__restrict__ pAABBMax,
         const float *__restrict__ pPoints,
-        const int64_t *__restrict__ pBatchIds,
-        const int64_t *__restrict__ pStartIndexs,
-        const int64_t *__restrict__ pNeigbors,
+        const int *__restrict__ pBatchIds,
+        const int *__restrict__ pStartIndexs,
+        const int *__restrict__ pNeigbors,
         float *__restrict__ pOutPDFs)
     {
         int currentNeighborIndex = threadIdx.x + blockDim.x * (blockIdx.x + blockIdx.y * gridDim.x + blockIdx.z * gridDim.x * gridDim.y);
@@ -100,15 +100,15 @@ namespace pt_mcc
     void computeDPFsCPU(
         const bool scaleInv,
         const double pWindow,
-        const int64_t numSamples,
-        const int64_t pNumNeighbors,
+        const int numSamples,
+        const int pNumNeighbors,
         const double pRadius,
         const float *pInPts,
-        const int64_t *pInBatchIds,
+        const int *pInBatchIds,
         const float *pAABBMin,
         const float *pAABBMax,
-        const int64_t *pStartIndexs,
-        const int64_t *pPackedIndexs,
+        const int *pStartIndexs,
+        const int *pPackedIndexs,
         float *pPDFs)
     {
 
