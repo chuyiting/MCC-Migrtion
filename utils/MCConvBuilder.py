@@ -117,7 +117,6 @@ class PointHierarchy:
             transformedIndexs = transform_indices(sampledIndexs, indexs)
 
             # Save the resulting point cloud.
-            print(f'sample points device: {sampledPts.device}')
             self.points_.append(sampledPts)
             self.batchIds_.append(sampledBatchsIds)
             self.features_.append(sampledFeatures)
@@ -400,20 +399,12 @@ class ConvolutionBuilder (nn.Module):
         print(f'in points shape: {currGridTuple[0].shape}')
         print(f'in features shape: {sortFeatures.shape}')
         print(f'sample points: {currOutPointHierarchy.points_[currOutPointLevel].shape}')
-        print(f'in points device: {currGridTuple[0].device}')
-        print(f'in features device: {sortFeatures.device}')
-        print(f'curr neighs device: {currNeighTuple[1].device}')
-        print(f'aabb device: {inPointHierarchy.aabbMin_.device}')
-        print(f'sample points: {currOutPointHierarchy.points_[currOutPointLevel].device}')
+        print(f'pdf device: {currPDFs.device}')
+        currPDFs = currPDFs.cuda()
        
-        points = currGridTuple[0].cuda()
-        batch_ids = currGridTuple[1].cuda()
-        start_index = currNeighTuple[0].cuda()
-        packed_neigh = currNeighTuple[1].cuda()
-
-        return spatial_conv(points, sortFeatures, batch_ids, 
+        return spatial_conv(currGridTuple[0], sortFeatures, currGridTuple[1], 
             currPDFs, currOutPointHierarchy.points_[currOutPointLevel], 
-            start_index, packed_neigh, 
+            currNeighTuple[0], currNeighTuple[1], 
             inPointHierarchy.aabbMin_, inPointHierarchy.aabbMax_, 
             self.weights, self.weights2, self.weights3, self.biases, self.biases2, self.biases3, 
             currNumOutFeatures, currMultiFeatureConv, inPointHierarchy.batchSize_, 
