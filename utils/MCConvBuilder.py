@@ -396,7 +396,9 @@ class ConvolutionBuilder (nn.Module):
             self.cachePDFs_[keyPDF] = currPDFs
 
         
-        
+        print(f'in points shape: {currGridTuple[0].shape}')
+        print(f'in features shape: {sortFeatures.shape}')
+        print(f'sample points: {currOutPointHierarchy.points_[currOutPointLevel].shape}')
        
         return spatial_conv(currGridTuple[0], sortFeatures, currGridTuple[1], 
             currPDFs, currOutPointHierarchy.points_[currOutPointLevel], 
