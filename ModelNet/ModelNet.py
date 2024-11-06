@@ -170,6 +170,7 @@ if __name__ == '__main__':
 
             accuracy = create_accuracy(logits, labels)
             total_accuracy += accuracy
+            print(f"B [{num_iter}], Loss: {total_loss.item():.4f}, Accuracy: {accuracy:.4f}")
         
         endEpochTime = current_milli_time()   
         running_loss /= num_iter

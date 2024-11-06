@@ -53,7 +53,7 @@ class MCClassS(nn.Module):
 
     def forward(self, points, batch_ids, features):
         ############################################ Compute point hierarchy
-        # Initialize PointHierarchy
+        # Initialize PointHierarchy, we are creating hierarchy every time!
         ############################################ Compute point hierarchy
         mPointHierarchy = PointHierarchy(points, features, batch_ids, [0.1, 0.4, math.sqrt(3.0)+0.1], "MCClassS_PH", self.batch_size)
 
@@ -65,7 +65,6 @@ class MCClassS(nn.Module):
         convFeatures1 = self.bn_relu_dropout1(convFeatures1)
         convFeatures1 = self.conv1x1_1(convFeatures1)
         convFeatures1 = self.bn_relu_dropout2(convFeatures1)
-        print(f'conv feature shape: {convFeatures1.shape}')
 
         # Convolution 2
         convFeatures2 = self.conv2(mPointHierarchy, convFeatures1)
