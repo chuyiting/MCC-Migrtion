@@ -59,7 +59,7 @@ def _sort_points_step2_backward(ctx, grad):
     return ptsGrad, None, inFeatureGrad, None, None, None, None, None, None, None
 
 def sort_features(features, indices):
-    return torch.ops.pt_mcc.sort_features(indices, features)
+    return torch.ops.pt_mcc.sort_features(features, indices)
 
 def _setup_sort_features_context(ctx, inputs, output):
     features, _ = inputs
