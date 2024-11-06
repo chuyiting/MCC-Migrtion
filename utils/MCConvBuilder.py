@@ -396,6 +396,13 @@ class ConvolutionBuilder (nn.Module):
 
             self.cachePDFs_[keyPDF] = currPDFs
 
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        num_out_features = torch.tensor(currNumOutFeatures, dtype=torch.int64).to(device=device)
+        combin = torch.tensor(currMultiFeatureConv, dtype=torch.bool).to(device=device)
+        batch_size = torch.tensor(inPointHierarchy.batchSize_, dtype=torch.int64).to(device=device)
+        radius = torch.tensor(self.convRadius, dtype=torch.float).to(device=device)
+        scale_inv = torch.tensor(currRelativeRadius, dtype=torch.bool).to(device=device)
+        avg = torch.tensor(currUseAVG, dtype=torch.bool).to(device=device)
         
         print(f'in points shape: {currGridTuple[0].shape}')
         print(f'in features shape: {sortFeatures.shape}')
@@ -406,5 +413,4 @@ class ConvolutionBuilder (nn.Module):
             currNeighTuple[0], currNeighTuple[1], 
             inPointHierarchy.aabbMin_, inPointHierarchy.aabbMax_, 
             self.weights, self.weights2, self.weights3, self.biases, self.biases2, self.biases3, 
-            currNumOutFeatures, currMultiFeatureConv, inPointHierarchy.batchSize_, 
-            self.convRadius, currRelativeRadius, currUseAVG)
+            num_out_features, combin, batch_size, radius, scale_inv, avg)

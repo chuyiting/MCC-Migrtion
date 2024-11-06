@@ -76,9 +76,16 @@ namespace pt_mcc
         torch::Tensor in_samples, torch::Tensor start_index, torch::Tensor packed_neigh, torch::Tensor in_aabb_min,
         torch::Tensor in_aabb_max, torch::Tensor in_weights_hidd1, torch::Tensor in_weights_hidd2, torch::Tensor in_weights_out,
         torch::Tensor in_bias_hidd1, torch::Tensor in_bias_hidd2, torch::Tensor in_bias_out,
-        int64_t num_out_features, bool combin, int64_t batch_size, double radius,
-        bool scale_inv, bool avg)
+        torch::Tensor num_out_features_tensor, torch::Tensor combin_tensor, torch::Tensor batch_size_tensor, torch::Tensor radius_tensor,
+        torch::Tensor scale_inv_tensor, torch::Tensor avg_tensor)
     {
+        int64_t num_out_features = num_out_features_tensor[0];
+        bool combin = combin_tensor[0];
+        int64_t batch_size = batch_size_tensor[0];
+        double radius = radius_tensor[0];
+        bool scale_inv = scale_inv_tensor[0];
+        bool avg = avg_tensor[0];
+
         TORCH_CHECK(in_points.is_cuda() && in_features.is_cuda() && batch_ids.is_cuda() && in_pdfs.is_cuda() && in_samples.is_cuda(), "all inputs should be on CUDA - 1");
         TORCH_CHECK(start_index.is_cuda() && packed_neigh.is_cuda() && in_aabb_min.is_cuda() && in_aabb_max.is_cuda(), "all inputs should be on CUDA - 2");
         TORCH_CHECK(in_weights_hidd1.is_cuda() && in_weights_hidd2.is_cuda() && in_weights_out.is_cuda(), "all inputs should be on CUDA - 3");
@@ -252,7 +259,7 @@ namespace pt_mcc
 
     void register_spatial_connv(torch::Library &m)
     {
-        m.def("spatial_conv(Tensor in_points, Tensor in_features, Tensor batch_ids, Tensor in_pdfs, Tensor in_samples, Tensor start_index, Tensor packed_neigh, Tensor in_aabb_min, Tensor in_aabb_max, Tensor in_weights_hidd1, Tensor in_weights_hidd2, Tensor in_weights_out, Tensor in_bias_hidd1, Tensor in_bias_hidd2, Tensor in_bias_out, int num_out_features, bool combin, int batch_size, float radius, bool scale_inv, bool avg) -> Tensor");
+        m.def("spatial_conv(Tensor in_points, Tensor in_features, Tensor batch_ids, Tensor in_pdfs, Tensor in_samples, Tensor start_index, Tensor packed_neigh, Tensor in_aabb_min, Tensor in_aabb_max, Tensor in_weights_hidd1, Tensor in_weights_hidd2, Tensor in_weights_out, Tensor in_bias_hidd1, Tensor in_bias_hidd2, Tensor in_bias_out, Tensor num_out_features, Tensor combin, Tensor batch_size, Tensor radius, Tensor scale_inv, Tensor avg) -> Tensor");
         m.def("spatial_conv_grad(Tensor in_points, Tensor in_features, Tensor batch_ids, Tensor in_pdfs, Tensor in_samples, Tensor start_index, Tensor packed_neigh, Tensor in_aabb_min, Tensor in_aabb_max, Tensor in_weights_hidd1, Tensor in_weights_hidd2, Tensor in_weights_out, Tensor in_bias_hidd1, Tensor in_bias_hidd2, Tensor in_bias_out, Tensor in_out_feature_grads, int num_out_features, bool combin, int batch_size, float radius, bool scale_inv, bool avg) -> (Tensor, Tensor, Tensor, Tensor, Tensor, Tensor, Tensor)");
         m.def("get_block_size", &get_block_size);
     }
