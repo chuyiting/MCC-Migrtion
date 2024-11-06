@@ -19,7 +19,7 @@ namespace pt_mcc
 
     void computeAABB(
         const bool pScaleInv, const int pNumPoints, const int64_t pBatchSize,
-        const float *pPoints, const int64_t *pBatchIds, float *pAABBMin, float *pAABBMax);
+        const float *pPoints, const int *pBatchIds, float *pAABBMin, float *pAABBMax);
 
     std::tuple<torch::Tensor, at::Tensor> compute_aabb(
         torch::Tensor points, torch::Tensor batchIds, int64_t batchSize, bool scaleInv)
@@ -44,7 +44,7 @@ namespace pt_mcc
         // Call the CUDA kernel (passing raw pointers to the tensors)
         computeAABB(
             scaleInv, numPoints, batchSize,
-            points.data_ptr<float>(), batchIds.data_ptr<long>(),
+            points.data_ptr<float>(), batchIds.data_ptr<int>(),
             aabbMin.data_ptr<float>(), aabbMax.data_ptr<float>());
 
         return std::make_tuple(aabbMin, aabbMax);
