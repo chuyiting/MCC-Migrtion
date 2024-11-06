@@ -176,10 +176,10 @@ if __name__ == '__main__':
         endEpochTime = current_milli_time()   
         running_loss /= num_iter
         total_accuracy /= num_iter
-        print(f"Epoch [{epoch + 1}/{args.maxEpoch}], Loss: {running_loss:.4f}, Accuracy: {total_accuracy:.4f}")
+        print(f"Epoch [{epoch + 1}/{args.maxEpoch}], Loss: {running_loss:.4f}, Accuracy: {total_accuracy:.4f}, Training time: {((endEpochTime-startEpochTime)/1000.0):.2f}")
         
         # Check on test data for early stopping
-        if epoch % 10 == 0:
+        if (epoch+1) % 10 == 0:
             model.eval()
             test_loss = 0.0
             test_accuracy = 0.0
