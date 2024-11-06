@@ -218,4 +218,8 @@ if __name__ == "__main__":
     print(f'out features: {out_features}')
     print(f'out cell indices: {out_cell_indices}')
 
+    print('##################### Test get_block_size #####################')
+    block_size = pt_mcc.ops.get_block_size()
+    print(block_size)
+
     unittest.main()
