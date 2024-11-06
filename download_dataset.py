@@ -12,7 +12,7 @@ import shutil
 path = kagglehub.dataset_download("chenxaoyu/modelnet-normal-resampled")
 
 # Move the downloaded files to the target directory
-destination_dir = os.path.expanduser("~/MCC-Pytorch/data")
+destination_dir = os.path.expanduser("data")
 
 # Move the downloaded folder to the new location and rename it to 'data'
 shutil.move(path, destination_dir)
