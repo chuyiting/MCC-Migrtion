@@ -333,7 +333,7 @@ class ConvolutionBuilder (nn.Module):
         currUsePDF = self.usePDF_
         currUseAVG = self.useAVG_
         currOutPointHierarchy = inPointHierarchy
-        currOutPointLevel = self.inPointLevel
+        currOutPointLevel = self.outPointLevel
 
 
         # Check if the batch size in both point hierarchies are the same.
@@ -400,7 +400,6 @@ class ConvolutionBuilder (nn.Module):
         print(f'in points shape: {currGridTuple[0].shape}')
         print(f'in features shape: {sortFeatures.shape}')
         print(f'sample points: {currOutPointHierarchy.points_[currOutPointLevel].shape}')
-        print(f'pdf device: {currPDFs.device}')
        
         return spatial_conv(currGridTuple[0], sortFeatures, currGridTuple[1], 
             currPDFs, currOutPointHierarchy.points_[currOutPointLevel], 
