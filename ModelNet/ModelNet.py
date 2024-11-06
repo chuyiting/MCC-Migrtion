@@ -165,6 +165,7 @@ if __name__ == '__main__':
             xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay)
             total_loss = xentropy_loss + reg_term
             running_loss += total_loss.item()
+            optimizer.zero_grad()
             total_loss.backward()
             optimizer.step()
 
