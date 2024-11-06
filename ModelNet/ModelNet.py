@@ -157,7 +157,7 @@ if __name__ == '__main__':
             num_iter += 1
             _, points, batchIds, features, _, labels, _ = mTrainDataSet.get_next_batch()
             points = torch.from_numpy(points).float().cuda()
-            batchIds = torch.from_numpy(batchIds).cuda()
+            batchIds = torch.from_numpy(batchIds).int().cuda()
             features = torch.from_numpy(features).float().cuda()
             logits = model(points, batchIds, features)
             xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay)
@@ -183,7 +183,7 @@ if __name__ == '__main__':
             while mTestDataSet.has_more_batches():
                 _, points, batchIds, features, _, labels, _ = mTestDataSet.get_next_batch()
                 points = torch.from_numpy(points).float().cuda()
-                batchIds = torch.from_numpy(batchIds).cuda()
+                batchIds = torch.from_numpy(batchIds).int().cuda()
                 features = torch.from_numpy(features).float().cuda()
                 logits = model(points, batchIds, features)
                 xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay)
