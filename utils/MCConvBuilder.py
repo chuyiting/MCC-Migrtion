@@ -400,7 +400,6 @@ class ConvolutionBuilder (nn.Module):
         print(f'in features shape: {sortFeatures.shape}')
         print(f'sample points: {currOutPointHierarchy.points_[currOutPointLevel].shape}')
         print(f'pdf device: {currPDFs.device}')
-        currPDFs = currPDFs.cuda()
        
         return spatial_conv(currGridTuple[0], sortFeatures, currGridTuple[1], 
             currPDFs, currOutPointHierarchy.points_[currOutPointLevel], 

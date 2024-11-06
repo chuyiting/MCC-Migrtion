@@ -79,6 +79,10 @@ namespace pt_mcc
         int64_t num_out_features, bool combin, int64_t batch_size, double radius,
         bool scale_inv, bool avg)
     {
+        TORCH_CHECK(in_points.is_cuda() && in_features.is_cuda() && batch_ids.is_cuda() && in_pdfs.is_cuda() && in_samples.is_cuda(), "all inputs should be on CUDA - 1");
+        TORCH_CHECK(start_index.is_cuda() && packed_neigh.is_cuda() && in_aabb_min.is_cuda() && in_aabb_max.is_cuda(), "all inputs should be on CUDA - 2");
+        TORCH_CHECK(in_weights_hidd1.is_cuda() && in_weights_hidd2.is_cuda() && in_weights_out.is_cuda(), "all inputs should be on CUDA - 3");
+        TORCH_CHECK(in_bias_hidd1.is_cuda() && in_bias_hidd2.is_cuda() && in_bias_out.is_cuda(), "all inputs should be on CUDA - 4");
         // Input validation
         TORCH_CHECK(num_out_features > 0, "SpatialConvOp expects a positive number of output features")
         TORCH_CHECK(radius > 0.0, "SpatialConvOp expects a positive radius")
