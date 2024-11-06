@@ -88,10 +88,10 @@ class PointHierarchy:
         self.aabbMin_ = aabbMin
         self.aabbMax_ = aabbMax
 
-        print("")
-        print("########## Point Hierarchy: "+hierarchyName+" (Rel: "+str(relativeRadius)+")")
-        print("")
-        print("Level: 0 | Poisson Disk Radius: 0.0")
+        # print("")
+        # print("########## Point Hierarchy: "+hierarchyName+" (Rel: "+str(relativeRadius)+")")
+        # print("")
+        # print("Level: 0 | Poisson Disk Radius: 0.0")
 
         # Initialize the temporal variables.
         currPts = inPoints
@@ -101,7 +101,7 @@ class PointHierarchy:
         # Compute the different levels.
         for level, currRadius in enumerate(radiusList):
 
-            print("Level: "+str(level+1)+" | Poisson Disk Radius: "+str(currRadius))
+            # print("Level: "+str(level+1)+" | Poisson Disk Radius: "+str(currRadius))
 
             # Distribute points into a regular grid.
             keys, indexs = sort_points_step1(currPts, currBatchIds, self.aabbMin_, 

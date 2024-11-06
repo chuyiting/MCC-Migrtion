@@ -188,7 +188,7 @@ if __name__ == '__main__':
                 points = torch.from_numpy(points).float().cuda()
                 batchIds = torch.from_numpy(batchIds).int().cuda()
                 features = torch.from_numpy(features).float().cuda()
-                labels = torch.from_numpy(labels).int().cuda()
+                labels = torch.from_numpy(labels).long().cuda()
                 logits = model(points, batchIds, features)
                 xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay)
                 total_loss = xentropy_loss + reg_term
