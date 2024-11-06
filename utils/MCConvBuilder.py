@@ -371,6 +371,7 @@ class ConvolutionBuilder (nn.Module):
         # Check if the neighbor information was previously computed.
         if keyNeighs in self.cacheNeighs_:
             currNeighTuple = self.cacheNeighs_[keyNeighs]
+            print('use neighbor cache')
         else:
             startIndexs, packedNeighs = find_neighbors(
                 currOutPointHierarchy.points_[currOutPointLevel], 
@@ -407,6 +408,7 @@ class ConvolutionBuilder (nn.Module):
         print(f'in points shape: {currGridTuple[0].shape}')
         print(f'in features shape: {sortFeatures.shape}')
         print(f'sample points: {currOutPointHierarchy.points_[currOutPointLevel].shape}')
+        print(f'start index shape: {currNeighTuple[0].shape}')
        
         return spatial_conv(currGridTuple[0], sortFeatures, currGridTuple[1], 
             currPDFs, currOutPointHierarchy.points_[currOutPointLevel], 
