@@ -130,7 +130,8 @@ if __name__ == '__main__':
     num_out_cat = len(categories)
 
     # Load the model
-    model = model_map[args.model](numInputFeatures=num_input_features, k=k, numOutCat=num_out_cat, 
+    model_class = model_map[args.model]
+    model = model_class(numInputFeatures=num_input_features, k=k, numOutCat=num_out_cat, 
                                   batchSize=batch_size, keepProbConv=args.dropOutKeepProbConv, keepProbFull=args.dropOutKeepProb, 
                                   useConvDropOut=args.useDropOutConv, useDropOutFull=args.useDropOut)
 
