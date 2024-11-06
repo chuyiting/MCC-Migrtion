@@ -13,7 +13,8 @@
 import sys
 import os
 import math
-import tensorflow as tf
+import torch
+import torch.nn as nn
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 sys.path.append(os.path.join(ROOT_DIR, 'tf_ops'))
@@ -130,7 +131,7 @@ class PointHierarchy:
         print("")
 
 
-class ConvolutionBuilder:
+class ConvolutionBuilder (nn.Module):
     """Class to create the convolution operation on a point hierarchy.
 
     Attributes:
@@ -157,11 +158,18 @@ class ConvolutionBuilder:
     """
 
     def __init__(self, 
-        multiFeatureConvs = False, 
         KDEWindow = 0.25,
-        relativeRadius = True,
-        usePDF = True,
-        useAVG = True,
+        convName='',
+        inPointLevel=2,
+        outPointLevel=3,
+        inNumFeatures = 0,
+        outNumFeatures = -1,
+        convRadius=math.sqrt(3.0)+0.1,
+        multiFeatureConvs = False, 
+        
+        relativeRadius = True, # use default
+        usePDF = True, # use default
+        useAVG = True, # use default
         decayLossCollection = 'weight_decay_loss'):
         """Constructor.
 
@@ -182,13 +190,19 @@ class ConvolutionBuilder:
                 divided by the number of neighbors.
             decayLossCollection (string): Weight decay loss collection name.
         """
-
+        super().__init__()
         # Initialize the caches.
         self.cacheGrids_ = {}
         self.cacheNeighs_ = {}
         self.cachePDFs_ = {}
 
         # Store the attributes.
+        self.inPointLevel = inPointLevel
+        self.outPointLevel = outPointLevel
+        self.inNumFeatures = inNumFeatures
+        self.outNumFeatures = inNumFeatures if outNumFeatures == -1 else outNumFeatures
+        self.convRadius = convRadius
+
         self.multiFeatureConvs_ = multiFeatureConvs
         self.KDEWindow_ = KDEWindow
         self.relativeRadius_ = relativeRadius
@@ -198,6 +212,33 @@ class ConvolutionBuilder:
 
         print("########## Convolution Builder")
         print("")
+
+        # Create the convolution.
+        blockSize = get_block_size()
+        
+        if multiFeatureConvs:
+            numOutNeurons = inNumFeatures * inNumFeatures
+        else:
+            numOutNeurons = inNumFeatures
+
+        numBlocks = (numOutNeurons + blockSize - 1) // blockSize  # Equivalent to ceil(numOutNeurons / blockSize)
+
+        print("Convolution: "+str(convName)+" (KDE: "+str(self.KDEWindow)+" | MF: "+str(self.multiFeatureConvs_)+
+            " | Rel: "+str(self.relativeRadius_)+" | PDF: "+str(self.usePDF_)+")")
+        print("    In points: "+str(self.inPointLevel))
+        print("    Out points: "+str(self.outPointLevel))
+        print("    Features in: "+str(inNumFeatures))
+        print("    Features out: "+str(self.outNumFeatures))
+        print("    Radius: "+str(self.convRadius))
+
+         # Initialize weights and biases
+        self.weights = nn.Parameter(torch.randn(3, blockSize * numBlocks) * 0.01)
+        self.biases = nn.Parameter(torch.zeros(blockSize * numBlocks))
+        self.weights2 = nn.Parameter(torch.randn(numBlocks, blockSize, blockSize) * 0.01).view(blockSize, numBlocks * blockSize)
+        self.biases2 = nn.Parameter(torch.zeros(numBlocks * blockSize)).view(numBlocks * blockSize)
+        self.weights3 = nn.Parameter(torch.randn(numBlocks, blockSize, blockSize) * 0.01).view(blockSize, numBlocks * blockSize)
+        self.biases3 = nn.Parameter(torch.zeros(numBlocks * blockSize)).view(numBlocks * blockSize)
+
 
 
     def __compute_dic_keys__(self,
@@ -246,21 +287,9 @@ class ConvolutionBuilder:
         self.cachePDFs_ = {}
 
     
-    def create_convolution(self,
-        convName,
+    def forward(self,
         inPointHierarchy, 
-        inPointLevel,
-        inFeatures, 
-        inNumFeatures,
-        convRadius,
-        outPointHierarchy =  None,
-        outPointLevel = None,
-        multiFeatureConv = None, 
-        outNumFeatures = None,
-        KDEWindow = None,
-        relativeRadius = None,
-        usePDF = None,
-        useAVG = None):
+        inFeatures):
         """Method to create a convolution layer. 
         
         This method uses a cache to store the operations to distribute points into a regular 
@@ -297,30 +326,14 @@ class ConvolutionBuilder:
 
         # Determine the configuration used for the convolution.
         currMultiFeatureConv = self.multiFeatureConvs_
-        currNumOutFeatures = inNumFeatures
+        currNumOutFeatures = self.inNumFeatures
         currKDEWindow = self.KDEWindow_
         currRelativeRadius = self.relativeRadius_
         currUsePDF = self.usePDF_
         currUseAVG = self.useAVG_
         currOutPointHierarchy = inPointHierarchy
-        currOutPointLevel = inPointLevel
+        currOutPointLevel = self.inPointLevel
 
-        if not(outPointHierarchy is None):
-            currOutPointHierarchy = outPointHierarchy
-        if not(multiFeatureConv is None):
-            currMultiFeatureConv = multiFeatureConv
-        if not(KDEWindow is None):
-            currKDEWindow = KDEWindow
-        if not(relativeRadius is None):
-            currRelativeRadius = relativeRadius
-        if not(usePDF is None):
-            currUsePDF = usePDF
-        if not(useAVG is None):
-            currUseAVG = useAVG
-        if not(outNumFeatures is None):
-            currNumOutFeatures = outNumFeatures
-        if not(outPointLevel is None):
-            currOutPointLevel = outPointLevel
 
         # Check if the batch size in both point hierarchies are the same.
         if currOutPointHierarchy.batchSize_ != inPointHierarchy.batchSize_:
@@ -328,21 +341,13 @@ class ConvolutionBuilder:
 
         # Check if the num input features is equal to the number of output features 
         # when multifeatureCon is False
-        if (currMultiFeatureConv == False) and (currNumOutFeatures!=inNumFeatures):
+        if (currMultiFeatureConv == False) and (currNumOutFeatures!=self.inNumFeatures):
             raise RuntimeError('The number of input and output features should be the same ' \
                 'for multi feature convolutions.')
 
         # Compute the keys used to access the dictionaries.
         keyGrid, keyNeighs, keyPDF = self.__compute_dic_keys__(inPointHierarchy, currOutPointHierarchy,
-            inPointLevel, currOutPointLevel, convRadius, currKDEWindow, currRelativeRadius, currUsePDF)
-
-        print("Convolution: "+str(convName)+" (KDE: "+str(currKDEWindow)+" | MF: "+str(currMultiFeatureConv)+
-            " | Rel: "+str(currRelativeRadius)+" | PDF: "+str(currUsePDF)+")")
-        print("    In points: "+str(inPointLevel)+" ("+inPointHierarchy.hierarchyName_+")")
-        print("    Out points: "+str(currOutPointLevel)+" ("+currOutPointHierarchy.hierarchyName_+")")
-        print("    Features in: "+str(inNumFeatures))
-        print("    Features out: "+str(currNumOutFeatures))
-        print("    Radius: "+str(convRadius))
+            self.inPointLevel, currOutPointLevel, self.convRadius, currKDEWindow, currRelativeRadius, currUsePDF)
 
         
         # Check if the grid distribution was already computed.
@@ -350,15 +355,15 @@ class ConvolutionBuilder:
             currGridTuple = self.cacheGrids_[keyGrid]
             sortFeatures = sort_features(inFeatures, currGridTuple[3])
         else:
-            keys, indexs = sort_points_step1(inPointHierarchy.points_[inPointLevel], 
-                inPointHierarchy.batchIds_[inPointLevel], inPointHierarchy.aabbMin_, 
+            keys, indexs = sort_points_step1(inPointHierarchy.points_[self.inPointLevel], 
+                inPointHierarchy.batchIds_[self.inPointLevel], inPointHierarchy.aabbMin_, 
                 inPointHierarchy.aabbMax_, inPointHierarchy.batchSize_, 
-                convRadius, currRelativeRadius)
+                self.convRadius, currRelativeRadius)
             sortPts, sortBatchs, sortFeatures, cellIndexs = sort_points_step2(
-                inPointHierarchy.points_[inPointLevel], 
-                inPointHierarchy.batchIds_[inPointLevel], inFeatures, keys, indexs, 
+                inPointHierarchy.points_[self.inPointLevel], 
+                inPointHierarchy.batchIds_[self.inPointLevel], inFeatures, keys, indexs, 
                 inPointHierarchy.aabbMin_, inPointHierarchy.aabbMax_, 
-                inPointHierarchy.batchSize_, convRadius, currRelativeRadius)
+                inPointHierarchy.batchSize_, self.convRadius, currRelativeRadius)
             currGridTuple = (sortPts, sortBatchs, cellIndexs, indexs)
             self.cacheGrids_[keyGrid] = currGridTuple
 
@@ -370,7 +375,7 @@ class ConvolutionBuilder:
                 currOutPointHierarchy.points_[currOutPointLevel], 
                 currOutPointHierarchy.batchIds_[currOutPointLevel], 
                 currGridTuple[0], currGridTuple[2], inPointHierarchy.aabbMin_, 
-                inPointHierarchy.aabbMax_, convRadius, inPointHierarchy.batchSize_, 
+                inPointHierarchy.aabbMax_, self.convRadius, inPointHierarchy.batchSize_, 
                 currRelativeRadius)
             currNeighTuple = (startIndexs, packedNeighs)
             self.cacheNeighs_[keyNeighs] = currNeighTuple
@@ -385,43 +390,18 @@ class ConvolutionBuilder:
                     currNeighTuple[0], currNeighTuple[1], currKDEWindow, convRadius, 
                     inPointHierarchy.batchSize_, currRelativeRadius)
             else:
-                neighShape = tf.shape(currNeighTuple[1])
-                currPDFs = tf.ones([neighShape[0], 1], tf.float32)
+                neighShape = currNeighTuple[1].shape
+                currPDFs = torch.ones((neighShape[0], 1), dtype=torch.float32)
 
             self.cachePDFs_[keyPDF] = currPDFs
 
-        # Create the convolution.
-        initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_AVG', uniform=True)
-        initializerBiases = tf.zeros_initializer()
-
-        blockSize = get_block_size()
         
-        if currMultiFeatureConv:
-            numOutNeurons = inNumFeatures*currNumOutFeatures
-        else:
-            numOutNeurons = inNumFeatures
-        numBlocks = int(numOutNeurons/blockSize)
-        if numOutNeurons%blockSize!=0:
-            numBlocks = numBlocks+1
-
-        weights = tf.get_variable(convName+'_weights', [3, blockSize*numBlocks], initializer=initializer)
-        tf.add_to_collection(self.decayLossCollection_, weights)
-        biases = tf.get_variable(convName+'_biases', [blockSize*numBlocks], initializer=initializerBiases)
-        weights2 = tf.get_variable(convName+'_weights2', [numBlocks, blockSize, blockSize], initializer=initializer)
-        weights2 = tf.reshape(weights2, [blockSize, numBlocks*blockSize])
-        tf.add_to_collection(self.decayLossCollection_, weights2)
-        biases2 = tf.get_variable(convName+'_biases2', [numBlocks, blockSize], initializer=initializerBiases)
-        biases2 = tf.reshape(biases2, [numBlocks*blockSize])
-        weights3 = tf.get_variable(convName+'_weights3', [numBlocks, blockSize, blockSize], initializer=initializer)
-        weights3 = tf.reshape(weights3, [blockSize, numBlocks*blockSize])
-        tf.add_to_collection(self.decayLossCollection_, weights3)
-        biases3 = tf.get_variable(convName+'_biases3', [numBlocks, blockSize], initializer=initializerBiases)
-        biases3 = tf.reshape(biases3, [numBlocks*blockSize])
-
+        
+       
         return spatial_conv(currGridTuple[0], sortFeatures, currGridTuple[1], 
             currPDFs, currOutPointHierarchy.points_[currOutPointLevel], 
             currNeighTuple[0], currNeighTuple[1], 
             inPointHierarchy.aabbMin_, inPointHierarchy.aabbMax_, 
-            weights, weights2, weights3, biases, biases2, biases3, 
+            self.weights, self.weights2, self.weights3, self.biases, self.biases2, self.biases3, 
             currNumOutFeatures, currMultiFeatureConv, inPointHierarchy.batchSize_, 
-            convRadius, currRelativeRadius, currUseAVG)
+            self.convRadius, currRelativeRadius, currUseAVG)

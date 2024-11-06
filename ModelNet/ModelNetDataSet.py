@@ -18,7 +18,7 @@ import numpy as np
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 sys.path.append(os.path.join(ROOT_DIR, 'utils'))
-from DataSet import DataSet
+from utils.DataSet import DataSet
 
 class ModelNetDataSet(DataSet):
     """ModelNet dataset.

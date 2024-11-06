@@ -14,63 +14,72 @@
 import sys
 import os
 import math
-import tensorflow as tf
+import torch
+import torch.nn as n
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 sys.path.append(os.path.join(ROOT_DIR, 'utils'))
 from utils.MCConvBuilder import PointHierarchy, ConvolutionBuilder
-from utils.MCNetworkUtils import MLP_2_hidden, batch_norm_RELU_drop_out, conv_1x1 
+from utils.MCNetworkUtils import MLP2Hidden, BatchNormReLUDropout, Conv1x1
 
-def create_network(points, batchIds, features, numInputFeatures, batchSize, k, numOutCat, isTraining, 
-    keepProbConv, keepProbFull, useConvDropOut = False, useDropOutFull = True):
+import torch
+import torch.nn as nn
+import math
 
-    ############################################ Compute point hierarchy
-    mPointHierarchy = PointHierarchy(points, features, batchIds, [0.1, 0.4, math.sqrt(3.0)+0.1], "MCClassS_PH", batchSize)
-    
+class MCClassS(nn.Module):
+    def __init__(self, numInputFeatures, k, numOutCat, batchSize, keepProbConv=0.8, keepProbFull=0.8,
+                 useConvDropOut=False, useDropOutFull=True):
+        super(MCClassS, self).__init__()
+        self.k = k
+        self.numOutCat = numOutCat
+        self.batchSize = batchSize
+        self.useConvDropOut = useConvDropOut
+        self.useDropOutFull = useDropOutFull
 
-    ############################################ Convolutions
-    mConvBuilder = ConvolutionBuilder(KDEWindow=0.2)
+        self.conv1 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_1", inPointLevel=0, outPointLevel=1, inNumFeatures=numInputFeatures, outNumFeatures=k, convRadius= 0.2, multiFeatureConv=True)
+        self.conv2 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_2", inPointLevel=1, outPointLevel=2, inNumFeatures=k*2, convRadius= 0.8)
+        self.conv3 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_3", inPointLevel=2, outPointLevel=3, inNumFeatures=k*4, convRadius=math.sqrt(3.0)+0.1)
+        
+        # Convolutional layers
+        self.bn_relu_dropout1 = BatchNormReLUDropout(k, use_dropout=useConvDropOut, keep_prob=keepProbConv)
+        self.conv1x1_1 = Conv1x1(k, k * 2)
+        self.bn_relu_dropout2 = BatchNormReLUDropout(k * 2, use_dropout=useConvDropOut, keep_prob=keepProbConv)
+        self.conv1x1_2 = Conv1x1(k * 2, k * 4)
+        self.bn_relu_dropout3 = BatchNormReLUDropout(k * 4, use_dropout=useConvDropOut, keep_prob=keepProbConv)
 
-    #### Convolution 1
-    convFeatures1 = mConvBuilder.create_convolution(
-        convName = "Conv_1", 
-        inPointHierarchy = mPointHierarchy,
-        inPointLevel=0, 
-        outPointLevel=1, 
-        inFeatures=features, 
-        inNumFeatures=numInputFeatures,
-        outNumFeatures=k, 
-        convRadius= 0.2,
-        multiFeatureConv=True)
+        # Fully connected MLP
+        self.final_bn_relu_dropout = BatchNormReLUDropout(k * 4, use_dropout=useConvDropOut, keep_prob=keepProbConv)
+        self.final_mlp = MLP2Hidden(k * 4, k * 2, k, numOutCat, use_dropout=useDropOutFull, keep_prob=keepProbFull)
 
-    #### Convolution 2
-    convFeatures1 = batch_norm_RELU_drop_out("Reduce_1_In_BN", convFeatures1, isTraining, useConvDropOut, keepProbConv)
-    convFeatures1 = conv_1x1("Reduce_1", convFeatures1, k, k*2)
-    convFeatures1 = batch_norm_RELU_drop_out("Reduce_1_Out_BN", convFeatures1, isTraining, useConvDropOut, keepProbConv)
-    convFeatures2 = mConvBuilder.create_convolution(
-        convName="Conv_2", 
-        inPointHierarchy=mPointHierarchy,
-        inPointLevel=1, 
-        outPointLevel=2, 
-        inFeatures=convFeatures1,
-        inNumFeatures=k*2, 
-        convRadius=0.8)
+    def forward(self, points, batch_ids, features):
+        ############################################ Compute point hierarchy
+        # Initialize PointHierarchy
+        ############################################ Compute point hierarchy
+        mPointHierarchy = PointHierarchy(points, features, batch_ids, [0.1, 0.4, math.sqrt(3.0)+0.1], "MCClassS_PH", batchSize)
 
-    #### Convolution 3
-    convFeatures2 = batch_norm_RELU_drop_out("Reduce_2_In_BN", convFeatures2, isTraining, useConvDropOut, keepProbConv)
-    convFeatures2 = conv_1x1("Reduce_2", convFeatures2, k*2, k*4)
-    convFeatures2 = batch_norm_RELU_drop_out("Reduce_2_Out_BN", convFeatures2, isTraining, useConvDropOut, keepProbConv)
-    convFeatures3 = mConvBuilder.create_convolution(
-        convName="Conv_3", 
-        inPointHierarchy=mPointHierarchy,
-        inPointLevel=2, 
-        outPointLevel=3, 
-        inFeatures=convFeatures2,
-        inNumFeatures=k*4, 
-        convRadius=math.sqrt(3.0)+0.1)
+        ############################################ Convolutions
+        # Convolution 1
+        convFeatures1 = self.conv1(mPointHierarchy, features)
 
-    #Fully connected MLP - Global features.
-    finalInput = batch_norm_RELU_drop_out("BNRELUDROP_final", convFeatures3, isTraining, useConvDropOut, keepProbConv)
-    finalLogits = MLP_2_hidden(finalInput, k*4, k*2, k, numOutCat, "Final_Logits", keepProbFull, isTraining, useDropOutFull)
+        # BatchNorm + ReLU + Dropout + Conv1x1 for Convolution 1
+        convFeatures1 = self.bn_relu_dropout1(convFeatures1)
+        convFeatures1 = self.conv1x1_1(convFeatures1)
+        convFeatures1 = self.bn_relu_dropout2(convFeatures1)
 
-    return finalLogits
+        # Convolution 2
+        convFeatures2 = self.conv2(mPointHierarchy, convFeatures1)
+
+        # BatchNorm + ReLU + Dropout + Conv1x1 for Convolution 2
+        convFeatures2 = self.bn_relu_dropout2(convFeatures2)
+        convFeatures2 = self.conv1x1_2(convFeatures2)
+        convFeatures2 = self.bn_relu_dropout3(convFeatures2)
+
+        # Convolution 3
+        convFeatures3 = self.conv3(mPointHierarchy, convFeatures2)
+
+        # Fully connected MLP for final global features
+        finalInput = self.final_bn_relu_dropout(convFeatures3)
+        finalLogits = self.final_mlp(finalInput)
+
+        return finalLogits
+

@@ -10,135 +10,168 @@
     \author pedro hermosilla (pedro-1.hermosilla-casajus@uni-ulm.de)
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-import tensorflow as tf
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
 import os
 import sys
 import math
 
 ############################################################################# Network Utils
-
-def MLP_2_hidden(features, numInputFeatures, hidden1_units, hidden2_units, numOutFeatures, 
-    layerName, keepProb, isTraining, useDropOut = False, useInitBN = True):
-    """Method to create the graph of a MLP of two hidden layers.
-
-    Args:
-        features (nxm tensor): Input features.
-        numInputFeatures (int): Number of input features.
-        hidden1_units (int): Number of units in the first hidden layer.
-        hidden2_units (int): Number of units in the second hidden layer.
-        numOutFeatures (int): Number of output features.
-        layerName (string): Name of the MLP.
-        keepProb (tensor): Tensor with the probability to maintain a input in the MLP.
-        isTraining (tensor): Tensor with a boolean that indicates if the MLP is executed
-            in a training mode or not.
-        useDropOut (bool): Boolean that indicates if dropout should be used in the MLP.
-        useInitBN (bool): Boolean that indicates if an initial batch normalization should be used.
-    """
-
-    initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_AVG', uniform=True)
-    initializerBiases = tf.zeros_initializer()
-
-    if useInitBN:
-        features = tf.layers.batch_normalization(inputs = features, training = isTraining, name = layerName+"_BN_Init")
-    
-    # Hidden 1
-    weights = tf.get_variable(layerName+'_weights1', [numInputFeatures, hidden1_units], initializer=initializer)
-    tf.add_to_collection('weight_decay_loss', weights)
-    biases = tf.get_variable(layerName+'_biases1', [hidden1_units], initializer=initializerBiases)
-    mul1 = tf.matmul(features, weights) + biases
-    mul1 = tf.layers.batch_normalization(inputs = mul1, training = isTraining, name = layerName+"_BN_h1")
-    hidden1 = tf.nn.relu(mul1)
+class MLP2Hidden(nn.Module):
+    def __init__(self, num_input_features, hidden1_units, hidden2_units, num_out_features, 
+                 use_dropout=False, use_init_bn=True, keep_prob=0.8):
+        super(MLP2Hidden, self).__init__()
         
-    # Hidden 2
-    if useDropOut:
-        hidden1 = tf.nn.dropout(hidden1, keepProb)
-    weights = tf.get_variable(layerName+'_weights2', [hidden1_units, hidden2_units])
-    tf.add_to_collection('weight_decay_loss', weights)
-    biases = tf.get_variable(layerName+'_biases2', [hidden2_units], initializer=initializerBiases)
-    mul2 = tf.matmul(hidden1, weights) + biases
-    mul2 = tf.layers.batch_normalization(inputs = mul2, training = isTraining, name = layerName+"_BN_h2")
-    hidden2 = tf.nn.relu(mul2)
+        self.use_init_bn = use_init_bn
+        self.use_dropout = use_dropout
+
+        # Initialize layers
+        self.bn_init = nn.BatchNorm1d(num_input_features) if use_init_bn else None
+        self.fc1 = nn.Linear(num_input_features, hidden1_units)
+        self.bn1 = nn.BatchNorm1d(hidden1_units)
+        self.fc2 = nn.Linear(hidden1_units, hidden2_units)
+        self.bn2 = nn.BatchNorm1d(hidden2_units)
+        self.fc3 = nn.Linear(hidden2_units, num_out_features)
+
+        # Dropout layer
+        self.dropout = nn.Dropout(p=1 - keep_prob) if use_dropout else None
+
+    def forward(self, features):
+        if self.use_init_bn:
+            features = self.bn_init(features)
+
+        # Hidden layer 1
+        x = self.fc1(features)
+        x = self.bn1(x)
+        x = F.relu(x)
+
+        # Hidden layer 2
+        if self.use_dropout:
+            x = self.dropout(x) 
+        x = self.fc2(x)
+        x = self.bn2(x)
+        x = F.relu(x)
+
+        # Output layer
+        if self.use_dropout:
+            x = self.dropout(x) 
+        x = self.fc3(x)
+
+        return x
+
+class MLP1Hidden(nn.Module):
+    def __init__(self, num_input_features, hidden_units, num_out_features, use_dropout=False, keep_prob=0.8):
+        """
+        Initialize the MLP with one hidden layer.
+
+        Args:
+            num_input_features (int): Number of input features.
+            hidden_units (int): Number of units in the hidden layer.
+            num_out_features (int): Number of output features.
+            use_dropout (bool): Boolean that indicates if dropout should be used in the MLP.
+        """
+        super(MLP1Hidden, self).__init__()
+        self.use_dropout = use_dropout
+
+        # Define layers
+        self.hidden_layer = nn.Linear(num_input_features, hidden_units)
+        self.batch_norm_hidden = nn.BatchNorm1d(hidden_units)
+        self.output_layer = nn.Linear(hidden_units, num_out_features)
+
+        # Dropout layer
+        if use_dropout:
+            self.dropout = nn.Dropout(p=1.0 - keep_prob)  # keep_prob is defined during the forward pass
+
+    def forward(self, features):
+        """
+        Forward pass through the MLP.
+
+        Args:
+            features (tensor): Input features (nxm tensor).
+            keep_prob (float): Probability to keep an input in the MLP (for dropout).
+            is_training (bool): Indicates if the MLP is executed in a training mode or not.
+
+        Returns:
+            tensor: Output features from the MLP.
+        """
+        # Hidden layer with batch normalization and ReLU activation
+        hidden = self.hidden_layer(features)
+        hidden = self.batch_norm_hidden(hidden)
+        hidden = torch.relu(hidden)
+
+        # Apply dropout if in training mode
+        if self.use_dropout:
+            hidden = self.dropout(hidden)
+
+        # Output layer
+        output = self.output_layer(hidden)
+        return output
+
+
+class Conv1x1(nn.Module):
+    def __init__(self, num_inputs, num_out_features):
+        """
+        Initialize the Conv1x1 layer.
+
+        Args:
+            num_inputs (int): Number of input features.
+            num_out_features (int): Number of output features.
+        """
+        super(Conv1x1, self).__init__()
         
-    # Linear
-    if useDropOut:
-        hidden2 = tf.nn.dropout(hidden2, keepProb)
-    weights = tf.get_variable(layerName+'_weights3', [hidden2_units, numOutFeatures], initializer=initializer)
-    tf.add_to_collection('weight_decay_loss', weights)
-    biases = tf.get_variable(layerName+'_biases3', [numOutFeatures], initializer=initializerBiases)
-    logits = tf.matmul(hidden2, weights) + biases
-    return logits
-
-
-def MLP_1_hidden(features, numInputFeatures, hidden_units, numOutFeatures, layerName, 
-    keepProb, isTraining, useDropOut = False):
-    """Method to create the graph of a MLP of one hidden layers.
-
-    Args:
-        features (nxm tensor): Input features.
-        numInputFeatures (int): Number of input features.
-        hidden_units (int): Number of units in the hidden layer.
-        numOutFeatures (int): Number of output features.
-        layerName (string): Name of the MLP.
-        keepProb (tensor): Tensor with the probability to maintain a input in the MLP.
-        isTraining (tensor): Tensor with a boolean that indicates if the MLP is executed
-            in a training mode or not.
-        useDropOut (bool): Boolean that indicates if dropout should be used in the MLP.
-    """
-
-    initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_AVG', uniform=True)
-    initializerBiases = tf.zeros_initializer()
-
-    # Hidden 1
-    weights = tf.get_variable(layerName+'_weights1', [numInputFeatures, hidden_units], initializer=initializer)
-    tf.add_to_collection('weight_decay_loss', weights)
-    biases = tf.get_variable(layerName+'_biases1', [hidden_units], initializer=initializerBiases)
-    mul = tf.matmul(features, weights) + biases
-    mul = tf.layers.batch_normalization(inputs = mul, training = isTraining, name = layerName+"_BN_h")
-    hidden = tf.nn.relu(mul)
+        # Define the linear layer
+        self.linear_layer = nn.Linear(num_inputs, num_out_features)
         
-    # Linear
-    if useDropOut:
-        hidden = tf.nn.dropout(hidden, keepProb)
-    weights = tf.get_variable(layerName+'_weights2', [hidden_units, numOutFeatures], initializer=initializer)
-    tf.add_to_collection('weight_decay_loss', weights)
-    biases = tf.get_variable(layerName+'_biases2', [numOutFeatures], initializer=initializerBiases)
-    linear = tf.matmul(hidden, weights) + biases
-    return linear
+        # Initialize weights using Xavier (Glorot) initialization
+        nn.init.xavier_uniform_(self.linear_layer.weight)
+        nn.init.zeros_(self.linear_layer.bias)
+
+    def forward(self, inputs):
+        """
+        Forward pass through the Conv1x1 layer.
+
+        Args:
+            inputs (tensor): Input features (nxm tensor).
+
+        Returns:
+            tensor: Transformed output features.
+        """
+        # Perform the linear transformation
+        reduced_output = self.linear_layer(inputs)
+        return reduced_output
 
 
-def conv_1x1(layerName, inputs, numInputs, numOutFeatures):
-    """Method to create a fully connected layer to compute a new set of features
-        by combining the input features.
+class BatchNormReLUDropout(nn.Module):
+    def __init__(self, in_features, use_dropout=False, keep_prob=0.8):
+        """
+        Initialize the BatchNormReLUDropout layer.
 
-    Args:
-        layerName (string): Name of the layer.
-        inputs (nxm tensor): Input features.
-        numInputs (int): Number of input features.
-        numOutFeatures (int): Number of output features.
-    """
+        Args:
+            in_features (int): Number of input features.
+            use_dropout (bool): Boolean that indicates if dropout should be used in the layer.
+            keep_prob (float): Probability of keeping a unit during dropout.
+        """
+        super(BatchNormReLUDropout, self).__init__()
+        self.batch_norm = nn.BatchNorm1d(in_features)
+        self.relu = nn.ReLU()
+        self.use_dropout = use_dropout
+        self.dropout = nn.Dropout(p=1 - keep_prob) if use_dropout else None
 
-    initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_AVG', uniform=True)
-    initializerBiases = tf.zeros_initializer()
-    weights = tf.get_variable(layerName+'_weights', [numInputs, numOutFeatures], initializer=initializer)
-    tf.add_to_collection('weight_decay_loss', weights)
-    biases = tf.get_variable(layerName+'_biases', [numOutFeatures], initializer=initializerBiases)
-    reducedOutput = tf.matmul(inputs, weights) + biases
-    return reducedOutput
+    def forward(self, x):
+        """
+        Forward pass for the BatchNormReLUDropout layer.
 
+        Args:
+            x (torch.Tensor): Input features.
+            is_training (bool): Indicates if the model is in training mode.
 
-def batch_norm_RELU_drop_out(layerName, inFeatures, isTraining, usedDropOut, keepProb):
-    """Method to create a combination of layers: Batch norm + RELU + Drop out.
+        Returns:
+            torch.Tensor: Output features after BatchNorm, ReLU, and optional Dropout.
+        """
+        x = self.batch_norm(x)
+        x = self.relu(x)
+        if self.use_dropout:
+            x = self.dropout(x)
+        return x
 
-    Args:
-        layerName (string): Name of the layer.
-        inFeatures (nxm tensor): Input features.
-        isTraining (tensor): Tensor with a boolean that indicates if the MLP is executed
-            in a training mode or not.
-        useDropOut (bool): Boolean that indicates if dropout should be used in the MLP.
-        keepProb (tensor): Tensor with the probability to maintain a input in the MLP.
-    """
-    inFeatures = tf.layers.batch_normalization(inputs = inFeatures, training = isTraining, name = layerName+"_BN")
-    inFeatures = tf.nn.relu(inFeatures)
-    if usedDropOut:
-        inFeatures = tf.nn.dropout(inFeatures, keepProb)
-    return inFeatures

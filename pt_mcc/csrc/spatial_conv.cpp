@@ -66,8 +66,10 @@ namespace pt_mcc
         float *pBiases2Grads,
         float *pBiasesOutGrads);
 
-    int get_block_size(){
-        return BLOCK_MLP_SIZE}
+    int64_t get_block_size()
+    {
+        return BLOCK_MLP_SIZE;
+    }
 
     torch::Tensor spatial_conv(
         torch::Tensor in_points, torch::Tensor in_features, torch::Tensor batch_ids, torch::Tensor in_pdfs,
