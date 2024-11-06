@@ -387,7 +387,7 @@ class ConvolutionBuilder (nn.Module):
             if currUsePDF:
                 currPDFs = compute_pdf(currGridTuple[0], currGridTuple[1], 
                     inPointHierarchy.aabbMin_, inPointHierarchy.aabbMax_, 
-                    currNeighTuple[0], currNeighTuple[1], currKDEWindow, convRadius, 
+                    currNeighTuple[0], currNeighTuple[1], currKDEWindow, self.convRadius, 
                     inPointHierarchy.batchSize_, currRelativeRadius)
             else:
                 neighShape = currNeighTuple[1].shape
