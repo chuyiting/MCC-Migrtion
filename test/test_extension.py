@@ -250,7 +250,11 @@ if __name__ == "__main__":
     out_features = pt_mcc.ops.sort_features(features, new_indices)
     print(out_features.cpu())
 
-    grad = torch.ones(num_points, num_features, dtype=torch.float).cuda()
+    grad = torch.tensor([[4, 4, 4],  # Features for point 0
+                        [3, 3, 3],  # Features for point 1
+                        [2, 2, 2],  # Features for point 2
+                        [1, 1, 1],# Features for point 3
+                        [0, 0, 0]], dtype=torch.float32).cuda()
     out_features.backward(grad)
     print(f'grad: {features.grad}')
 
