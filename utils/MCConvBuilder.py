@@ -366,7 +366,7 @@ class ConvolutionBuilder (nn.Module):
                 inPointHierarchy.aabbMin_, inPointHierarchy.aabbMax_, 
                 inPointHierarchy.batchSize_, self.convRadius, currRelativeRadius)
             currGridTuple = (sortPts, sortBatchs, cellIndexs, indexs)
-            self.cacheGrids_[keyGrid] = currGridTuple
+            #self.cacheGrids_[keyGrid] = currGridTuple
 
         # Check if the neighbor information was previously computed.
         if keyNeighs in self.cacheNeighs_:
@@ -380,7 +380,7 @@ class ConvolutionBuilder (nn.Module):
                 inPointHierarchy.aabbMax_, self.convRadius, inPointHierarchy.batchSize_, 
                 currRelativeRadius)
             currNeighTuple = (startIndexs, packedNeighs)
-            self.cacheNeighs_[keyNeighs] = currNeighTuple
+            #self.cacheNeighs_[keyNeighs] = currNeighTuple
 
         # Check if the pdf was previously computed.
         if keyPDF in self.cachePDFs_:
@@ -395,7 +395,7 @@ class ConvolutionBuilder (nn.Module):
                 neighShape = currNeighTuple[1].shape
                 currPDFs = torch.ones((neighShape[0], 1), dtype=torch.float32)
 
-            self.cachePDFs_[keyPDF] = currPDFs
+            #self.cachePDFs_[keyPDF] = currPDFs
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         num_out_features = torch.tensor(currNumOutFeatures, dtype=torch.int64).to(device=device)
