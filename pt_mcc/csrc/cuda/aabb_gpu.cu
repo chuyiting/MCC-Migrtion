@@ -72,7 +72,7 @@ namespace pt_mcc
         const int pNumPoints,
         const int64_t pBatchSize,
         const float *__restrict__ pPoints,
-        const int64_t *__restrict__ pBatchIds,
+        const int *__restrict__ pBatchIds,
         float *__restrict__ pAABBMin,
         float *__restrict__ pAABBMax)
     {
