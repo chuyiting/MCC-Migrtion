@@ -14,7 +14,7 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 sys.path.append(os.path.join(ROOT_DIR, 'models'))
 sys.path.append(os.path.join(ROOT_DIR, 'utils'))
 
-from models import MCClassS
+from models.MCClassS import MCClassS
 from utils.PyUtils import visualize_progress
 from ModelNetDataSet import ModelNetDataSet
 
