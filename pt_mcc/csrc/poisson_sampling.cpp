@@ -69,7 +69,7 @@ namespace pt_mcc
         int num_points = points.size(0);
         int num_cells = cell_indices.size(1);
 
-        printf("number of points: %d\n", num_points);
+        // printf("number of points: %d\n", num_points);
         torch::Tensor tmp_pts = torch::empty({num_points, 3}, points.options());
         torch::Tensor tmp_batchs = torch::empty({num_points, 1}, batch_ids.options());
         torch::Tensor tmp_indexs = torch::empty({num_points, 1}, batch_ids.options());

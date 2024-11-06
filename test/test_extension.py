@@ -212,11 +212,14 @@ if __name__ == "__main__":
                         [1.0, 1.0, 1.0],
                         [2.0, 2.0, 2.0],
                         [3.0, 3.0, 3.0]], dtype=torch.float32, device="cuda")
+    features.requires_grad_()
     out_points, out_batch_ids, out_features, out_cell_indices = pt_mcc.ops.sort_points_step2(pts, batch_ids, features, keys, new_indices, aabb_min, aabb_max, batch_size, cell_size, scale_inv)
     print(f'out points: {out_points}')
     print(f'out batch ids: {out_batch_ids}')
     print(f'out features: {out_features}')
     print(f'out cell indices: {out_cell_indices}')
+
+
 
     print('##################### Test sort_features_back #####################')
     features = torch.tensor([[0, 0, 0], # Features for point 0
