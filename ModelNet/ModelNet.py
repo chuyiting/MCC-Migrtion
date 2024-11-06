@@ -179,12 +179,14 @@ if __name__ == '__main__':
         print(f"Epoch [{epoch + 1}/{args.maxEpoch}], Loss: {running_loss:.4f}, Accuracy: {total_accuracy:.4f}")
         
         # Check on test data for early stopping
-        if epoch % 5 == 0:
+        if epoch % 10 == 0:
             model.eval()
             test_loss = 0.0
             test_accuracy = 0.0
             mTestDataSet.start_iteration()
+            num_iter = 0
             while mTestDataSet.has_more_batches():
+                num_iter += 1
                 _, points, batchIds, features, _, labels, _ = mTestDataSet.get_next_batch()
                 points = torch.from_numpy(points).float().cuda()
                 batchIds = torch.from_numpy(batchIds).int().cuda()
@@ -200,10 +202,9 @@ if __name__ == '__main__':
                 accuracy = create_accuracy(logits, labels)
                 test_accuracy += accuracy
                
-                if test_accuracy > bestTestAccuracy:
-                    bestTestAccuracy = test_accuracy
-                    print(f"Best Test Accuracy: {bestTestAccuracy:.4f}")
-                    torch.save(model.state_dict(), os.path.join(args.logFolder, 'best_model.pth'))
+            test_accuracy /= num_iter
+            print(f"Test Accuracy: {test_accuracy:.4f}")
+            torch.save(model.state_dict(), os.path.join(args.logFolder, 'best_model.pth'))
 
         if epoch % args.learningDecayRate == 0:
             lr_scheduler.step()
