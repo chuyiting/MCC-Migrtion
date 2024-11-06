@@ -130,10 +130,11 @@ if __name__ == '__main__':
     num_out_cat = len(categories)
 
     # Load the model
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model_class = model_map[args.model]
     model = model_class(numInputFeatures=num_input_features, k=k, numOutCat=num_out_cat, 
                                   batch_size=batch_size, keepProbConv=args.dropOutKeepProbConv, keepProbFull=args.dropOutKeepProb, 
-                                  useConvDropOut=args.useDropOutConv, useDropOutFull=args.useDropOut)
+                                  useConvDropOut=args.useDropOutConv, useDropOutFull=args.useDropOut).to(device)
 
     # TODO add learning rate decay per batch
     optimizer = optim.Adam(model.parameters(), lr=args.initLearningRate)
