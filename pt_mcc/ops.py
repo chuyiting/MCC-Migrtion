@@ -265,7 +265,7 @@ def _(pts, batch_ids, features, keys, indices, aabb_min, aabb_max, batch_size, c
     num_cells = 100 # just some placeholder
     return torch.empty_like(pts), torch.empty_like(batch_ids), torch.empty_like(features), torch.empty((batch_size, num_cells, num_cells, num_cells, 2))
 
-@torch.library.register_fake("pt_mcc::sort_features")
+@torch.library.register_fake("pt_mcc::sort_features_back_grad")
 def _(features, indices):
     return torch.empty_like(features)
 
