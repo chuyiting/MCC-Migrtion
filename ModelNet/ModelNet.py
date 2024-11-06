@@ -196,8 +196,6 @@ if __name__ == '__main__':
                 xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay)
                 total_loss = xentropy_loss + reg_term
                 test_loss += total_loss.item()
-                total_loss.backward()
-                optimizer.step()
 
                 accuracy = create_accuracy(logits, labels)
                 test_accuracy += accuracy
