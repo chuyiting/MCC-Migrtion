@@ -79,12 +79,12 @@ namespace pt_mcc
         torch::Tensor num_out_features_tensor, torch::Tensor combin_tensor, torch::Tensor batch_size_tensor, torch::Tensor radius_tensor,
         torch::Tensor scale_inv_tensor, torch::Tensor avg_tensor)
     {
-        int64_t num_out_features = num_out_features_tensor[0].item<int64_t>();
-        bool combin = combin_tensor[0].item<bool>();
-        int64_t batch_size = batch_size_tensor[0].item<int64_t>();
-        double radius = radius_tensor[0].item<double>();
-        bool scale_inv = scale_inv_tensor[0].item<bool>();
-        bool avg = avg_tensor[0].item<bool>();
+        int64_t num_out_features = num_out_features_tensor.item<int64_t>();
+        bool combin = combin_tensor.item<bool>();
+        int64_t batch_size = batch_size_tensor.item<int64_t>();
+        double radius = radius_tensor.item<double>();
+        bool scale_inv = scale_inv_tensor.item<bool>();
+        bool avg = avg_tensor.item<bool>();
 
         TORCH_CHECK(in_points.is_cuda() && in_features.is_cuda() && batch_ids.is_cuda() && in_pdfs.is_cuda() && in_samples.is_cuda(), "all inputs should be on CUDA - 1");
         TORCH_CHECK(start_index.is_cuda() && packed_neigh.is_cuda() && in_aabb_min.is_cuda() && in_aabb_max.is_cuda(), "all inputs should be on CUDA - 2");
