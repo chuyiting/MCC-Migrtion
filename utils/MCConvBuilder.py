@@ -128,7 +128,7 @@ class PointHierarchy:
             currBatchIds = sampledBatchsIds
             currFeatures = sampledFeatures
 
-        print("")
+        # print("")
 
 
 class ConvolutionBuilder (nn.Module):
