@@ -244,6 +244,35 @@ namespace pt_mcc
         return std::make_tuple(out_input_grads, out_input_feature_grads);
     }
 
+    torch::Tensor sort_features(
+        torch::Tensor features,
+        torch::Tensor new_indices)
+    {
+
+        // Check input shapes
+        TORCH_CHECK(new_indices.dim() == 1, "sort_features expects indices with shape (num_points)");
+        int num_points = new_indices.size(0);
+
+        TORCH_CHECK(features.dim() == 2, "sort_features expects gradients of features with shape (num_points, num_features)");
+        int num_features = features.size(1);
+
+        TORCH_CHECK(features.device().is_cuda(), "Input tensors must be on CUDA device");
+        TORCH_CHECK(new_indices.device().is_cuda(), "Input tensors must be on CUDA device");
+
+        // Allocate output tensor
+        auto out_feature = torch::empty_like(features);
+
+        // Call the kernel function
+        sortFeaturesBackGrad(
+            num_points,
+            num_features,
+            features.data_ptr<float>(),
+            new_indices.data_ptr<int>(),
+            out_feature.data_ptr<float>());
+
+        return out_feature;
+    }
+
     torch::Tensor sort_features_back(
         torch::Tensor features,
         torch::Tensor new_indices)
@@ -345,6 +374,7 @@ namespace pt_mcc
         m.def("sort_points_step2(Tensor points, Tensor batch_ids, Tensor features, Tensor keys, Tensor new_indices, Tensor aabb_min, Tensor aabb_max, int batch_size, float cell_size, bool scale_inv) -> (Tensor, Tensor, Tensor, Tensor)");
         m.def("sort_points_step2_grad(Tensor new_indices, Tensor output_grad, Tensor output_feature_grad) -> (Tensor, Tensor)");
         m.def("sort_features_back(Tensor features, Tensor new_indices) -> Tensor");
+        m.def("sort_features(Tensor features, Tensor new_indices) -> Tensor");
         m.def("sort_features_back_grad(Tensor new_indices, Tensor output_feature_grad) -> Tensor");
         m.def("transform_indices(Tensor start_indices, Tensor new_indices) -> Tensor");
     }
@@ -356,6 +386,7 @@ namespace pt_mcc
         m.impl("sort_points_step2", &sort_points_step2);
         m.impl("sort_points_step2_grad", &sort_points_step2_grad);
         m.impl("sort_features_back", &sort_features_back);
+        m.impl("sort_features", &sort_features);
         m.impl("sort_features_back_grad", &sort_features_back_grad);
         m.impl("transform_indices", &transform_indices);
     }

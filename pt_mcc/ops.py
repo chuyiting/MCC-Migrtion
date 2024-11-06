@@ -59,7 +59,7 @@ def _sort_points_step2_backward(ctx, grad):
     return ptsGrad, None, inFeatureGrad, None, None, None, None, None, None, None
 
 def sort_features(features, indices):
-    return torch.ops.pt_mcc.sort_features_back_grad(indices, features)
+    return torch.ops.pt_mcc.sort_features(indices, features)
 
 def _setup_sort_features_context(ctx, inputs, output):
     features, _ = inputs
@@ -265,7 +265,7 @@ def _(pts, batch_ids, features, keys, indices, aabb_min, aabb_max, batch_size, c
     num_cells = 100 # just some placeholder
     return torch.empty_like(pts), torch.empty_like(batch_ids), torch.empty_like(features), torch.empty((batch_size, num_cells, num_cells, num_cells, 2))
 
-@torch.library.register_fake("pt_mcc::sort_features_back_grad")
+@torch.library.register_fake("pt_mcc::sort_features")
 def _(features, indices):
     return torch.empty_like(features)
 
