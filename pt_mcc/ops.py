@@ -84,6 +84,7 @@ def _setup_sort_features_back_context(ctx, inputs, output):
     saved_indices = None
     if ctx.needs_input_grad[0]:
         saved_indices = indices
+    print(saved_indices)
     ctx.save_for_backward(saved_indices)
 
 def _sort_features_back_backward(ctx, grad):
