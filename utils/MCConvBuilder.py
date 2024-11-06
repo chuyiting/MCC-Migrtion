@@ -403,14 +403,14 @@ class ConvolutionBuilder (nn.Module):
         print(f'aabb device: {inPointHierarchy.aabbMin_.device}')
         print(f'sample points: {currOutPointHierarchy.points_[currOutPointLevel].shape}')
        
-        currGridTuple[0] = currGridTuple[0].cuda()
-        currGridTuple[1] = currGridTuple[1].cuda()
-        currNeighTuple[0] = currNeighTuple[0].cuda()
-        currNeighTuple[1] = currNeighTuple[1].cuda()
+        points = currGridTuple[0].cuda()
+        batch_ids = currGridTuple[1].cuda()
+        start_index = currNeighTuple[0].cuda()
+        packed_neigh = currNeighTuple[1].cuda()
 
-        return spatial_conv(currGridTuple[0], sortFeatures, currGridTuple[1], 
+        return spatial_conv(points, sortFeatures, batch_ids, 
             currPDFs, currOutPointHierarchy.points_[currOutPointLevel], 
-            currNeighTuple[0], currNeighTuple[1], 
+            start_index, packed_neigh, 
             inPointHierarchy.aabbMin_, inPointHierarchy.aabbMax_, 
             self.weights, self.weights2, self.weights3, self.biases, self.biases2, self.biases3, 
             currNumOutFeatures, currMultiFeatureConv, inPointHierarchy.batchSize_, 
