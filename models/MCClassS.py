@@ -27,16 +27,16 @@ import torch.nn as nn
 import math
 
 class MCClassS(nn.Module):
-    def __init__(self, numInputFeatures, k, numOutCat, batchSize, keepProbConv=0.8, keepProbFull=0.8,
+    def __init__(self, numInputFeatures, k, numOutCat, batch_size, keepProbConv=0.8, keepProbFull=0.8,
                  useConvDropOut=False, useDropOutFull=True):
         super(MCClassS, self).__init__()
         self.k = k
         self.numOutCat = numOutCat
-        self.batchSize = batchSize
+        self.batch_size = batch_size
         self.useConvDropOut = useConvDropOut
         self.useDropOutFull = useDropOutFull
 
-        self.conv1 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_1", inPointLevel=0, outPointLevel=1, inNumFeatures=numInputFeatures, outNumFeatures=k, convRadius= 0.2, multiFeatureConvs=True)
+        self.conv1 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_1", inPointLevel=0, outPointLevel=1, inNumFeatures=numInputFeatures, outNumFeatures=k, convRadius= 0.2, multiFeatureConv=True)
         self.conv2 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_2", inPointLevel=1, outPointLevel=2, inNumFeatures=k*2, convRadius= 0.8)
         self.conv3 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_3", inPointLevel=2, outPointLevel=3, inNumFeatures=k*4, convRadius=math.sqrt(3.0)+0.1)
         
@@ -55,7 +55,7 @@ class MCClassS(nn.Module):
         ############################################ Compute point hierarchy
         # Initialize PointHierarchy
         ############################################ Compute point hierarchy
-        mPointHierarchy = PointHierarchy(points, features, batch_ids, [0.1, 0.4, math.sqrt(3.0)+0.1], "MCClassS_PH", batchSize)
+        mPointHierarchy = PointHierarchy(points, features, batch_ids, [0.1, 0.4, math.sqrt(3.0)+0.1], "MCClassS_PH", self.batch_size)
 
         ############################################ Convolutions
         # Convolution 1

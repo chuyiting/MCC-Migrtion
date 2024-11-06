@@ -132,7 +132,7 @@ if __name__ == '__main__':
     # Load the model
     model_class = model_map[args.model]
     model = model_class(numInputFeatures=num_input_features, k=k, numOutCat=num_out_cat, 
-                                  batchSize=batch_size, keepProbConv=args.dropOutKeepProbConv, keepProbFull=args.dropOutKeepProb, 
+                                  batch_size=batch_size, keepProbConv=args.dropOutKeepProbConv, keepProbFull=args.dropOutKeepProb, 
                                   useConvDropOut=args.useDropOutConv, useDropOutFull=args.useDropOut)
 
     # TODO add learning rate decay per batch
