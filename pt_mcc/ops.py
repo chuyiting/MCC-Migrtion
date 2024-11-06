@@ -282,10 +282,6 @@ def _(in_points, in_features, batch_ids, in_pdfs, in_samples, start_index, packe
     num_samples = in_samples.shape[0]
     return torch.empty({num_samples, num_out_features})
 
-@torch.library.register_fake("pt_mcc::get_block_size")
-def _():
-    return 8
-
 def _backward(ctx, grad):
     a, b = ctx.saved_tensors
     grad_a, grad_b = None, None
