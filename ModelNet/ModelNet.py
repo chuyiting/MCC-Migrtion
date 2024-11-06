@@ -125,7 +125,7 @@ if __name__ == '__main__':
     
     #Create the network
     num_input_features = 1
-    batch_size = args.batch_size
+    batch_size = args.batchSize
     k = args.grow
     num_out_cat = len(categories)
 
