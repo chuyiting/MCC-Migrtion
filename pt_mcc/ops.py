@@ -53,7 +53,7 @@ def _setup_sort_points_step2_context(ctx, inputs, output):
     ctx.save_for_backward(saved_new_indices)
 
 def _sort_points_step2_backward(ctx, grad):
-    new_indices = ctx.saved_tensors
+    new_indices = ctx.saved_tensors[0]
     ptsGrad, inFeatureGrad = torch.ops.pt_mcc.sort_points_step2_grad(new_indices, grad[0], grad[2])
     
     return ptsGrad, None, inFeatureGrad, None, None, None, None, None, None, None
@@ -69,7 +69,7 @@ def _setup_sort_features_context(ctx, inputs, output):
     ctx.save_for_backward(saved_features)
 
 def _sort_features_backward(ctx, grad):
-    features = ctx.saved_tensors
+    features = ctx.saved_tensors[0]
     grad_indices = None
     if ctx.needs_input_grad[1]:
         grad_indices = torch.ops.pt_mcc.sort_features_back(grad, features)
@@ -84,11 +84,10 @@ def _setup_sort_features_back_context(ctx, inputs, output):
     saved_indices = None
     if ctx.needs_input_grad[0]:
         saved_indices = indices
-    print(saved_indices)
     ctx.save_for_backward(saved_indices)
 
 def _sort_features_back_backward(ctx, grad):
-    indices = ctx.saved_tensors
+    indices = ctx.saved_tensors[0]
     grad_features = None
     if ctx.needs_input_grad[0]:
         grad_features = torch.ops.pt_mcc.sort_features_back_grad(indices, grad)
