@@ -117,6 +117,7 @@ class PointHierarchy:
             transformedIndexs = transform_indices(sampledIndexs, indexs)
 
             # Save the resulting point cloud.
+            print(f'sample points device: {sampledPts.device}')
             self.points_.append(sampledPts)
             self.batchIds_.append(sampledBatchsIds)
             self.features_.append(sampledFeatures)
@@ -397,11 +398,13 @@ class ConvolutionBuilder (nn.Module):
 
         
         print(f'in points shape: {currGridTuple[0].shape}')
-        print(f'in points device: {currGridTuple[0].device}')
         print(f'in features shape: {sortFeatures.shape}')
+        print(f'sample points: {currOutPointHierarchy.points_[currOutPointLevel].shape}')
+        print(f'in points device: {currGridTuple[0].device}')
+        print(f'in features device: {sortFeatures.device}')
         print(f'curr neighs device: {currNeighTuple[1].device}')
         print(f'aabb device: {inPointHierarchy.aabbMin_.device}')
-        print(f'sample points: {currOutPointHierarchy.points_[currOutPointLevel].shape}')
+        print(f'sample points: {currOutPointHierarchy.points_[currOutPointLevel].device}')
        
         points = currGridTuple[0].cuda()
         batch_ids = currGridTuple[1].cuda()
