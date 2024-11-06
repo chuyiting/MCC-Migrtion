@@ -62,19 +62,19 @@ def sort_features(features, indices):
     return torch.ops.pt_mcc.sort_features(features, indices)
 
 def _setup_sort_features_context(ctx, inputs, output):
-    features, _ = inputs
-    saved_features = None
+    _, indices = inputs
+    saved_indices = None
     if ctx.needs_input_grad[0]:
-        saved_features = features
-    ctx.save_for_backward(saved_features)
+        saved_indices = indices
+    ctx.save_for_backward(saved_indices)
 
 def _sort_features_backward(ctx, grad):
-    features = ctx.saved_tensors[0]
-    grad_indices = None
+    indices = ctx.saved_tensors[0]
+    grad_features = None
     if ctx.needs_input_grad[0]:
-        grad_indices = torch.ops.pt_mcc.sort_features_back(grad, features)
+        grad_features = torch.ops.pt_mcc.sort_features_back(grad, indices)
     
-    return grad_indices, None
+    return grad_features, None
 
 def sort_features_back(features, indices):
     return torch.ops.pt_mcc.sort_features_back(features, indices)

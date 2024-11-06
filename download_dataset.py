@@ -11,7 +11,4 @@ os.makedirs(target_directory, exist_ok=True)
 path = kagglehub.dataset_download("chenxaoyu/modelnet-normal-resampled")
 
 # Move the downloaded files to the target directory
-import shutil
-shutil.move(path, os.path.join(target_directory, "modelnet-normal-resampled"))
-
-print("Dataset saved at:", os.path.join(target_directory, "modelnet-normal-resampled"))
+os.rename(path, target_directory)
