@@ -223,7 +223,7 @@ class ConvolutionBuilder (nn.Module):
 
         numBlocks = (numOutNeurons + blockSize - 1) // blockSize  # Equivalent to ceil(numOutNeurons / blockSize)
 
-        print("Convolution: "+str(convName)+" (KDE: "+str(self.KDEWindow)+" | MF: "+str(self.multiFeatureConvs_)+
+        print("Convolution: "+str(convName)+" (KDE: "+str(self.KDEWindow_)+" | MF: "+str(self.multiFeatureConvs_)+
             " | Rel: "+str(self.relativeRadius_)+" | PDF: "+str(self.usePDF_)+")")
         print("    In points: "+str(self.inPointLevel))
         print("    Out points: "+str(self.outPointLevel))
