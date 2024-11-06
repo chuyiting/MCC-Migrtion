@@ -397,9 +397,15 @@ class ConvolutionBuilder (nn.Module):
 
         
         print(f'in points shape: {currGridTuple[0].shape}')
+        print(f'in points device: {currGridTuple[0].device}')
         print(f'in features shape: {sortFeatures.shape}')
+        print(f'curr neighs device: {currNeighTuple[1].device}')
         print(f'sample points: {currOutPointHierarchy.points_[currOutPointLevel].shape}')
        
+        currGridTuple[0] = currGridTuple[0].cuda()
+        currGridTuple[1] = currGridTuple[1].cuda()
+        currNeighTuple[0] = currNeighTuple[0].cuda()
+        currNeighTuple[1] = currNeighTuple[1].cuda()
         return spatial_conv(currGridTuple[0], sortFeatures, currGridTuple[1], 
             currPDFs, currOutPointHierarchy.points_[currOutPointLevel], 
             currNeighTuple[0], currNeighTuple[1], 
