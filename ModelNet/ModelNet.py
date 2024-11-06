@@ -117,11 +117,11 @@ if __name__ == '__main__':
     else:
         allowedSamplingsTrain = [0]
         allowedSamplingsTest = [0]
-
+    print('start loading dataset')
     mTrainDataSet = ModelNetDataSet(True, args.nPoints, args.ptDropOut, maxStoredPoints, args.batchSize, allowedSamplingsTrain, args.augment)
     mTestDataSet = ModelNetDataSet(False, args.nPoints, 1.0, maxStoredPoints, 1, allowedSamplingsTest, False)
     categories = mTrainDataSet.get_categories()
-
+    print('finish loading dataset')
     
     #Create the network
     num_input_features = 1
@@ -142,6 +142,7 @@ if __name__ == '__main__':
 
     # Train model
     bestTestAccuracy = -1.0
+    print("start training...")
     for epoch in range(args.maxEpoch):
         startEpochTime = current_milli_time()
         startTrainTime = current_milli_time()
