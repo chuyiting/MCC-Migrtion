@@ -156,6 +156,9 @@ if __name__ == '__main__':
         while mTrainDataSet.has_more_batches():
             num_iter += 1
             _, points, batchIds, features, _, labels, _ = mTrainDataSet.get_next_batch()
+            points = torch.from_numpy(points).cuda()
+            batchIds = torch.from_numpy(batchIds).cuda()
+            features = torch.from_numpy(features).cuda()
             logits = model(points, batchIds, features)
             xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay)
             total_loss = xentropy_loss + reg_term
