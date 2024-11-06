@@ -218,6 +218,42 @@ if __name__ == "__main__":
     print(f'out features: {out_features}')
     print(f'out cell indices: {out_cell_indices}')
 
+    print('##################### Test sort_features_back #####################')
+    features = torch.tensor([[0, 0, 0],  # Features for point 0
+                            [1, 1, 1],  # Features for point 1
+                            [2, 2, 2],  # Features for point 2
+                            [3, 3, 3],# Features for point 3
+                            [4, 4, 4]], dtype=torch.float32).cuda()
+    num_points, num_features = features.shape
+    features.requires_grad_()
+    # Define new_indices that will sort the features in reverse order
+    new_indices = torch.tensor([4, 3, 2, 1, 0], dtype=torch.int32).cuda()
+
+    out_features = pt_mcc.ops.sort_features_back(features, new_indices)
+    print(out_features.cpu())
+
+    grad = torch.ones(num_points, num_features, dtype=torch.float).cuda()
+    out_features.backward(grad)
+    print(f'grad: {new_indices.grad}')
+
+    print('##################### Test sort_features #####################')
+    features = torch.tensor([[0, 0, 0],  # Features for point 0
+                            [1, 1, 1],  # Features for point 1
+                            [2, 2, 2],  # Features for point 2
+                            [3, 3, 3],# Features for point 3
+                            [4, 4, 4]], dtype=torch.float32).cuda()
+    num_points, num_features = features.shape
+    # Define new_indices that will sort the features in reverse order
+    new_indices = torch.tensor([4, 3, 2, 1, 0], dtype=torch.int32).cuda()
+    new_indices.requires_grad_()
+
+    out_features = pt_mcc.ops.sort_features(features, new_indices)
+    print(out_features.cpu())
+
+    grad = torch.ones(num_points, num_features, dtype=torch.float).cuda()
+    out_features.backward(grad)
+    print(f'grad: {features.grad}')
+
     print('##################### Test get_block_size #####################')
     block_size = pt_mcc.ops.get_block_size()
     print(block_size)
