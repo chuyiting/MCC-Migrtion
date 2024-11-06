@@ -326,7 +326,7 @@ class ConvolutionBuilder (nn.Module):
 
         # Determine the configuration used for the convolution.
         currMultiFeatureConv = self.multiFeatureConvs_
-        currNumOutFeatures = self.inNumFeatures
+        currNumOutFeatures = self.outNumFeatures
         currKDEWindow = self.KDEWindow_
         currRelativeRadius = self.relativeRadius_
         currUsePDF = self.usePDF_
