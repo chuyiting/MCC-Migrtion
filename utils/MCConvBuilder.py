@@ -361,11 +361,25 @@ class ConvolutionBuilder (nn.Module):
                 inPointHierarchy.batchIds_[self.inPointLevel], inPointHierarchy.aabbMin_, 
                 inPointHierarchy.aabbMax_, inPointHierarchy.batchSize_, 
                 self.convRadius, currRelativeRadius)
+            keys2, indexs2 = sort_points_step1(inPointHierarchy.points_[self.inPointLevel], 
+                inPointHierarchy.batchIds_[self.inPointLevel], inPointHierarchy.aabbMin_, 
+                inPointHierarchy.aabbMax_, inPointHierarchy.batchSize_, 
+                self.convRadius, currRelativeRadius)
+            if not torch.allclose(keys, keys2) or not torch.allclose(indexs, indexs2):
+                print('sort points step 1 is not stable')
+
             sortPts, sortBatchs, sortFeatures, cellIndexs = sort_points_step2(
                 inPointHierarchy.points_[self.inPointLevel], 
                 inPointHierarchy.batchIds_[self.inPointLevel], inFeatures, keys, indexs, 
                 inPointHierarchy.aabbMin_, inPointHierarchy.aabbMax_, 
                 inPointHierarchy.batchSize_, self.convRadius, currRelativeRadius)
+            sortPts2, sortBatchs2, sortFeatures2, cellIndexs2 = sort_points_step2(
+                inPointHierarchy.points_[self.inPointLevel], 
+                inPointHierarchy.batchIds_[self.inPointLevel], inFeatures, keys, indexs, 
+                inPointHierarchy.aabbMin_, inPointHierarchy.aabbMax_, 
+                inPointHierarchy.batchSize_, self.convRadius, currRelativeRadius)
+            if not torch.allclose(sortPts, sortPts2) or not torch.allclose(sortBatchs, sortBatchs2) or not torch.allclose(sortFeatures, sortFeatures2):
+                print('sort points step 1 is not stable')
             currGridTuple = (sortPts, sortBatchs, cellIndexs, indexs)
             #self.cacheGrids_[keyGrid] = currGridTuple
 
@@ -380,6 +394,14 @@ class ConvolutionBuilder (nn.Module):
                 currGridTuple[0], currGridTuple[2], inPointHierarchy.aabbMin_, 
                 inPointHierarchy.aabbMax_, self.convRadius, inPointHierarchy.batchSize_, 
                 currRelativeRadius)
+            startIndexs2, packedNeighs2 = find_neighbors(
+                currOutPointHierarchy.points_[currOutPointLevel], 
+                currOutPointHierarchy.batchIds_[currOutPointLevel], 
+                currGridTuple[0], currGridTuple[2], inPointHierarchy.aabbMin_, 
+                inPointHierarchy.aabbMax_, self.convRadius, inPointHierarchy.batchSize_, 
+                currRelativeRadius)
+            if not torch.allclose(startIndexs, startIndexs2) or not torch.allclose(packedNeighs, packedNeighs2):
+                print('find neighbor is not stable')
             currNeighTuple = (startIndexs, packedNeighs)
             #self.cacheNeighs_[keyNeighs] = currNeighTuple
 
@@ -406,9 +428,18 @@ class ConvolutionBuilder (nn.Module):
         scale_inv = torch.tensor(currRelativeRadius, dtype=torch.bool).to(device=device)
         avg = torch.tensor(currUseAVG, dtype=torch.bool).to(device=device)
        
-        return spatial_conv(currGridTuple[0], sortFeatures, currGridTuple[1], 
+        conv1 = spatial_conv(currGridTuple[0], sortFeatures, currGridTuple[1], 
             currPDFs, currOutPointHierarchy.points_[currOutPointLevel], 
             currNeighTuple[0], currNeighTuple[1], 
             inPointHierarchy.aabbMin_, inPointHierarchy.aabbMax_, 
             self.weights, self.weights2, self.weights3, self.biases, self.biases2, self.biases3, 
             num_out_features, combin, batch_size, radius, scale_inv, avg)
+        conv2 = spatial_conv(currGridTuple[0], sortFeatures, currGridTuple[1], 
+            currPDFs, currOutPointHierarchy.points_[currOutPointLevel], 
+            currNeighTuple[0], currNeighTuple[1], 
+            inPointHierarchy.aabbMin_, inPointHierarchy.aabbMax_, 
+            self.weights, self.weights2, self.weights3, self.biases, self.biases2, self.biases3, 
+            num_out_features, combin, batch_size, radius, scale_inv, avg)
+        if not torch.allclose(conv1, conv2):
+            print('convolution is not stable')
+        return conv1
