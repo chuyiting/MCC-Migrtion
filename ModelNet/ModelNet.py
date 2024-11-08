@@ -36,7 +36,7 @@ def create_accuracy(logits, labels):
     return accuracy
 
 def load_weights(model, log_folder):
-    model.load_state_dict(torch.load(os.path.join(log_folder, 'best_model.pth')), weights_only=True)
+    model.load_state_dict(torch.load(os.path.join(log_folder, 'best_model.pth'), weights_only=True))
 
 model_map = {
     'MCClassS' : MCClassS
