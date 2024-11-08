@@ -186,14 +186,15 @@ if __name__ == '__main__':
     for param_group in optimizer.param_groups:
         param_group['lr'] = max(param_group['lr'], args.maxLearningRate)
 
+    start_epoch = 0
     if args.use_pretrain:
         print('use pretrained weights....')
-        model, optimizer, ep = load_weights(model, optimizer)
+        model, optimizer, start_epoch = load_weights(model, optimizer)
 
     # Train model
     bestTestAccuracy = -1.0
     print("start training...")
-    for epoch in range(ep, args.maxEpoch):
+    for epoch in range(start_epoch, args.maxEpoch):
         startEpochTime = current_milli_time()
         startTrainTime = current_milli_time()
 
