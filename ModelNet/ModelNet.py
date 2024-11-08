@@ -201,12 +201,12 @@ if __name__ == '__main__':
         while mTrainDataSet.has_more_batches():
             num_iter += 1
             _, points, batchIds, features, _, labels, _ = mTrainDataSet.get_next_batch()
-            if num_iter == 1:
-                check_deterministic_outputs(model, points, batchIds, features)
             points = torch.from_numpy(points).float().cuda()
             batchIds = torch.from_numpy(batchIds).int().cuda()
             features = torch.from_numpy(features).float().cuda()
             labels = torch.from_numpy(labels).long().cuda()
+            if num_iter == 1:
+                check_deterministic_outputs(model, points, batchIds, features)
             logits = model(points, batchIds, features)
             xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay, model)
             total_loss = xentropy_loss + reg_term
