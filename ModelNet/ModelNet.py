@@ -38,6 +38,29 @@ def create_accuracy(logits, labels):
 def load_weights(model, log_folder):
     model.load_state_dict(torch.load(os.path.join(log_folder, 'best_model.pth'), weights_only=True))
 
+def compare_running_vs_batch_stats(model, points, batchIds, feature):
+    model.eval()  # Ensure the model is in evaluation mode
+    with torch.no_grad():
+        print("Evaluation Mode - Using Running Statistics:")
+        _ = model(points, batchIds, feature)  # Forward pass in eval mode to use running stats
+        print_batchnorm_stats(model, mode="Running")
+
+    model.train()  # Temporarily switch to train mode to get batch stats on test data
+    with torch.no_grad():
+        print("\nTrain Mode on Test Data - Using Batch Statistics:")
+        _ = model(points, batchIds, feature)  # Forward pass in train mode to capture batch statistics
+        print_batchnorm_stats(model, mode="Batch")
+
+def print_batchnorm_stats(model, mode="Running"):
+    for name, layer in model.named_modules():
+        if isinstance(layer, nn.BatchNorm1d):
+            print(f"Layer: {name} - {mode} statistics")
+            if mode == "Running":
+                print(f"  Running mean: {layer.running_mean}")
+                print(f"  Running variance: {layer.running_var}")
+            elif mode == "Batch":
+                print(f"  Batch mean: {layer.running_mean}")
+                print(f"  Batch variance: {layer.running_var}")
 model_map = {
     'MCClassS' : MCClassS
 }
@@ -188,7 +211,7 @@ if __name__ == '__main__':
         
         # Check on test data for early stopping
         if (epoch) % 10 == 0:
-            # model.eval()
+            model.eval()
             test_loss = 0.0
             test_accuracy = 0.0
             mTestDataSet.start_iteration()
@@ -201,6 +224,7 @@ if __name__ == '__main__':
                     batchIds = torch.from_numpy(batchIds).int().cuda()
                     features = torch.from_numpy(features).float().cuda()
                     labels = torch.from_numpy(labels).long().cuda()
+                    compare_running_vs_batch_stats(model, points, batchIds, features)
                     logits = model(points, batchIds, features)
                     xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay, model)
                     total_loss = xentropy_loss + reg_term
