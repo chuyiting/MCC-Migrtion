@@ -362,8 +362,17 @@ if __name__ == "__main__":
         num_out_features_tensor, combin_tensor, batch_size_tensor, radius_tensor,
         scale_inv_tensor, avg_tensor
     )
-
+    output1 = pt_mcc.ops.spatial_conv(
+        in_points, in_features, batch_ids, in_pdfs,
+        in_samples, start_index, packed_neigh, in_aabb_min,
+        in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out,
+        in_bias_hidd1, in_bias_hidd2, in_bias_out,
+        num_out_features_tensor, combin_tensor, batch_size_tensor, radius_tensor,
+        scale_inv_tensor, avg_tensor
+    )
+    
     print("Output shape:", output.shape)  # Expected shape: (num_samples, num_out_features)
     print("Output:", output)
+    print(f'stable output: {torch.allclose(output1, output)}')
 
     unittest.main()
