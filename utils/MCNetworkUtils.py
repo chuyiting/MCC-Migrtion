@@ -27,11 +27,11 @@ class MLP2Hidden(nn.Module):
         self.use_dropout = use_dropout
 
         # Initialize layers
-        # self.bn_init = nn.BatchNorm1d(num_input_features) if use_init_bn else None
+        self.bn_init = nn.BatchNorm1d(num_input_features) if use_init_bn else None
         self.fc1 = nn.Linear(num_input_features, hidden1_units)
-        # self.bn1 = nn.BatchNorm1d(hidden1_units)
+        self.bn1 = nn.BatchNorm1d(hidden1_units)
         self.fc2 = nn.Linear(hidden1_units, hidden2_units)
-        # self.bn2 = nn.BatchNorm1d(hidden2_units)
+        self.bn2 = nn.BatchNorm1d(hidden2_units)
         self.fc3 = nn.Linear(hidden2_units, num_out_features)
 
         # Dropout layer
@@ -40,19 +40,19 @@ class MLP2Hidden(nn.Module):
             self.dropout2 = nn.Dropout(p=1 - keep_prob) 
 
     def forward(self, features):
-        # if self.use_init_bn:
-        #     features = self.bn_init(features)
+        if self.use_init_bn:
+            features = self.bn_init(features)
 
         # Hidden layer 1
         x = self.fc1(features)
-        # x = self.bn1(x)
+        x = self.bn1(x)
         x = F.relu(x)
 
         # Hidden layer 2
         if self.use_dropout:
             x = self.dropout(x) 
         x = self.fc2(x)
-        # x = self.bn2(x)
+        x = self.bn2(x)
         x = F.relu(x)
 
         # Output layer
@@ -155,7 +155,7 @@ class BatchNormReLUDropout(nn.Module):
             keep_prob (float): Probability of keeping a unit during dropout.
         """
         super().__init__()
-        # self.batch_norm = nn.BatchNorm1d(in_features)
+        self.batch_norm = nn.BatchNorm1d(in_features)
         self.relu = nn.ReLU()
         self.use_dropout = use_dropout
         self.dropout = nn.Dropout(p=1 - keep_prob) if use_dropout else None
@@ -171,7 +171,7 @@ class BatchNormReLUDropout(nn.Module):
         Returns:
             torch.Tensor: Output features after BatchNorm, ReLU, and optional Dropout.
         """
-        # x = self.batch_norm(x)
+        x = self.batch_norm(x)
         x = self.relu(x)
         if self.use_dropout:
             x = self.dropout(x)
