@@ -170,7 +170,7 @@ if __name__ == "__main__":
     out_pts, out_batchs, out_indices = pt_mcc.ops.poisson_sampling(pts, batch_ids, cell_indices, aabb_min, aabb_max, radius, batch_size, scale_inv)
     out_pts1, out_batchs1, out_indice1= pt_mcc.ops.poisson_sampling(pts, batch_ids, cell_indices, aabb_min, aabb_max, radius, batch_size, scale_inv)
     print(f'stable output: {torch.allclose(out_pts, out_pts1)}  {torch.allclose(out_batchs1, out_batchs)} {torch.allclose(out_indices, out_indice1)}')
-
+    
     print('##################### Test get_sampled_features(pts_indices, features) #####################')
     pts_indices = torch.tensor([0, 3], dtype=torch.int).cuda()
     features = torch.tensor([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [2.0, 2.0, 2.0], [3.0, 3.0, 3.0]], dtype=torch.float32).cuda()

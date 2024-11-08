@@ -127,6 +127,7 @@ class PointHierarchy:
             currPts = sampledPts
             currBatchIds = sampledBatchsIds
             currFeatures = sampledFeatures
+            
 
         # print("")
 

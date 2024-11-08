@@ -36,6 +36,7 @@ class MLP2Hidden(nn.Module):
 
         # Dropout layer
         self.dropout = nn.Dropout(p=1 - keep_prob) if use_dropout else None
+        self.dropout2 = nn.Dropout(p=1 - keep_prob) if use_dropout else None
 
     def forward(self, features):
         if self.use_init_bn:
@@ -55,7 +56,7 @@ class MLP2Hidden(nn.Module):
 
         # Output layer
         if self.use_dropout:
-            x = self.dropout(x) 
+            x = self.dropout2(x) 
         x = self.fc3(x)
 
         return x
