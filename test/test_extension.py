@@ -265,7 +265,7 @@ if __name__ == "__main__":
     block_size = pt_mcc.ops.get_block_size()
     print(block_size)
 
-    print('##################### Test cpmv #####################')
+    print('##################### Test conv #####################')
 
     # Mock data (smaller sizes for easier debugging)
     num_points = 4
@@ -307,22 +307,43 @@ if __name__ == "__main__":
     in_aabb_max = torch.tensor([[1.0, 1.0, 1.0],
                                 [1.5, 1.5, 1.5]], device='cuda', dtype=torch.float32)
 
-    # Weights and biases for MLP layers
-    in_weights_hidd1 = torch.tensor([[0.1, 0.2],
-                                    [0.3, 0.4],
-                                    [0.5, 0.6]], device='cuda', dtype=torch.float32)
+    # First hidden layer weights and bias
+    # Shape (3, 8) for weights to satisfy in_weights_hidd1.size(1) % BLOCK_MLP_SIZE == 0 and in_weights_hidd1.size(1) == in_bias_hidd1.size(0)
+    in_weights_hidd1 = torch.tensor([[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+                                    [0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6],
+                                    [1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4]], 
+                                    device='cuda', dtype=torch.float32)
 
-    in_bias_hidd1 = torch.tensor([0.1, 0.2], device='cuda', dtype=torch.float32)
+    in_bias_hidd1 = torch.tensor([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8], device='cuda', dtype=torch.float32)
 
-    in_weights_hidd2 = torch.tensor([[0.2, 0.3],
-                                    [0.4, 0.5]], device='cuda', dtype=torch.float32)
+    # Second hidden layer weights and bias
+    # Shape (8, 8) for weights to satisfy in_weights_hidd2.size(0) == BLOCK_MLP_SIZE and matching in_weights_hidd1.size(1)
+    in_weights_hidd2 = torch.tensor([[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+                                    [0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6],
+                                    [1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4],
+                                    [2.5, 2.6, 2.7, 2.8, 2.9, 3.0, 3.1, 3.2],
+                                    [3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4.0],
+                                    [4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8],
+                                    [4.9, 5.0, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6],
+                                    [5.7, 5.8, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4]], 
+                                    device='cuda', dtype=torch.float32)
 
-    in_bias_hidd2 = torch.tensor([0.1, 0.2], device='cuda', dtype=torch.float32)
+    in_bias_hidd2 = torch.tensor([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8], device='cuda', dtype=torch.float32)
 
-    in_weights_out = torch.tensor([[0.3, 0.4],
-                                [0.5, 0.6]], device='cuda', dtype=torch.float32)
+    # Output layer weights and bias
+    # Shape (8, 8) for weights to match BLOCK_MLP_SIZE and also ensure compatibility with in_weights_hidd2 size
+    in_weights_out = torch.tensor([[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+                                [0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6],
+                                [1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4],
+                                [2.5, 2.6, 2.7, 2.8, 2.9, 3.0, 3.1, 3.2],
+                                [3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4.0],
+                                [4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8],
+                                [4.9, 5.0, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6],
+                                [5.7, 5.8, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4]], 
+                                device='cuda', dtype=torch.float32)
 
-    in_bias_out = torch.tensor([0.1, 0.2], device='cuda', dtype=torch.float32)
+    in_bias_out = torch.tensor([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8], device='cuda', dtype=torch.float32)
+
 
     # Scalar tensors
     num_out_features_tensor = torch.tensor(num_out_features, device='cuda', dtype=torch.int64)
