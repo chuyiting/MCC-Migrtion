@@ -35,8 +35,12 @@ def create_accuracy(logits, labels):
     accuracy = correct / labels.size(0)
     return accuracy
 
-def load_weights(model, log_folder):
-    model.load_state_dict(torch.load(os.path.join(log_folder, 'best_model.pth'), weights_only=True))
+def load_weights(model, optimizer):
+    checkpoint = torch.load('checkpoint.pth')
+    model.load_state_dict(checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    epoch = checkpoint['epoch']
+    return model, optimizer, epoch
 
 def compare_running_vs_batch_stats(model, points, batchIds, feature):
     model.eval()  # Ensure the model is in evaluation mode
@@ -176,20 +180,20 @@ if __name__ == '__main__':
                                   batch_size=batch_size, keepProbConv=args.dropOutKeepProbConv, keepProbFull=args.dropOutKeepProb, 
                                   useConvDropOut=args.useDropOutConv, useDropOutFull=args.useDropOut).to(device)
 
-    if args.use_pretrain:
-        print('use pretrained weights....')
-        load_weights(model, args.logFolder)
-
     # TODO add learning rate decay per batch
     optimizer = optim.Adam(model.parameters(), lr=args.initLearningRate)
     lr_scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=args.learningDecayFactor)
     for param_group in optimizer.param_groups:
         param_group['lr'] = max(param_group['lr'], args.maxLearningRate)
 
+    if args.use_pretrain:
+        print('use pretrained weights....')
+        model, optimizer, ep = load_weights(model, optimizer)
+
     # Train model
     bestTestAccuracy = -1.0
     print("start training...")
-    for epoch in range(args.maxEpoch):
+    for epoch in range(ep, args.maxEpoch):
         startEpochTime = current_milli_time()
         startTrainTime = current_milli_time()
 
@@ -251,7 +255,14 @@ if __name__ == '__main__':
                
             test_accuracy /= num_iter
             print(f"Test Accuracy: {test_accuracy:.4f}")
-            torch.save(model.state_dict(), os.path.join(args.logFolder, 'best_model.pth'))
+
+            checkpoint = {
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict()
+            }   
+            torch.save(checkpoint, 'checkpoint.pth')
+            print('saving model weights')
 
         if epoch % args.learningDecayRate == 0:
             lr_scheduler.step()

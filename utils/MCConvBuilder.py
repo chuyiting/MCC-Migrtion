@@ -361,15 +361,6 @@ class ConvolutionBuilder (nn.Module):
                 inPointHierarchy.batchIds_[self.inPointLevel], inPointHierarchy.aabbMin_, 
                 inPointHierarchy.aabbMax_, inPointHierarchy.batchSize_, 
                 self.convRadius, currRelativeRadius)
-            keys2, indexs2 = sort_points_step1(inPointHierarchy.points_[self.inPointLevel], 
-                inPointHierarchy.batchIds_[self.inPointLevel], inPointHierarchy.aabbMin_, 
-                inPointHierarchy.aabbMax_, inPointHierarchy.batchSize_, 
-                self.convRadius, currRelativeRadius)
-            if not torch.allclose(keys, keys2) :
-                print('keys are not stable')
-
-            if not torch.allclose(indexs, indexs2):
-                print('indexs are not stable')
 
             sortPts, sortBatchs, sortFeatures, cellIndexs = sort_points_step2(
                 inPointHierarchy.points_[self.inPointLevel], 
