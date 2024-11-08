@@ -132,7 +132,7 @@ if __name__ == "__main__":
         [0, 1], [3, 1],  # Neighbors for point 1
         [0, 2], [3, 2],  # Neighbors for point 2
         [1, 3], [2, 3]   # Neighbors for point 3
-    ]).cuda()
+    ]).int().cuda()
 
     # Set other parameters
     window = 1.0
