@@ -283,10 +283,10 @@ if __name__ == "__main__":
                             [0.7, 0.8, 0.9],
                             [1.0, 1.1, 1.2]], device='cuda', dtype=torch.float32)
 
-    in_features = torch.tensor([[1.0, 1.0, 1.0],
-                                [0.9, 0.8, 0.7],
-                                [0.6, 0.5, 0.4],
-                                [0.3, 0.2, 0.1]], device='cuda', dtype=torch.float32)
+    in_features = torch.tensor([[1.0, 1.0],
+                                [0.9, 0.8],
+                                [0.6, 0.5],
+                                [0.3, 0.2]], device='cuda', dtype=torch.float32)
 
     batch_ids = torch.tensor([[0], [1], [0], [1]], device='cuda', dtype=torch.int32)
 
