@@ -204,7 +204,6 @@ if __name__ == '__main__':
         mTrainDataSet.start_iteration()
         num_iter = 0
         while mTrainDataSet.has_more_batches():
-            num_iter += 1
             _, points, batchIds, features, _, labels, _ = mTrainDataSet.get_next_batch()
             points = torch.from_numpy(points).float().cuda()
             batchIds = torch.from_numpy(batchIds).int().cuda()
@@ -222,6 +221,7 @@ if __name__ == '__main__':
             total_accuracy += accuracy
             if num_iter % 50 == 0:
                 print(f"B [{num_iter}], Loss: {total_loss.item():.4f}, Accuracy: {accuracy:.4f}")
+            num_iter += 1
         
         endEpochTime = current_milli_time()   
         running_loss /= num_iter
