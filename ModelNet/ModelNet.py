@@ -66,7 +66,16 @@ def check_deterministic_outputs(model, points, batchIds, feature):
     model.eval()  # Set to evaluation mode
     with torch.no_grad():
         # Run two forward passes
+        points_original = points
+        batchIds_original = batchIds
+        feature_original = feature
         output1 = model(points, batchIds, feature)
+        if not torch.allclose(points_original, points):
+            print('points have been changed')
+        if not torch.allclose(batchIds_original, batchIds):
+            print('batchIds have been changed')
+        if not torch.allclose(feature_original, feature):
+            print('feature have been changed')
         output2 = model(points, batchIds, feature)
         # Check if outputs are identical
         if torch.allclose(output1, output2):
