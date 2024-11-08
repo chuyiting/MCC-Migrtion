@@ -60,6 +60,7 @@ class MCClassS(nn.Module):
         ############################################ Convolutions
         # Convolution 1
         convFeatures1 = self.conv1(mPointHierarchy, features)
+        print(f'conv shape: {convFeatures1.shape}')
 
         # BatchNorm + ReLU + Dropout + Conv1x1 for Convolution 1
         convFeatures1 = self.bn_relu_dropout1(convFeatures1)

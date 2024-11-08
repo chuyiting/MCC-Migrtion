@@ -12,9 +12,11 @@ import shutil
 path = kagglehub.dataset_download("chenxaoyu/modelnet-normal-resampled")
 
 # Move the downloaded files to the target directory
-destination_dir = os.path.expanduser("data")
+items = os.listdir(path)
+folder = os.path.join(path, items[0])
 
 # Move the downloaded folder to the new location and rename it to 'data'
-shutil.move(path, destination_dir)
+current_directory = os.getcwd()
+shutil.move(folder, current_directory)
+os.rename(os.path.join(current_directory, os.path.basename(folder)), os.path.join(current_directory, 'data'))
 
-print(f"Dataset moved and renamed to {destination_dir}")
