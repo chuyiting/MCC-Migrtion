@@ -201,6 +201,8 @@ if __name__ == '__main__':
         while mTrainDataSet.has_more_batches():
             num_iter += 1
             _, points, batchIds, features, _, labels, _ = mTrainDataSet.get_next_batch()
+            if num_iter == 1:
+                check_deterministic_outputs(model, points, batchIds, features)
             points = torch.from_numpy(points).float().cuda()
             batchIds = torch.from_numpy(batchIds).int().cuda()
             features = torch.from_numpy(features).float().cuda()
@@ -216,7 +218,6 @@ if __name__ == '__main__':
             accuracy = create_accuracy(logits, labels)
             total_accuracy += accuracy
             if num_iter % 50 == 0:
-                check_deterministic_outputs(model, points, batchIds, features)
                 print(f"B [{num_iter}], Loss: {total_loss.item():.4f}, Accuracy: {accuracy:.4f}")
         
         endEpochTime = current_milli_time()   
