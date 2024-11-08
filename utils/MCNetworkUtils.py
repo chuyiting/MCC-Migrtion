@@ -155,7 +155,7 @@ class BatchNormReLUDropout(nn.Module):
             keep_prob (float): Probability of keeping a unit during dropout.
         """
         super().__init__()
-        self.batch_norm = nn.BatchNorm1d(in_features)
+        # self.batch_norm = nn.BatchNorm1d(in_features)
         self.relu = nn.ReLU()
         self.use_dropout = use_dropout
         self.dropout = nn.Dropout(p=1 - keep_prob) if use_dropout else None
@@ -171,7 +171,7 @@ class BatchNormReLUDropout(nn.Module):
         Returns:
             torch.Tensor: Output features after BatchNorm, ReLU, and optional Dropout.
         """
-        x = self.batch_norm(x)
+        # x = self.batch_norm(x)
         x = self.relu(x)
         if self.use_dropout:
             x = self.dropout(x)
