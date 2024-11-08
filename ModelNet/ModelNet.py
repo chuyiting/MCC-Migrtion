@@ -122,7 +122,7 @@ if __name__ == '__main__':
         allowedSamplingsTest = [0]
     print('start loading dataset')
     mTrainDataSet = ModelNetDataSet(True, args.nPoints, args.ptDropOut, maxStoredPoints, args.batchSize, allowedSamplingsTrain, args.augment)
-    mTestDataSet = ModelNetDataSet(False, args.nPoints, 1.0, maxStoredPoints, 32, allowedSamplingsTest, False)
+    mTestDataSet = ModelNetDataSet(False, args.nPoints, 1.0, maxStoredPoints, args.batchSize, allowedSamplingsTest, False)
     categories = mTrainDataSet.get_categories()
     print('finish loading dataset')
     
@@ -159,11 +159,11 @@ if __name__ == '__main__':
         model.train()
         running_loss = 0.0
         total_accuracy = 0.0
-        mTestDataSet.start_iteration()
+        mTrainDataSet.start_iteration()
         num_iter = 0
-        while mTestDataSet.has_more_batches():
+        while mTrainDataSet.has_more_batches():
             num_iter += 1
-            _, points, batchIds, features, _, labels, _ = mTestDataSet.get_next_batch()
+            _, points, batchIds, features, _, labels, _ = mTrainDataSet.get_next_batch()
             points = torch.from_numpy(points).float().cuda()
             batchIds = torch.from_numpy(batchIds).int().cuda()
             features = torch.from_numpy(features).float().cuda()
@@ -187,7 +187,7 @@ if __name__ == '__main__':
         print(f"Epoch [{epoch + 1}/{args.maxEpoch}], Loss: {running_loss:.4f}, Accuracy: {total_accuracy:.4f}, Training time: {((endEpochTime-startEpochTime)/1000.0):.2f}")
         
         # Check on test data for early stopping
-        if (epoch+1) % 10 == 0:
+        if (epoch) % 10 == 0:
             model.eval()
             test_loss = 0.0
             test_accuracy = 0.0
@@ -202,7 +202,7 @@ if __name__ == '__main__':
                     features = torch.from_numpy(features).float().cuda()
                     labels = torch.from_numpy(labels).long().cuda()
                     logits = model(points, batchIds, features)
-                    xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay, model)
+                    xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay)
                     total_loss = xentropy_loss + reg_term
                     test_loss += total_loss.item()
 
