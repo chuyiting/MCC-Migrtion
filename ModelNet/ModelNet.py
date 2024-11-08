@@ -64,7 +64,7 @@ if __name__ == '__main__':
     parser.add_argument('--nonunif', action='store_true', help='Train on non-uniform (default: False)')
     parser.add_argument('--gpu', default='0', help='GPU (default: 0)')
     parser.add_argument('--gpuMem', default=0.5, type=float, help='GPU memory used (default: 0.5)')
-    parser.add_argument('--use_pretrain', default=False, action='store_true', type=bool, help='whether to use pretrain weights')
+    parser.add_argument('--use_pretrain', default=False, action='store_true', help='whether to use pretrain weights')
     args = parser.parse_args()
 
     if not os.path.exists(args.logFolder): os.mkdir(args.logFolder)
