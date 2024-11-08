@@ -265,4 +265,84 @@ if __name__ == "__main__":
     block_size = pt_mcc.ops.get_block_size()
     print(block_size)
 
+    print('##################### Test cpmv #####################')
+
+    # Mock data (smaller sizes for easier debugging)
+    num_points = 4
+    num_neighs = 3
+    num_samples = 2
+    num_out_features = 2
+    num_in_features = 3
+    batch_size = 2
+    radius = 1.0
+    block_mlp_size = 2  # Matches size of hidden layers
+
+    # Input tensors
+    in_points = torch.tensor([[0.1, 0.2, 0.3],
+                            [0.4, 0.5, 0.6],
+                            [0.7, 0.8, 0.9],
+                            [1.0, 1.1, 1.2]], device='cuda', dtype=torch.float32)
+
+    in_features = torch.tensor([[1.0, 1.0, 1.0],
+                                [0.9, 0.8, 0.7],
+                                [0.6, 0.5, 0.4],
+                                [0.3, 0.2, 0.1]], device='cuda', dtype=torch.float32)
+
+    batch_ids = torch.tensor([[0], [1], [0], [1]], device='cuda', dtype=torch.int32)
+
+    in_pdfs = torch.tensor([[1.0], [0.8], [0.5]], device='cuda', dtype=torch.float32)
+
+    in_samples = torch.tensor([[0.1, 0.2, 0.3],
+                            [0.4, 0.5, 0.6]], device='cuda', dtype=torch.float32)
+
+    start_index = torch.tensor([[0], [1]], device='cuda', dtype=torch.int32)
+
+    packed_neigh = torch.tensor([[0, 1],
+                                [1, 2],
+                                [2, 3]], device='cuda', dtype=torch.int32)
+
+    in_aabb_min = torch.tensor([[0.0, 0.0, 0.0],
+                                [0.5, 0.5, 0.5]], device='cuda', dtype=torch.float32)
+
+    in_aabb_max = torch.tensor([[1.0, 1.0, 1.0],
+                                [1.5, 1.5, 1.5]], device='cuda', dtype=torch.float32)
+
+    # Weights and biases for MLP layers
+    in_weights_hidd1 = torch.tensor([[0.1, 0.2],
+                                    [0.3, 0.4],
+                                    [0.5, 0.6]], device='cuda', dtype=torch.float32)
+
+    in_bias_hidd1 = torch.tensor([0.1, 0.2], device='cuda', dtype=torch.float32)
+
+    in_weights_hidd2 = torch.tensor([[0.2, 0.3],
+                                    [0.4, 0.5]], device='cuda', dtype=torch.float32)
+
+    in_bias_hidd2 = torch.tensor([0.1, 0.2], device='cuda', dtype=torch.float32)
+
+    in_weights_out = torch.tensor([[0.3, 0.4],
+                                [0.5, 0.6]], device='cuda', dtype=torch.float32)
+
+    in_bias_out = torch.tensor([0.1, 0.2], device='cuda', dtype=torch.float32)
+
+    # Scalar tensors
+    num_out_features_tensor = torch.tensor(num_out_features, device='cuda', dtype=torch.int64)
+    combin_tensor = torch.tensor(True, device='cuda', dtype=torch.bool)  # Example with combin=True
+    batch_size_tensor = torch.tensor(batch_size, device='cuda', dtype=torch.int64)
+    radius_tensor = torch.tensor(radius, device='cuda', dtype=torch.float64)
+    scale_inv_tensor = torch.tensor(True, device='cuda', dtype=torch.bool)
+    avg_tensor = torch.tensor(True, device='cuda', dtype=torch.bool)
+
+    # Call the function
+    output = pt_mcc.ops.spatial_conv(
+        in_points, in_features, batch_ids, in_pdfs,
+        in_samples, start_index, packed_neigh, in_aabb_min,
+        in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out,
+        in_bias_hidd1, in_bias_hidd2, in_bias_out,
+        num_out_features_tensor, combin_tensor, batch_size_tensor, radius_tensor,
+        scale_inv_tensor, avg_tensor
+    )
+
+    print("Output shape:", output.shape)  # Expected shape: (num_samples, num_out_features)
+    print("Output:", output)
+
     unittest.main()
