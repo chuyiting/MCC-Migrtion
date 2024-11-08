@@ -393,7 +393,7 @@ class ConvolutionBuilder (nn.Module):
                     inPointHierarchy.batchSize_, currRelativeRadius)
             else:
                 neighShape = currNeighTuple[1].shape
-                currPDFs = torch.ones((neighShape[0], 1), dtype=torch.float32)
+                currPDFs = torch.ones((neighShape[0], 1), dtype=torch.float32).cuda()
 
             #self.cachePDFs_[keyPDF] = currPDFs
 
