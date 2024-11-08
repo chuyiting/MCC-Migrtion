@@ -188,7 +188,7 @@ if __name__ == '__main__':
         
         # Check on test data for early stopping
         if (epoch) % 10 == 0:
-            model.eval()
+            # model.eval()
             test_loss = 0.0
             test_accuracy = 0.0
             mTestDataSet.start_iteration()
@@ -208,7 +208,7 @@ if __name__ == '__main__':
 
                     accuracy = create_accuracy(logits, labels)
                     test_accuracy += accuracy
-                    if num_iter % 500 == 0:
+                    if num_iter % 100 == 0:
                         print(f'B[{num_iter}] test loss: {test_loss/ num_iter} accuracy: {test_accuracy / num_iter}')
                
             test_accuracy /= num_iter
