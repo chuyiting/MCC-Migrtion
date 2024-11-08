@@ -114,17 +114,17 @@ class TestMyAddOut(TestCase):
 if __name__ == "__main__":
     print('##################### Test compute_aabb #####################')
     pts = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]).cuda()
-    batch_ids = torch.tensor([[0], [0], [0], [0]]).cuda()
+    batch_ids = torch.tensor([[0], [0], [0], [0]]).int().cuda()
     res = pt_mcc.ops.compute_aabb(pts, batch_ids, 1, True)
     print(f'the result is: {res[0].shape} {res}\n')
 
     print('##################### Test compute_pdf #####################')
     pts = torch.tensor([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]).cuda()
-    batch = torch.tensor([[1], [1], [1], [1]]).cuda()
+    batch = torch.tensor([[1], [1], [1], [1]]).int().cuda()
     aabb_min = torch.tensor([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]).cuda()
     aabb_max = torch.tensor([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]]).cuda()
     # Define the starting indexes, indicating where each point's neighbors start in the neighbors list
-    start_indexes = torch.tensor([[0], [2], [4], [6]]).cuda()
+    start_indexes = torch.tensor([[0], [2], [4], [6]]).int().cuda()
 
     # Define the neighbors list, where each point has two neighbors for simplicity
     neighbors = torch.tensor([
