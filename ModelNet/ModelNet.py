@@ -61,6 +61,19 @@ def print_batchnorm_stats(model, mode="Running"):
             elif mode == "Batch":
                 print(f"  Batch mean: {layer.running_mean}")
                 print(f"  Batch variance: {layer.running_var}")
+
+def check_deterministic_outputs(model, points, batchIds, feature):
+    model.eval()  # Set to evaluation mode
+    with torch.no_grad():
+        # Run two forward passes
+        output1 = model(points, batchIds, feature)
+        output2 = model(points, batchIds, feature)
+        # Check if outputs are identical
+        if torch.allclose(output1, output2):
+            print("Outputs are deterministic; dropout is correctly handled in eval mode.")
+        else:
+            print("Outputs are not deterministic; dropout may still be active in eval mode.")
+
 model_map = {
     'MCClassS' : MCClassS
 }
@@ -224,8 +237,8 @@ if __name__ == '__main__':
                     batchIds = torch.from_numpy(batchIds).int().cuda()
                     features = torch.from_numpy(features).float().cuda()
                     labels = torch.from_numpy(labels).long().cuda()
-                    compare_running_vs_batch_stats(model, points, batchIds, features)
                     logits = model(points, batchIds, features)
+                    check_deterministic_outputs(model, points, batchIds, features):
                     xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay, model)
                     total_loss = xentropy_loss + reg_term
                     test_loss += total_loss.item()
