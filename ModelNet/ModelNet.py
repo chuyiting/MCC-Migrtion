@@ -159,7 +159,7 @@ if __name__ == '__main__':
         model.train()
         running_loss = 0.0
         total_accuracy = 0.0
-        mTrainDataSet.start_iteration()
+        mTestDataSet.start_iteration()
         num_iter = 0
         while mTestDataSet.has_more_batches():
             num_iter += 1
