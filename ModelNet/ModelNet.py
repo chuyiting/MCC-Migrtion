@@ -189,7 +189,18 @@ if __name__ == '__main__':
     start_epoch = 0
     if args.use_pretrain:
         print('use pretrained weights....')
+        # Save the model's initial parameters
+        initial_params = {name: param.clone() for name, param in model.named_parameters()}
         model, optimizer, start_epoch = load_weights(model, optimizer)
+        # Compare the parameters before and after loading the checkpoint
+        for (name, initial_param), (name_after, loaded_param) in zip(initial_params.items(), model.named_parameters()):
+            if not torch.equal(initial_param, loaded_param):
+                print(f"Parameter '{name}' has been modified after loading checkpoint.")
+            else:
+                print(f"Parameter '{name}' matches after loading checkpoint.")
+        
+        print("Checkpoint loading test complete.")
+            
 
     # Train model
     bestTestAccuracy = -1.0
