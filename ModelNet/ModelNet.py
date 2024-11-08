@@ -21,7 +21,7 @@ from ModelNetDataSet import ModelNetDataSet
 current_milli_time = lambda: time.time() * 1000.0
 
 
-def create_loss(logits, labels, weight_decay):
+def create_loss(logits, labels, weight_decay, model):
     criterion = nn.CrossEntropyLoss()
     xentropy_loss = criterion(logits, labels)
     l2_reg = sum(p.pow(2.0).sum() for p in model.parameters())
@@ -36,7 +36,7 @@ def create_accuracy(logits, labels):
     return accuracy
 
 def load_weights(model, log_folder):
-    model.load_state_dict(torch.load(os.path.join(log_folder, 'best_model.pth')))
+    model.load_state_dict(torch.load(os.path.join(log_folder, 'best_model.pth')), weights_only=True)
 
 model_map = {
     'MCClassS' : MCClassS
@@ -169,7 +169,7 @@ if __name__ == '__main__':
             features = torch.from_numpy(features).float().cuda()
             labels = torch.from_numpy(labels).long().cuda()
             logits = model(points, batchIds, features)
-            xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay)
+            xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay, model)
             total_loss = xentropy_loss + reg_term
             running_loss += total_loss.item()
             optimizer.zero_grad()
@@ -207,8 +207,9 @@ if __name__ == '__main__':
                     test_loss += total_loss.item()
 
                     accuracy = create_accuracy(logits, labels)
-                    print(f'B[{num_iter}] xen loss: {xentropy_loss.item()} test loss: {test_loss} accuracy: {accuracy}')
                     test_accuracy += accuracy
+                    if num_iter % 500 == 0:
+                        print(f'B[{num_iter}] test loss: {test_loss/ num_iter} accuracy: {test_accuracy / num_iter}')
                
             test_accuracy /= num_iter
             print(f"Test Accuracy: {test_accuracy:.4f}")
