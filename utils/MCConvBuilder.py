@@ -192,6 +192,7 @@ class ConvolutionBuilder (nn.Module):
         """
         super().__init__()
         # Initialize the caches.
+        self.first_pass = True
         self.cacheGrids_ = {}
         self.cacheNeighs_ = {}
         self.cachePDFs_ = {}
@@ -392,6 +393,9 @@ class ConvolutionBuilder (nn.Module):
                     currNeighTuple[0], currNeighTuple[1], currKDEWindow, self.convRadius, 
                     inPointHierarchy.batchSize_, currRelativeRadius)
             else:
+                if self.first_pass:
+                    print('not using pdf')
+                    self.first_pass = False
                 neighShape = currNeighTuple[1].shape
                 currPDFs = torch.ones((neighShape[0], 1), dtype=torch.float32).cuda()
 
