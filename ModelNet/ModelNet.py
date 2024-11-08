@@ -138,6 +138,7 @@ if __name__ == '__main__':
     model = model_class(numInputFeatures=num_input_features, k=k, numOutCat=num_out_cat, 
                                   batch_size=batch_size, keepProbConv=args.dropOutKeepProbConv, keepProbFull=args.dropOutKeepProb, 
                                   useConvDropOut=args.useDropOutConv, useDropOutFull=args.useDropOut).to(device)
+
     if args.use_pretrain:
         print('use pretrained weights....')
         load_weights(model, args.logFolder)
@@ -206,7 +207,7 @@ if __name__ == '__main__':
                     test_loss += total_loss.item()
 
                     accuracy = create_accuracy(logits, labels)
-                    print(f'B[{num_iter}] test loss: {test_loss} accuracy: {accuracy}')
+                    print(f'B[{num_iter}] xen loss: {xentropy_loss} test loss: {test_loss} accuracy: {accuracy}')
                     test_accuracy += accuracy
                
             test_accuracy /= num_iter
