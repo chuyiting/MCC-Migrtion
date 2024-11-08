@@ -168,6 +168,8 @@ if __name__ == "__main__":
 
     print('##################### Test poisson_sampling #####################')
     res = pt_mcc.ops.poisson_sampling(pts, batch_ids, cell_indices, aabb_min, aabb_max, radius, batch_size, scale_inv)
+    res1 = pt_mcc.ops.poisson_sampling(pts, batch_ids, cell_indices, aabb_min, aabb_max, radius, batch_size, scale_inv)
+    print(f'stable output: {torch.allclose(res, res1)}')
     print(res)
 
     print('##################### Test get_sampled_features(pts_indices, features) #####################')
