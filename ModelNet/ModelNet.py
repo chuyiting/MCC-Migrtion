@@ -122,7 +122,7 @@ if __name__ == '__main__':
         allowedSamplingsTest = [0]
     print('start loading dataset')
     mTrainDataSet = ModelNetDataSet(True, args.nPoints, args.ptDropOut, maxStoredPoints, args.batchSize, allowedSamplingsTrain, args.augment)
-    mTestDataSet = ModelNetDataSet(False, args.nPoints, 1.0, maxStoredPoints, 1, allowedSamplingsTest, False)
+    mTestDataSet = ModelNetDataSet(False, args.nPoints, 1.0, maxStoredPoints, 32, allowedSamplingsTest, False)
     categories = mTrainDataSet.get_categories()
     print('finish loading dataset')
     
