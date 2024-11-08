@@ -186,20 +186,22 @@ if __name__ == '__main__':
             test_accuracy = 0.0
             mTestDataSet.start_iteration()
             num_iter = 0
-            while mTestDataSet.has_more_batches():
-                num_iter += 1
-                _, points, batchIds, features, _, labels, _ = mTestDataSet.get_next_batch()
-                points = torch.from_numpy(points).float().cuda()
-                batchIds = torch.from_numpy(batchIds).int().cuda()
-                features = torch.from_numpy(features).float().cuda()
-                labels = torch.from_numpy(labels).long().cuda()
-                logits = model(points, batchIds, features)
-                xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay)
-                total_loss = xentropy_loss + reg_term
-                test_loss += total_loss.item()
+            with torch.no_grad():
+                while mTestDataSet.has_more_batches():
+                    num_iter += 1
+                    _, points, batchIds, features, _, labels, _ = mTestDataSet.get_next_batch()
+                    points = torch.from_numpy(points).float().cuda()
+                    batchIds = torch.from_numpy(batchIds).int().cuda()
+                    features = torch.from_numpy(features).float().cuda()
+                    labels = torch.from_numpy(labels).long().cuda()
+                    logits = model(points, batchIds, features)
+                    xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay)
+                    total_loss = xentropy_loss + reg_term
+                    test_loss += total_loss.item()
 
-                accuracy = create_accuracy(logits, labels)
-                test_accuracy += accuracy
+                    print(f'test loss: {test_loss}')
+                    accuracy = create_accuracy(logits, labels)
+                    test_accuracy += accuracy
                
             test_accuracy /= num_iter
             print(f"Test Accuracy: {test_accuracy:.4f}")
