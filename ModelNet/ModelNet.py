@@ -207,7 +207,7 @@ if __name__ == '__main__':
                     test_loss += total_loss.item()
 
                     accuracy = create_accuracy(logits, labels)
-                    print(f'B[{num_iter}] xen loss: {xentropy_loss} test loss: {test_loss} accuracy: {accuracy}')
+                    print(f'B[{num_iter}] xen loss: {xentropy_loss.item()} test loss: {test_loss} accuracy: {accuracy}')
                     test_accuracy += accuracy
                
             test_accuracy /= num_iter
