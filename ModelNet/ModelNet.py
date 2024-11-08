@@ -161,9 +161,9 @@ if __name__ == '__main__':
         total_accuracy = 0.0
         mTrainDataSet.start_iteration()
         num_iter = 0
-        while mTrainDataSet.has_more_batches():
+        while mTestDataSet.has_more_batches():
             num_iter += 1
-            _, points, batchIds, features, _, labels, _ = mTrainDataSet.get_next_batch()
+            _, points, batchIds, features, _, labels, _ = mTestDataSet.get_next_batch()
             points = torch.from_numpy(points).float().cuda()
             batchIds = torch.from_numpy(batchIds).int().cuda()
             features = torch.from_numpy(features).float().cuda()
