@@ -21,7 +21,7 @@ import math
 class MLP2Hidden(nn.Module):
     def __init__(self, num_input_features, hidden1_units, hidden2_units, num_out_features, 
                  use_dropout=False, use_init_bn=True, keep_prob=0.8):
-        super(MLP2Hidden, self).__init__()
+        super().__init__()
         
         self.use_init_bn = use_init_bn
         self.use_dropout = use_dropout
@@ -35,8 +35,9 @@ class MLP2Hidden(nn.Module):
         self.fc3 = nn.Linear(hidden2_units, num_out_features)
 
         # Dropout layer
-        self.dropout = nn.Dropout(p=1 - keep_prob) if use_dropout else None
-        self.dropout2 = nn.Dropout(p=1 - keep_prob) if use_dropout else None
+        if use_dropout:
+            self.dropout = nn.Dropout(p=1 - keep_prob) 
+            self.dropout2 = nn.Dropout(p=1 - keep_prob) 
 
     def forward(self, features):
         if self.use_init_bn:
@@ -72,7 +73,7 @@ class MLP1Hidden(nn.Module):
             num_out_features (int): Number of output features.
             use_dropout (bool): Boolean that indicates if dropout should be used in the MLP.
         """
-        super(MLP1Hidden, self).__init__()
+        super().__init__()
         self.use_dropout = use_dropout
 
         # Define layers
@@ -119,7 +120,7 @@ class Conv1x1(nn.Module):
             num_inputs (int): Number of input features.
             num_out_features (int): Number of output features.
         """
-        super(Conv1x1, self).__init__()
+        super().__init__()
         
         # Define the linear layer
         self.linear_layer = nn.Linear(num_inputs, num_out_features)
@@ -153,7 +154,7 @@ class BatchNormReLUDropout(nn.Module):
             use_dropout (bool): Boolean that indicates if dropout should be used in the layer.
             keep_prob (float): Probability of keeping a unit during dropout.
         """
-        super(BatchNormReLUDropout, self).__init__()
+        super().__init__()
         self.batch_norm = nn.BatchNorm1d(in_features)
         self.relu = nn.ReLU()
         self.use_dropout = use_dropout

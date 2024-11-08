@@ -72,6 +72,7 @@ def check_deterministic_outputs(model, points, batchIds, feature):
         if torch.allclose(output1, output2):
             print("Outputs are deterministic; dropout is correctly handled in eval mode.")
         else:
+            print(torch.sum(output1 - output2))
             print("Outputs are not deterministic; dropout may still be active in eval mode.")
 
 model_map = {
@@ -237,7 +238,6 @@ if __name__ == '__main__':
                     batchIds = torch.from_numpy(batchIds).int().cuda()
                     features = torch.from_numpy(features).float().cuda()
                     labels = torch.from_numpy(labels).long().cuda()
-                    model = model.eval()
                     check_deterministic_outputs(model, points, batchIds, features)
                     logits = model(points, batchIds, features)
                     xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay, model)
