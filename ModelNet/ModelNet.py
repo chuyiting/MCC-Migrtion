@@ -35,6 +35,8 @@ def create_accuracy(logits, labels):
     accuracy = correct / labels.size(0)
     return accuracy
 
+def load_weights(model, log_folder):
+    model.load_state_dict(torch.load(os.path.join(log_folder, 'best_model.pth')))
 
 model_map = {
     'MCClassS' : MCClassS
@@ -62,6 +64,7 @@ if __name__ == '__main__':
     parser.add_argument('--nonunif', action='store_true', help='Train on non-uniform (default: False)')
     parser.add_argument('--gpu', default='0', help='GPU (default: 0)')
     parser.add_argument('--gpuMem', default=0.5, type=float, help='GPU memory used (default: 0.5)')
+    parser.add_argument('--use_pretrain', default=False, type=bool, help='whether to use pretrain weights')
     args = parser.parse_args()
 
     if not os.path.exists(args.logFolder): os.mkdir(args.logFolder)
@@ -135,6 +138,9 @@ if __name__ == '__main__':
     model = model_class(numInputFeatures=num_input_features, k=k, numOutCat=num_out_cat, 
                                   batch_size=batch_size, keepProbConv=args.dropOutKeepProbConv, keepProbFull=args.dropOutKeepProb, 
                                   useConvDropOut=args.useDropOutConv, useDropOutFull=args.useDropOut).to(device)
+    if args.use_pretrain:
+        print('use pretrained weights....')
+        load_weights(model, args.logFolder)
 
     # TODO add learning rate decay per batch
     optimizer = optim.Adam(model.parameters(), lr=args.initLearningRate)
@@ -180,7 +186,7 @@ if __name__ == '__main__':
         print(f"Epoch [{epoch + 1}/{args.maxEpoch}], Loss: {running_loss:.4f}, Accuracy: {total_accuracy:.4f}, Training time: {((endEpochTime-startEpochTime)/1000.0):.2f}")
         
         # Check on test data for early stopping
-        if (epoch+1) % 10 == 0:
+        if (epoch) % 10 == 0:
             model.eval()
             test_loss = 0.0
             test_accuracy = 0.0
@@ -199,8 +205,8 @@ if __name__ == '__main__':
                     total_loss = xentropy_loss + reg_term
                     test_loss += total_loss.item()
 
-                    print(f'test loss: {test_loss}')
                     accuracy = create_accuracy(logits, labels)
+                    print(f'B[{num_iter}] test loss: {test_loss} accuracy: {accuracy}')
                     test_accuracy += accuracy
                
             test_accuracy /= num_iter
