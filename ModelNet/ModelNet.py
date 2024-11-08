@@ -72,7 +72,7 @@ def check_deterministic_outputs(model, points, batchIds, feature):
         if torch.allclose(output1, output2):
             print("Outputs are deterministic; dropout is correctly handled in eval mode.")
         else:
-            print(torch.sum(output1 - output2))
+            print(torch.mean(output1 - output2))
             print("Outputs are not deterministic; dropout may still be active in eval mode.")
 
 model_map = {
@@ -216,6 +216,7 @@ if __name__ == '__main__':
             accuracy = create_accuracy(logits, labels)
             total_accuracy += accuracy
             if num_iter % 50 == 0:
+                check_deterministic_outputs(model, points, batchIds, features)
                 print(f"B [{num_iter}], Loss: {total_loss.item():.4f}, Accuracy: {accuracy:.4f}")
         
         endEpochTime = current_milli_time()   
