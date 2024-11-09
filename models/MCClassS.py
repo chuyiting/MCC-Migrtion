@@ -60,27 +60,32 @@ class MCClassS(nn.Module):
         ############################################ Convolutions
         # Convolution 1
         convFeatures1 = self.conv1(mPointHierarchy, features)
-        print(f'conv shape: {convFeatures1.shape}')
 
         # BatchNorm + ReLU + Dropout + Conv1x1 for Convolution 1
+        convFeatures1 = convFeatures1.view(self.batch_size, -1, convFeatures1.shape[-1])
         convFeatures1 = self.bn_relu_dropout1(convFeatures1)
         convFeatures1 = self.conv1x1_1(convFeatures1)
         convFeatures1 = self.bn_relu_dropout2(convFeatures1)
 
         # Convolution 2
+        convFeatures1 = convFeatures1.view(-1, convFeatures1.shape[-1])
         convFeatures2 = self.conv2(mPointHierarchy, convFeatures1)
 
         # BatchNorm + ReLU + Dropout + Conv1x1 for Convolution 2
+        convFeatures2 = convFeatures2.view(self.batch_size, -1, convFeatures2.shape[-1])
         convFeatures2 = self.bn_relu_dropout2(convFeatures2)
         convFeatures2 = self.conv1x1_2(convFeatures2)
         convFeatures2 = self.bn_relu_dropout3(convFeatures2)
 
         # Convolution 3
+        convFeatures2 = convFeatures2.view(-1, convFeatures2.shape[-1])
         convFeatures3 = self.conv3(mPointHierarchy, convFeatures2)
 
         # Fully connected MLP for final global features
+        convFeatures3 = convFeatures3.view(self.batch_size, -1, convFeatures3.shape[-1])
         finalInput = self.final_bn_relu_dropout(convFeatures3)
         finalLogits = self.final_mlp(finalInput)
+        print(f'final logits shape: {finalLogits.shape}')
 
         return finalLogits
 
