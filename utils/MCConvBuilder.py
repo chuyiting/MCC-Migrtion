@@ -114,8 +114,6 @@ class PointHierarchy:
             # Use poisson disk sampling algorithm for the given radius.
             sampledPts, sampledBatchsIds, sampledIndexs = poisson_sampling(
                 sortPts, sortBatchs, cellIndexs, aabbMin, aabbMax, currRadius, batchSize, self.relativeRadius_)
-            print(f'sampled_pts shape: {sampledPts.shape}')
-            print(f'sampled batches ids: {sampledBatchsIds.shape}')
             sampledFeatures = get_sampled_features(sampledIndexs, sortFeatures)
             transformedIndexs = transform_indices(sampledIndexs, indexs)
 
