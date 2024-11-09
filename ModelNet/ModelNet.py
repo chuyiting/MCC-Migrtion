@@ -249,6 +249,11 @@ if __name__ == '__main__':
         # Check on test data for early stopping
         if (epoch) % 10 == 0:
             model.eval()
+            # let batch norm stays in training mode
+            for module in model.modules():
+                if isinstance(module, nn.BatchNorm1d):
+                    module.train()
+                    
             test_loss = 0.0
             test_accuracy = 0.0
             mTestDataSet.start_iteration()
