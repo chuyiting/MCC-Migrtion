@@ -76,7 +76,6 @@ class MCClassS(nn.Module):
 
         # Convolution 3
         convFeatures3 = self.conv3(mPointHierarchy, convFeatures2)
-        print(f'conv3 shape: {convFeatures3.shape}')
 
         # Fully connected MLP for final global features
         finalInput = self.final_bn_relu_dropout(convFeatures3)
