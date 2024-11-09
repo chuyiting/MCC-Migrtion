@@ -30,9 +30,16 @@ def create_loss(logits, labels, weight_decay, model):
 
 
 def create_accuracy(logits, labels):
-    _, predicted = torch.max(logits, 1)
-    correct = (predicted == labels).sum().item()
-    accuracy = correct / labels.size(0)
+    # Get the indices of the top values in logits along the last dimension
+    _, logits_indices = torch.topk(logits, 1, dim=-1)
+    
+    # Reshape labels to have the same shape as logits_indices
+    labels = labels.view(-1, 1)
+    
+    # Calculate accuracy
+    correct_predictions = (logits_indices == labels).float()
+    accuracy = correct_predictions.mean().item()  # Mean of correct predictions
+
     return accuracy
 
 def load_weights(model, optimizer):
