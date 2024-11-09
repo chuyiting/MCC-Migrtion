@@ -408,8 +408,6 @@ class ConvolutionBuilder (nn.Module):
         scale_inv = torch.tensor(currRelativeRadius, dtype=torch.bool).to(device=device)
         avg = torch.tensor(currUseAVG, dtype=torch.bool).to(device=device)
        
-        print(f'in points shape: {currGridTuple[0].shape}')
-        print(f'in features shape: {sortFeatures.shape}')
         conv1 = spatial_conv(currGridTuple[0], sortFeatures, currGridTuple[1], 
             currPDFs, currOutPointHierarchy.points_[currOutPointLevel], 
             currNeighTuple[0], currNeighTuple[1], 

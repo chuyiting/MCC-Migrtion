@@ -156,8 +156,8 @@ if __name__ == '__main__':
     maxStoredPoints = int(float(args.nPoints) * (2.0 - args.ptDropOut))
     if args.nonunif:
         maxStoredPoints = 5000
-        allowedSamplingsTrain = [1, 2, 3, 4]
-        allowedSamplingsTest = [0, 1, 2, 3, 4]
+        allowedSamplingsTrain = [0]
+        allowedSamplingsTest = [0]
     else:
         allowedSamplingsTrain = [0]
         allowedSamplingsTest = [0]
@@ -220,12 +220,7 @@ if __name__ == '__main__':
             batchIds = torch.from_numpy(batchIds).int().cuda()
             features = torch.from_numpy(features).float().cuda()
             labels = torch.from_numpy(labels).long().cuda()
-            print(f'points shape: {points.shape}')
-            print(f'batchIds shape: {batchIds.shape}')
-            print(f'labels shape: {labels.shape}')
-            print(labels)
             logits = model(points, batchIds, features)
-            print(f'logits shape: {logits.shape}')
             xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay, model)
             total_loss = xentropy_loss + reg_term
             running_loss += total_loss.item()
@@ -267,7 +262,8 @@ if __name__ == '__main__':
 
                     accuracy = create_accuracy(logits, labels)
                     test_accuracy += accuracy
-                    if num_iter % 100 == 0:
+                    if num_iter % 10 == 0:
+                        print(labels)
                         print(f'B[{num_iter}] test loss: {test_loss/ num_iter} accuracy: {test_accuracy / num_iter}')
                
             test_accuracy /= num_iter
