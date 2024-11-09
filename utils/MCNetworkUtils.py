@@ -63,7 +63,7 @@ class MLP2Hidden(nn.Module):
         return x
 
 class MLP1Hidden(nn.Module):
-    def __init__(self, num_input_features, hidden_units, num_out_features, use_dropout=False, keep_prob=0.8):
+    def __init__(self, num_input_features, hidden_units, num_out_features, use_dropout=False, keep_prob=1.0):
         """
         Initialize the MLP with one hidden layer.
 
@@ -83,7 +83,7 @@ class MLP1Hidden(nn.Module):
 
         # Dropout layer
         if use_dropout:
-            self.dropout = nn.Dropout(p=1.0 - keep_prob)  # keep_prob is defined during the forward pass
+            self.dropout = nn.Dropout(p=(1.0 - keep_prob))  # keep_prob is defined during the forward pass
 
     def forward(self, features):
         """
