@@ -248,7 +248,7 @@ if __name__ == '__main__':
         
         # Check on test data for early stopping
         if (epoch) % 10 == 0:
-            model.eval()
+            # model.eval()
             test_loss = 0.0
             test_accuracy = 0.0
             mTestDataSet.start_iteration()
