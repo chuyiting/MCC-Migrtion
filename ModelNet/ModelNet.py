@@ -225,6 +225,7 @@ if __name__ == '__main__':
             print(f'labels shape: {labels.shape}')
             print(labels)
             logits = model(points, batchIds, features)
+            print(f'logits shape: {logits.shape}')
             xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay, model)
             total_loss = xentropy_loss + reg_term
             running_loss += total_loss.item()
