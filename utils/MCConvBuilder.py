@@ -106,13 +106,18 @@ class PointHierarchy:
             # Distribute points into a regular grid.
             keys, indexs = sort_points_step1(currPts, currBatchIds, self.aabbMin_, 
                 self.aabbMax_, self.batchSize_, currRadius, self.relativeRadius_)
+            
+            print(f'keys shape: {keys.shape}')
+            print(f'indexs shape: {indexs.shape}')
             sortPts, sortBatchs, sortFeatures, cellIndexs = sort_points_step2(currPts, 
                 currBatchIds, currFeatures, keys, indexs, self.aabbMin_, self.aabbMax_, 
                 self.batchSize_, currRadius, self.relativeRadius_)
+            print(f'sortPts shape: {sortPts.shape}')
 
             # Use poisson disk sampling algorithm for the given radius.
             sampledPts, sampledBatchsIds, sampledIndexs = poisson_sampling(
                 sortPts, sortBatchs, cellIndexs, aabbMin, aabbMax, currRadius, batchSize, self.relativeRadius_)
+            print(f'sortPts shape: {sampledPts.shape}')
             sampledFeatures = get_sampled_features(sampledIndexs, sortFeatures)
             transformedIndexs = transform_indices(sampledIndexs, indexs)
 
