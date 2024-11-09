@@ -97,7 +97,7 @@ if __name__ == '__main__':
     parser.add_argument('--grow', default=64, type=int, help='Grow rate (default: 64)')
     parser.add_argument('--batchSize', default=32, type=int, help='Batch size  (default: 32)')
     parser.add_argument('--maxEpoch', default=201, type=int, help='Max Epoch  (default: 201)')
-    parser.add_argument('--initLearningRate', default=0.005, type=float, help='Init learning rate  (default: 0.005)')
+    parser.add_argument('--initLearningRate', default=0.0005, type=float, help='Init learning rate  (default: 0.005)')
     parser.add_argument('--learningDecayFactor', default=0.5, type=float, help='Learning decay factor (default: 0.5)')
     parser.add_argument('--learningDecayRate', default=20, type=int, help='Learning decay rate  (default: 20 Epochs)')
     parser.add_argument('--maxLearningRate', default=0.00001, type=float, help='Maximum Learning rate (default: 0.00001)')
@@ -270,7 +270,7 @@ if __name__ == '__main__':
                     accuracy = create_accuracy(logits, labels)
                     test_accuracy += accuracy
                     if num_iter % 10 == 0:
-                        print(labels)
+                        print(logits.shape)
                         print(f'B[{num_iter}] test loss: {test_loss/ num_iter} accuracy: {test_accuracy / num_iter}')
                
             test_accuracy /= num_iter
