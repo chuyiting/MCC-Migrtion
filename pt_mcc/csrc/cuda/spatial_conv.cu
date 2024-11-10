@@ -945,14 +945,15 @@ namespace pt_mcc
             cudaMemset(pOutFeatureGrads, 0, sizeof(float) * pNumPoints * pNumInFeatures);
 
             dim3 gridDimension = computeBlockGrid(pNumNeighbors * numBlocksPerPoint * BLOCK_MLP_SIZE, EXECUTION_BLOCK_MLP_SIZE);
+            gpuErrchk(cudaPeekAtLastError());
 
             computedconvj_dKernel<<<gridDimension, EXECUTION_BLOCK_MLP_SIZE, EXECUTION_BLOCK_MLP_SIZE * 4 * sizeof(float)>>>(
                 pAvg, pScaleInv, pNumSamples, pNumNeighbors, pNumInFeatures,
                 pNumOutFeatures, pRadius, pAABBMin, pAABBMax, pWeights1, pWeights2, pWeightsOut, pBiases1, pBiases2, pBiasesOut,
                 pSamples, pInPoints, pBatchIds, pInFeatures, pInOutFeatueGrads, pStartIndexs, pPackedNeighs, pPDFs, pWeights1Grads,
                 pWeight2Grads, pWeightOutGrads, pBiases1Grads, pBiases2Grads, pBiasesOutGrads, pOutFeatureGrads);
-
-            gpuErrchk(cudaPeekAtLastError());
+            cudaDeviceSynchronize();
+            gpuErrchk(cudaGetLastError());
         }
         else
         {
