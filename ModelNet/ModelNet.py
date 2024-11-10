@@ -21,12 +21,10 @@ from ModelNetDataSet import ModelNetDataSet
 current_milli_time = lambda: time.time() * 1000.0
 
 
-def create_loss(logits, labels, weight_decay, model):
+def create_loss(logits, labels):
     criterion = nn.CrossEntropyLoss()
     xentropy_loss = criterion(logits, labels)
-    l2_reg = sum(p.pow(2.0).sum() for p in model.parameters())
-    reg_term = weight_decay * l2_reg
-    return xentropy_loss, reg_term
+    return xentropy_loss
 
 
 def create_accuracy(logits, labels):
@@ -54,7 +52,7 @@ def load_weights(model, optimizer, lr_scheduler):
             print(f"Parameter '{name}' matches after loading checkpoint.")
         
         print("Checkpoint loading test complete.")
-        
+
     if 'scheduler_state_dict' not in checkpoint:
         num_steps = epoch // args.learningDecayRate
         for _ in range(num_steps):
@@ -111,7 +109,7 @@ if __name__ == '__main__':
     parser.add_argument('--grow', default=64, type=int, help='Grow rate (default: 64)')
     parser.add_argument('--batchSize', default=32, type=int, help='Batch size  (default: 32)')
     parser.add_argument('--maxEpoch', default=201, type=int, help='Max Epoch  (default: 201)')
-    parser.add_argument('--initLearningRate', default=0.0005, type=float, help='Init learning rate  (default: 0.005)')
+    parser.add_argument('--initLearningRate', default=0.005, type=float, help='Init learning rate  (default: 0.005)')
     parser.add_argument('--learningDecayFactor', default=0.5, type=float, help='Learning decay factor (default: 0.5)')
     parser.add_argument('--learningDecayRate', default=20, type=int, help='Learning decay rate  (default: 20 Epochs)')
     parser.add_argument('--maxLearningRate', default=0.00001, type=float, help='Maximum Learning rate (default: 0.00001)')
@@ -177,8 +175,8 @@ if __name__ == '__main__':
     maxStoredPoints = int(float(args.nPoints) * (2.0 - args.ptDropOut))
     if args.nonunif:
         maxStoredPoints = 5000
-        allowedSamplingsTrain = [0]
-        allowedSamplingsTest = [0]
+        allowedSamplingsTrain = [1, 2, 3, 4]
+        allowedSamplingsTest = [0, 1, 2, 3, 4]
     else:
         allowedSamplingsTrain = [0]
         allowedSamplingsTest = [0]
@@ -202,7 +200,7 @@ if __name__ == '__main__':
                                   useConvDropOut=args.useDropOutConv, useDropOutFull=args.useDropOut).to(device)
 
     # TODO add learning rate decay per batch
-    optimizer = optim.Adam(model.parameters(), lr=args.initLearningRate)
+    optimizer = optim.Adam(model.parameters(), lr=args.initLearningRate, weight_decay=args.weightDecay)
     lr_scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=args.learningDecayFactor)
     for param_group in optimizer.param_groups:
         param_group['lr'] = max(param_group['lr'], args.maxLearningRate)
@@ -234,17 +232,16 @@ if __name__ == '__main__':
             features = torch.from_numpy(features).float().cuda()
             labels = torch.from_numpy(labels).long().cuda()
             logits = model(points, batchIds, features)
-            xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay, model)
-            total_loss = xentropy_loss + reg_term
-            running_loss += total_loss.item()
+            xentropy_loss = create_loss(logits, labels)
+            running_loss += xentropy_loss.item()
             optimizer.zero_grad()
-            total_loss.backward()
+            xentropy_loss.backward()
             optimizer.step()
 
             accuracy = create_accuracy(logits, labels)
             total_accuracy += accuracy
             if num_iter % 50 == 0:
-                print(f"B [{num_iter}], Loss: {total_loss.item():.4f}, Accuracy: {accuracy:.4f}")
+                print(f"B [{num_iter}], Loss: {xentropy_loss.item():.4f}, Accuracy: {accuracy:.4f}")
             num_iter += 1
         
         endEpochTime = current_milli_time()   
@@ -274,9 +271,8 @@ if __name__ == '__main__':
                     labels = torch.from_numpy(labels).long().cuda()
                     #check_deterministic_outputs(model, points, batchIds, features)
                     logits = model(points, batchIds, features)
-                    xentropy_loss, reg_term = create_loss(logits, labels, args.weightDecay, model)
-                    total_loss = xentropy_loss + reg_term
-                    test_loss += total_loss.item()
+                    xentropy_loss = create_loss(logits, labels)
+                    test_loss += xentropy_loss.item()
 
                     accuracy = create_accuracy(logits, labels)
                     test_accuracy += accuracy
