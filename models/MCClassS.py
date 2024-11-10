@@ -28,7 +28,7 @@ import math
 
 class MCClassS(nn.Module):
     def __init__(self, numInputFeatures, k, numOutCat, batch_size, keepProbConv=0.8, keepProbFull=0.8,
-                 useConvDropOut=False, useDropOutFull=True):
+                 useConvDropOut=False, useDropOutFull=True, usePdf=True):
         super(MCClassS, self).__init__()
         self.k = k
         self.numOutCat = numOutCat
@@ -36,9 +36,9 @@ class MCClassS(nn.Module):
         self.useConvDropOut = useConvDropOut
         self.useDropOutFull = useDropOutFull
 
-        self.conv1 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_1", inPointLevel=0, outPointLevel=1, inNumFeatures=numInputFeatures, outNumFeatures=k, convRadius= 0.2, multiFeatureConvs=True)
-        self.conv2 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_2", inPointLevel=1, outPointLevel=2, inNumFeatures=k*2, convRadius= 0.8)
-        self.conv3 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_3", inPointLevel=2, outPointLevel=3, inNumFeatures=k*4, convRadius=math.sqrt(3.0)+0.1)
+        self.conv1 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_1", inPointLevel=0, outPointLevel=1, inNumFeatures=numInputFeatures, outNumFeatures=k, convRadius= 0.2, multiFeatureConvs=True, usePDF=usePdf)
+        self.conv2 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_2", inPointLevel=1, outPointLevel=2, inNumFeatures=k*2, convRadius= 0.8, usePDF=usePdf)
+        self.conv3 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_3", inPointLevel=2, outPointLevel=3, inNumFeatures=k*4, convRadius=math.sqrt(3.0)+0.1, usePDF=usePdf)
         
         # Convolutional layers
         self.bn_relu_dropout1 = BatchNormReLUDropout(k, use_dropout=useConvDropOut, keep_prob=keepProbConv)

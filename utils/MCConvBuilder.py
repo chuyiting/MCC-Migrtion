@@ -171,7 +171,7 @@ class ConvolutionBuilder (nn.Module):
         multiFeatureConvs = False, 
         
         relativeRadius = True, # use default
-        usePDF = True, # use default
+        usePDF = False, # use default
         useAVG = True, # use default
         decayLossCollection = 'weight_decay_loss'):
         """Constructor.
