@@ -147,6 +147,7 @@ def _setup_spatial_conv_context(ctx, inputs, output):
         saved_radius = radius
         saved_scale_inv = scale_inv
         saved_avg = avg
+    print(f'saved num out features: {saved_num_out_features}')
     ctx.save_for_backward(saved_points, saved_features, saved_batch_ids, saved_pdfs, saved_sampled, saved_start_index, saved_packed_neigh, saved_aabb_min, saved_aabb_max, saved_weights_hidd1, saved_weights_hidd2, saved_weights_out, saved_bias_hidd1, saved_bias_hidd2, saved_bias_out, saved_num_out_features, saved_combin, saved_batch_size, saved_radius, saved_scale_inv, saved_avg)
 
 def _spatial_conv_backward(ctx, grad):
@@ -158,6 +159,7 @@ def _spatial_conv_backward(ctx, grad):
     biases1Grads = None
     biases2Grads = None 
     biasesOutGrads = None
+    print(f'extract num of out featurres: {num_out_features}')
     
     if ctx.needs_input_grad[1]:
         featureGrads, weights1Grads, biases1Grads, weights2Grads, biases2Grads, weightsOutGrads, biasesOutGrads = \
