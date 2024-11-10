@@ -20,18 +20,18 @@ import math
 ############################################################################# Network Utils
 class MLP2Hidden(nn.Module):
     def __init__(self, num_input_features, hidden1_units, hidden2_units, num_out_features, 
-                 use_dropout=False, use_init_bn=True, keep_prob=0.8, bn_momentum=0.01):
+                 use_dropout=False, use_init_bn=True, keep_prob=0.8, bn_momentum=0.01, eps=0.001):
         super().__init__()
         
         self.use_init_bn = use_init_bn
         self.use_dropout = use_dropout
 
         # Initialize layers
-        self.bn_init = nn.BatchNorm1d(num_input_features, momentum=bn_momentum) if use_init_bn else None
+        self.bn_init = nn.BatchNorm1d(num_input_features, momentum=bn_momentum, eps=eps) if use_init_bn else None
         self.fc1 = nn.Linear(num_input_features, hidden1_units)
-        self.bn1 = nn.BatchNorm1d(hidden1_units, momentum=bn_momentum)
+        self.bn1 = nn.BatchNorm1d(hidden1_units, momentum=bn_momentum, eps=eps)
         self.fc2 = nn.Linear(hidden1_units, hidden2_units)
-        self.bn2 = nn.BatchNorm1d(hidden2_units, momentum=bn_momentum)
+        self.bn2 = nn.BatchNorm1d(hidden2_units, momentum=bn_momentum, eps=eps)
         self.fc3 = nn.Linear(hidden2_units, num_out_features)
 
         # Dropout layer
@@ -145,7 +145,7 @@ class Conv1x1(nn.Module):
 
 
 class BatchNormReLUDropout(nn.Module):
-    def __init__(self, in_features, use_dropout=False, keep_prob=0.8, bn_momentum = 0.01):
+    def __init__(self, in_features, use_dropout=False, keep_prob=0.8, bn_momentum = 0.01, eps=0.001):
         """
         Initialize the BatchNormReLUDropout layer.
 
@@ -155,7 +155,7 @@ class BatchNormReLUDropout(nn.Module):
             keep_prob (float): Probability of keeping a unit during dropout.
         """
         super().__init__()
-        self.batch_norm = nn.BatchNorm1d(in_features, momentum=bn_momentum)
+        self.batch_norm = nn.BatchNorm1d(in_features, momentum=bn_momentum, eps=eps)
         self.relu = nn.ReLU()
         self.use_dropout = use_dropout
         self.dropout = nn.Dropout(p=1 - keep_prob) if use_dropout else None
