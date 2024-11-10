@@ -47,6 +47,14 @@ def load_weights(model, optimizer, lr_scheduler):
     model.load_state_dict(checkpoint['model_state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     epoch = checkpoint['epoch']
+    for (name, initial_param), (name_after, loaded_param) in zip(initial_params.items(), model.named_parameters()):
+        if not torch.equal(initial_param, loaded_param):
+            print(f"Parameter '{name}' has been modified after loading checkpoint.")
+        else:
+            print(f"Parameter '{name}' matches after loading checkpoint.")
+        
+        print("Checkpoint loading test complete.")
+        
     if 'scheduler_state_dict' not in checkpoint:
         num_steps = epoch // args.learningDecayRate
         for _ in range(num_steps):

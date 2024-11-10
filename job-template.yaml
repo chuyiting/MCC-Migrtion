@@ -1,54 +1,48 @@
-apiVersion: batch/v1
-kind: Job
+apiVersion: v1
+kind: Pod
 metadata:
-  name: mcc-pt-train # Change this to your job name
+  name: mcc-pytorch # Change this to your job name
 spec:
-  ttlSecondsAfterFinished: 86400
-  template:
-    spec:
-      containers:
-      - name: mcc-pytorch
-        image: eddychu/mcc-pytorch:latest
-        # image: ubuntu
-        # imagePullPolicy: Always
-        resources:
-          limits:
-            memory: 64Gi
-            cpu: 32000m
-            nvidia.com/gpu: "1"
-            ephemeral-storage: "100Gi"
-          requests:
-            memory: 32Gi
-            cpu: 16000m
-            nvidia.com/gpu: "1"
-            ephemeral-storage: "100Gi"
-        command: ["sh", "-c"]
-        args: ["git clone https://github.com/chuyiting/MCC-Pytorch.git; cd MCC-Pytorch; /workspace/conda run -n torch pip install .; python download_dataset.py; python ModelNet/ModelNet.py --grow 128 --useDropOut;"]
-        # args: ["cd /pv/SPIN; /workspace/conda run -n torch pip install -r requirements.txt; /workspace/conda run -n torch conda install -y -c plotly plotly plotly-orca; cd /pv/StEik/surface_reconstruction; /workspace/conda run -n torch bash scripts/run_shapenet_recon.sh;"]
-        # args: ["sudo apt update; sudo apt install unzip; cd /pv/data; wget https://s3.eu-central-1.amazonaws.com/avg-projects/occupancy_networks/data/dataset_small_v1.1.zip; unzip dataset_small_v1.1.zip;"]
-        volumeMounts:
-        - mountPath: /pv
-          name: bx-vol
-      volumes:
-      - name: git-repo
-        emptyDir: {}
-      - name: bx-vol
-        persistentVolumeClaim:
-          claimName: bx-vol-haosu
-      restartPolicy: Never
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: nvidia.com/gpu.product
-                operator: In
-                values:
-                - NVIDIA-A100-SXM4-80GB
-                - NVIDIA-A10
-                - NVIDIA-A40
-                - NVIDIA-RTX-A6000
-                - Quadro-RTX-8000
-                - NVIDIA-3090
-  backoffLimit: 0 # The number of attempts to restart after crash
-
+  containers:
+  - name: mcc-pt
+    image: eddychu/mcc-pytorch:latest
+    # image: ubuntu
+    # imagePullPolicy: Always
+    resources:
+      limits:
+        memory: 32Gi
+        cpu: 16000m
+        nvidia.com/gpu: "1"
+        ephemeral-storage: "100Gi"
+      requests:
+        memory: 32Gi
+        cpu: 16000m
+        nvidia.com/gpu: "1"
+        ephemeral-storage: "100Gi"
+    command: ["sh", "-c"]
+    args: ["sleep 36500"] # sleep for 365000 seconds, i.e., 4 days. However, any pod will be deleted after 6 hours. need to change this to your command
+    volumeMounts:
+    - mountPath: /pv
+      name: bx-vol
+  volumes:
+  - name: git-repo
+    emptyDir: {}
+  - name: bx-vol
+    persistentVolumeClaim:
+      claimName: eddy-vol
+  restartPolicy: Never
+  # affinity:
+  #   nodeAffinity:
+  #     requiredDuringSchedulingIgnoredDuringExecution:
+  #       nodeSelectorTerms:
+  #       - matchExpressions:
+  #         - key: nvidia.com/gpu.product
+  #           operator: In
+  #           values:
+  #           - NVIDIA-A100-SXM4-80GB
+  #           - NVIDIA-A10
+  #           - NVIDIA-A40
+  #           - NVIDIA-RTX-A6000
+  #           - Quadro-RTX-8000
+  #           - NVIDIA-3090
+  #           - NVIDIA-2080

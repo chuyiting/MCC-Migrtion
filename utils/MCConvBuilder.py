@@ -237,10 +237,10 @@ class ConvolutionBuilder (nn.Module):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.weights = nn.Parameter(torch.randn(3, blockSize * numBlocks, device=device) * 0.01)
         self.biases = nn.Parameter(torch.zeros(blockSize * numBlocks, device=device))
-        self.weights2 = nn.Parameter(torch.randn(numBlocks, blockSize, blockSize, device=device) * 0.01).view(blockSize, numBlocks * blockSize)
-        self.biases2 = nn.Parameter(torch.zeros(numBlocks * blockSize, device=device)).view(numBlocks * blockSize)
-        self.weights3 = nn.Parameter(torch.randn(numBlocks, blockSize, blockSize, device=device) * 0.01).view(blockSize, numBlocks * blockSize)
-        self.biases3 = nn.Parameter(torch.zeros(numBlocks * blockSize, device=device)).view(numBlocks * blockSize)
+        self.weights2 = nn.Parameter(torch.randn(numBlocks, blockSize * blockSize, device=device).view(blockSize, numBlocks * blockSize) * 0.01)
+        self.biases2 = nn.Parameter(torch.zeros(numBlocks * blockSize, device=device).view(numBlocks * blockSize))
+        self.weights3 = nn.Parameter(torch.randn(numBlocks, blockSize, blockSize, device=device).view(blockSize, numBlocks * blockSize) * 0.01)
+        self.biases3 = nn.Parameter(torch.zeros(numBlocks * blockSize, device=device).view(numBlocks * blockSize))
 
 
 
