@@ -951,7 +951,7 @@ namespace pt_mcc
 
             if (status == cudaSuccess)
             {
-                if (attributes.memoryType == cudaMemoryTypeDevice)
+                if (attributes.type == cudaMemoryTypeDevice)
                 {
                     printf("Pointer is on the device.");
                 }
