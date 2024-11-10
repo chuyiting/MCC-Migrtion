@@ -1,4 +1,5 @@
 #include <torch/extension.h>
+#include <iostream>
 
 #ifndef BLOCK_MLP_SIZE
 #define BLOCK_MLP_SIZE 8
@@ -213,6 +214,12 @@ namespace pt_mcc
         auto weight1_grads = torch::zeros_like(in_weights_hidd1).to(torch::kCUDA);
         auto bias1_grads = torch::zeros_like(in_bias_hidd1).to(torch::kCUDA);
         auto weight2_grads = torch::zeros_like(in_weights_hidd2).to(torch::kCUDA);
+        // Calculate the memory size in bytes
+        size_t num_elements = weight2_grads.numel();
+        size_t element_size = weight2_grads.element_size(); // Size of each element in bytes
+        size_t memory_size = num_elements * element_size;
+
+        std::cout << "Memory size of weight2_grads: " << memory_size << " bytes" << std::endl;
         auto bias2_grads = torch::zeros_like(in_bias_hidd2).to(torch::kCUDA);
         auto weight_out_grads = torch::zeros_like(in_weights_out).to(torch::kCUDA);
         auto bias_out_grads = torch::zeros_like(in_bias_out).to(torch::kCUDA);
