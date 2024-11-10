@@ -953,13 +953,6 @@ namespace pt_mcc
             allocationSize = sizeOfFloat * (pNumOutFeatures * pNumInFeatures) * BLOCK_MLP_SIZE;
             printf("Calculated allocation size: %zu bytes\n", allocationSize);
 
-            cudaMemGetInfo(&freeMem, &totalMem);
-            printf("Free GPU memory: %zu bytes, Total GPU memory: %zu bytes\n", freeMem, totalMem);
-
-            if (pWeightOutGrads == nullptr)
-            {
-                printf("pWeightOutGrads pointer is null!\n");
-            }
             cudaDeviceSynchronize();
             cudaMemset(pWeightOutGrads, 0, sizeof(float) * (pNumOutFeatures * pNumInFeatures) * BLOCK_MLP_SIZE);
             gpuErrchk(cudaPeekAtLastError());
