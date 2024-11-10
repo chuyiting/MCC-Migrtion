@@ -209,13 +209,13 @@ namespace pt_mcc
                     "in_out_feature_grads dimensions are incorrect");
 
         // Prepare output tensors
-        auto feature_gradients = torch::zeros_like(in_features);
-        auto weight1_grads = torch::zeros_like(in_weights_hidd1);
-        auto bias1_grads = torch::zeros_like(in_bias_hidd1);
-        auto weight2_grads = torch::zeros_like(in_weights_hidd2);
-        auto bias2_grads = torch::zeros_like(in_bias_hidd2);
-        auto weight_out_grads = torch::zeros_like(in_weights_out);
-        auto bias_out_grads = torch::zeros_like(in_bias_out);
+        auto feature_gradients = torch::zeros_like(in_features).to(torch::kCUDA);
+        auto weight1_grads = torch::zeros_like(in_weights_hidd1).to(torch::kCUDA);
+        auto bias1_grads = torch::zeros_like(in_bias_hidd1).to(torch::kCUDA);
+        auto weight2_grads = torch::zeros_like(in_weights_hidd2).to(torch::kCUDA);
+        auto bias2_grads = torch::zeros_like(in_bias_hidd2).to(torch::kCUDA);
+        auto weight_out_grads = torch::zeros_like(in_weights_out).to(torch::kCUDA);
+        auto bias_out_grads = torch::zeros_like(in_bias_out).to(torch::kCUDA);
 
         // Extract pointers
         const float *in_points_ptr = in_points.data_ptr<float>();
