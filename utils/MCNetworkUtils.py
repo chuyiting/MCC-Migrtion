@@ -20,7 +20,7 @@ import math
 ############################################################################# Network Utils
 class MLP2Hidden(nn.Module):
     def __init__(self, num_input_features, hidden1_units, hidden2_units, num_out_features, 
-                 use_dropout=False, use_init_bn=True, keep_prob=0.8, bn_momentum=0.01, eps=0.001):
+                 use_dropout=False, use_init_bn=True, keep_prob=0.5, bn_momentum=0.01, eps=0.001):
         super().__init__()
         
         self.use_init_bn = use_init_bn
@@ -148,7 +148,7 @@ class Conv1x1(nn.Module):
 
 
 class BatchNormReLUDropout(nn.Module):
-    def __init__(self, in_features, use_dropout=False, keep_prob=0.8, bn_momentum = 0.01, eps=0.001):
+    def __init__(self, in_features, use_dropout=False, keep_prob=0.5, bn_momentum = 0.01, eps=0.001):
         """
         Initialize the BatchNormReLUDropout layer.
 
