@@ -950,6 +950,7 @@ namespace pt_mcc
                 printf("pWeights1Grads pointer is null!\n");
             }
 
+            cudaDeviceSynchronize();
             cudaMemset(pWeights1Grads, 0, sizeof(float) * 3 * numBlocksPerPoint * BLOCK_MLP_SIZE);
             gpuErrchk(cudaPeekAtLastError());
 
@@ -963,6 +964,7 @@ namespace pt_mcc
             {
                 printf("pWeight2Gradpointer is null!\n");
             }
+            cudaDeviceSynchronize();
             cudaMemset(pWeight2Grads, 0, sizeof(float) * BLOCK_MLP_SIZE * numBlocksPerPoint * BLOCK_MLP_SIZE);
             gpuErrchk(cudaPeekAtLastError());
 
@@ -976,14 +978,23 @@ namespace pt_mcc
             {
                 printf("pWeightOutGrads pointer is null!\n");
             }
+            cudaDeviceSynchronize();
             cudaMemset(pWeightOutGrads, 0, sizeof(float) * (pNumOutFeatures * pNumInFeatures) * BLOCK_MLP_SIZE);
             gpuErrchk(cudaPeekAtLastError());
+
+            cudaDeviceSynchronize();
             cudaMemset(pBiases1Grads, 0, sizeof(float) * numBlocksPerPoint * BLOCK_MLP_SIZE);
             gpuErrchk(cudaPeekAtLastError());
+
+            cudaDeviceSynchronize();
             cudaMemset(pBiases2Grads, 0, sizeof(float) * numBlocksPerPoint * BLOCK_MLP_SIZE);
             gpuErrchk(cudaPeekAtLastError());
+
+            cudaDeviceSynchronize();
             cudaMemset(pBiasesOutGrads, 0, sizeof(float) * (pNumOutFeatures * pNumInFeatures));
             gpuErrchk(cudaPeekAtLastError());
+
+            cudaDeviceSynchronize();
             cudaMemset(pOutFeatureGrads, 0, sizeof(float) * pNumPoints * pNumInFeatures);
             gpuErrchk(cudaPeekAtLastError());
 
