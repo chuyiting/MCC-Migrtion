@@ -937,6 +937,16 @@ namespace pt_mcc
             numBlocksPerPoint += ((pNumOutFeatures * pNumInFeatures) % BLOCK_MLP_SIZE != 0) ? 1 : 0;
             gpuErrchk(cudaPeekAtLastError());
 
+            size_t sizeOfFloat = sizeof(float);
+            size_t allocationSize = sizeOfFloat * 3 * numBlocksPerPoint * BLOCK_MLP_SIZE;
+            printf("Calculated allocation size: %zu bytes\n", allocationSize);
+
+            size_t freeMem, totalMem;
+            cudaMemGetInfo(&freeMem, &totalMem);
+            printf("Free GPU memory: %zu bytes, Total GPU memory: %zu bytes\n", freeMem, totalMem);
+
+            assert(pWeights1Grads != nullptr && "pWeights1Grads pointer is null");
+
             cudaMemset(pWeights1Grads, 0, sizeof(float) * 3 * numBlocksPerPoint * BLOCK_MLP_SIZE);
             gpuErrchk(cudaPeekAtLastError());
             cudaMemset(pWeight2Grads, 0, sizeof(float) * BLOCK_MLP_SIZE * numBlocksPerPoint * BLOCK_MLP_SIZE);
