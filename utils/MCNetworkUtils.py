@@ -148,7 +148,7 @@ class Conv1x1(nn.Module):
 
 
 class BatchNormReLUDropout(nn.Module):
-    def __init__(self, in_features, use_dropout=False, keep_prob=0.5, bn_momentum = 0.01, eps=0.001):
+    def __init__(self, in_features, use_dropout=False, keep_prob=0.8, bn_momentum = 0.01, eps=0.001):
         """
         Initialize the BatchNormReLUDropout layer.
 
