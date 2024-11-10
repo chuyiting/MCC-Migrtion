@@ -946,6 +946,24 @@ namespace pt_mcc
             size_t allocationSize = sizeOfFloat * BLOCK_MLP_SIZE * numBlocksPerPoint * BLOCK_MLP_SIZE;
             printf("Calculated allocation size: %zu bytes\n", allocationSize);
 
+            cudaPointerAttributes attributes;
+            cudaError_t status = cudaPointerGetAttributes(&attributes, pWeight2Grads);
+
+            if (status == cudaSuccess)
+            {
+                if (attributes.memoryType == cudaMemoryTypeDevice)
+                {
+                    printf("Pointer is on the device.");
+                }
+                else
+                {
+                    printf("Pointer is not on the device.");
+                }
+            }
+            else
+            {
+                printf("get attribute fail.");
+            }
             cudaDeviceSynchronize();
             cudaMemset(pWeight2Grads, 0, sizeof(float) * BLOCK_MLP_SIZE * numBlocksPerPoint * BLOCK_MLP_SIZE);
             gpuErrchk(cudaPeekAtLastError());
