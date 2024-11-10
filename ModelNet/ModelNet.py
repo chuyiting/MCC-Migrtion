@@ -42,12 +42,18 @@ def create_accuracy(logits, labels):
 
     return accuracy
 
-def load_weights(model, optimizer):
+def load_weights(model, optimizer, lr_scheduler):
     checkpoint = torch.load('checkpoint.pth')
     model.load_state_dict(checkpoint['model_state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     epoch = checkpoint['epoch']
-    return model, optimizer, epoch
+    if 'scheduler_state_dict' not in checkpoint:
+        num_steps = epoch // args.learningDecayRate
+        for _ in range(num_steps):
+            lr_scheduler.step()
+    else:
+        lr_scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+    return model, optimizer, lr_scheduler, epoch
 
 def compare_running_vs_batch_stats(model, points, batchIds, feature):
     model.eval()  # Ensure the model is in evaluation mode
@@ -198,16 +204,8 @@ if __name__ == '__main__':
         print('use pretrained weights....')
         # Save the model's initial parameters
         initial_params = {name: param.clone() for name, param in model.named_parameters()}
-        model, optimizer, start_epoch = load_weights(model, optimizer)
-        # Compare the parameters before and after loading the checkpoint
-        for (name, initial_param), (name_after, loaded_param) in zip(initial_params.items(), model.named_parameters()):
-            if not torch.equal(initial_param, loaded_param):
-                print(f"Parameter '{name}' has been modified after loading checkpoint.")
-            else:
-                print(f"Parameter '{name}' matches after loading checkpoint.")
-        
-        print("Checkpoint loading test complete.")
-            
+        model, optimizer, lr_scheduler, start_epoch = load_weights(model, optimizer)
+
 
     # Train model
     bestTestAccuracy = -1.0
@@ -283,6 +281,7 @@ if __name__ == '__main__':
             checkpoint = {
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
+                'scheduler_state_dict': lr_scheduler.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict()
             }   
             torch.save(checkpoint, 'checkpoint.pth')
