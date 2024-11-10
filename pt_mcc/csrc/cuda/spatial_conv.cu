@@ -938,11 +938,17 @@ namespace pt_mcc
             gpuErrchk(cudaPeekAtLastError());
 
             cudaMemset(pWeights1Grads, 0, sizeof(float) * 3 * numBlocksPerPoint * BLOCK_MLP_SIZE);
+            gpuErrchk(cudaPeekAtLastError());
             cudaMemset(pWeight2Grads, 0, sizeof(float) * BLOCK_MLP_SIZE * numBlocksPerPoint * BLOCK_MLP_SIZE);
+            gpuErrchk(cudaPeekAtLastError());
             cudaMemset(pWeightOutGrads, 0, sizeof(float) * (pNumOutFeatures * pNumInFeatures) * BLOCK_MLP_SIZE);
+            gpuErrchk(cudaPeekAtLastError());
             cudaMemset(pBiases1Grads, 0, sizeof(float) * numBlocksPerPoint * BLOCK_MLP_SIZE);
+            gpuErrchk(cudaPeekAtLastError());
             cudaMemset(pBiases2Grads, 0, sizeof(float) * numBlocksPerPoint * BLOCK_MLP_SIZE);
+            gpuErrchk(cudaPeekAtLastError());
             cudaMemset(pBiasesOutGrads, 0, sizeof(float) * (pNumOutFeatures * pNumInFeatures));
+            gpuErrchk(cudaPeekAtLastError());
             cudaMemset(pOutFeatureGrads, 0, sizeof(float) * pNumPoints * pNumInFeatures);
             gpuErrchk(cudaPeekAtLastError());
 
