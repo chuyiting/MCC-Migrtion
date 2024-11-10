@@ -30,8 +30,8 @@ class MLP2Hidden(nn.Module):
         # self.ln_init = nn.LayerNorm(num_input_features)
         self.bn_init = nn.BatchNorm1d(num_input_features, momentum=bn_momentum, eps=eps) if use_init_bn else None
         self.fc1 = nn.Linear(num_input_features, hidden1_units)
-        self.ln1 = nn.LayerNorm(hidden1_units)
-        # self.bn1 = nn.BatchNorm1d(hidden1_units, momentum=bn_momentum, eps=eps)
+        # self.ln1 = nn.LayerNorm(hidden1_units)
+        self.bn1 = nn.BatchNorm1d(hidden1_units, momentum=bn_momentum, eps=eps)
         self.fc2 = nn.Linear(hidden1_units, hidden2_units)
         # self.ln2 = nn.LayerNorm(hidden2_units)
         self.bn2 = nn.BatchNorm1d(hidden2_units, momentum=bn_momentum, eps=eps)
