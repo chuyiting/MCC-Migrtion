@@ -952,8 +952,30 @@ namespace pt_mcc
 
             cudaMemset(pWeights1Grads, 0, sizeof(float) * 3 * numBlocksPerPoint * BLOCK_MLP_SIZE);
             gpuErrchk(cudaPeekAtLastError());
+
+            allocationSize = sizeOfFloat * BLOCK_MLP_SIZE * numBlocksPerPoint * BLOCK_MLP_SIZE;
+            printf("Calculated allocation size: %zu bytes\n", allocationSize);
+
+            cudaMemGetInfo(&freeMem, &totalMem);
+            printf("Free GPU memory: %zu bytes, Total GPU memory: %zu bytes\n", freeMem, totalMem);
+
+            if (pWeight2Grad == nullptr)
+            {
+                printf("pWeight2Gradpointer is null!\n");
+            }
             cudaMemset(pWeight2Grads, 0, sizeof(float) * BLOCK_MLP_SIZE * numBlocksPerPoint * BLOCK_MLP_SIZE);
             gpuErrchk(cudaPeekAtLastError());
+
+            allocationSize = sizeOfFloat * (pNumOutFeatures * pNumInFeatures) * BLOCK_MLP_SIZE;
+            printf("Calculated allocation size: %zu bytes\n", allocationSize);
+
+            cudaMemGetInfo(&freeMem, &totalMem);
+            printf("Free GPU memory: %zu bytes, Total GPU memory: %zu bytes\n", freeMem, totalMem);
+
+            if (pWeightOutGrads == nullptr)
+            {
+                printf("pWeightOutGrads pointer is null!\n");
+            }
             cudaMemset(pWeightOutGrads, 0, sizeof(float) * (pNumOutFeatures * pNumInFeatures) * BLOCK_MLP_SIZE);
             gpuErrchk(cudaPeekAtLastError());
             cudaMemset(pBiases1Grads, 0, sizeof(float) * numBlocksPerPoint * BLOCK_MLP_SIZE);
