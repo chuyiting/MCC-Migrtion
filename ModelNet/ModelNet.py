@@ -204,7 +204,7 @@ if __name__ == '__main__':
         print('use pretrained weights....')
         # Save the model's initial parameters
         initial_params = {name: param.clone() for name, param in model.named_parameters()}
-        model, optimizer, lr_scheduler, start_epoch = load_weights(model, optimizer)
+        model, optimizer, lr_scheduler, start_epoch = load_weights(model, optimizer, lr_scheduler)
 
 
     # Train model
