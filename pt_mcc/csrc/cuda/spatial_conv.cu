@@ -935,6 +935,7 @@ namespace pt_mcc
         {
             int numBlocksPerPoint = (pNumOutFeatures * pNumInFeatures) / BLOCK_MLP_SIZE;
             numBlocksPerPoint += ((pNumOutFeatures * pNumInFeatures) % BLOCK_MLP_SIZE != 0) ? 1 : 0;
+            gpuErrchk(cudaPeekAtLastError());
 
             cudaMemset(pWeights1Grads, 0, sizeof(float) * 3 * numBlocksPerPoint * BLOCK_MLP_SIZE);
             cudaMemset(pWeight2Grads, 0, sizeof(float) * BLOCK_MLP_SIZE * numBlocksPerPoint * BLOCK_MLP_SIZE);
@@ -943,6 +944,7 @@ namespace pt_mcc
             cudaMemset(pBiases2Grads, 0, sizeof(float) * numBlocksPerPoint * BLOCK_MLP_SIZE);
             cudaMemset(pBiasesOutGrads, 0, sizeof(float) * (pNumOutFeatures * pNumInFeatures));
             cudaMemset(pOutFeatureGrads, 0, sizeof(float) * pNumPoints * pNumInFeatures);
+            gpuErrchk(cudaPeekAtLastError());
 
             dim3 gridDimension = computeBlockGrid(pNumNeighbors * numBlocksPerPoint * BLOCK_MLP_SIZE, EXECUTION_BLOCK_MLP_SIZE);
             gpuErrchk(cudaPeekAtLastError());
