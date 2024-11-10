@@ -275,7 +275,6 @@ if __name__ == '__main__':
                     accuracy = create_accuracy(logits, labels)
                     test_accuracy += accuracy
                     if num_iter % 30 == 0:
-                        print(logits.shape)
                         print(f'B[{num_iter}] test loss: {test_loss/ num_iter} accuracy: {test_accuracy / num_iter}')
                
             test_accuracy /= num_iter
