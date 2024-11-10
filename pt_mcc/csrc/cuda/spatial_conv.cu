@@ -936,43 +936,22 @@ namespace pt_mcc
             int numBlocksPerPoint = (pNumOutFeatures * pNumInFeatures) / BLOCK_MLP_SIZE;
             numBlocksPerPoint += ((pNumOutFeatures * pNumInFeatures) % BLOCK_MLP_SIZE != 0) ? 1 : 0;
 
-            cudaDeviceSynchronize();
             cudaMemset(pWeights1Grads, 0, sizeof(float) * 3 * numBlocksPerPoint * BLOCK_MLP_SIZE);
-            gpuErrchk(cudaPeekAtLastError());
-
-            cudaDeviceSynchronize();
             cudaMemset(pWeight2Grads, 0, sizeof(float) * BLOCK_MLP_SIZE * numBlocksPerPoint * BLOCK_MLP_SIZE);
-            gpuErrchk(cudaPeekAtLastError());
-
-            cudaDeviceSynchronize();
             cudaMemset(pWeightOutGrads, 0, sizeof(float) * (pNumOutFeatures * pNumInFeatures) * BLOCK_MLP_SIZE);
-            gpuErrchk(cudaPeekAtLastError());
-
-            cudaDeviceSynchronize();
             cudaMemset(pBiases1Grads, 0, sizeof(float) * numBlocksPerPoint * BLOCK_MLP_SIZE);
-            gpuErrchk(cudaPeekAtLastError());
-
-            cudaDeviceSynchronize();
             cudaMemset(pBiases2Grads, 0, sizeof(float) * numBlocksPerPoint * BLOCK_MLP_SIZE);
-            gpuErrchk(cudaPeekAtLastError());
-
-            cudaDeviceSynchronize();
             cudaMemset(pBiasesOutGrads, 0, sizeof(float) * (pNumOutFeatures * pNumInFeatures));
-            gpuErrchk(cudaPeekAtLastError());
-
-            cudaDeviceSynchronize();
             cudaMemset(pOutFeatureGrads, 0, sizeof(float) * pNumPoints * pNumInFeatures);
-            gpuErrchk(cudaPeekAtLastError());
 
             dim3 gridDimension = computeBlockGrid(pNumNeighbors * numBlocksPerPoint * BLOCK_MLP_SIZE, EXECUTION_BLOCK_MLP_SIZE);
-            gpuErrchk(cudaPeekAtLastError());
 
             computedconvj_dKernel<<<gridDimension, EXECUTION_BLOCK_MLP_SIZE, EXECUTION_BLOCK_MLP_SIZE * 4 * sizeof(float)>>>(
                 pAvg, pScaleInv, pNumSamples, pNumNeighbors, pNumInFeatures,
                 pNumOutFeatures, pRadius, pAABBMin, pAABBMax, pWeights1, pWeights2, pWeightsOut, pBiases1, pBiases2, pBiasesOut,
                 pSamples, pInPoints, pBatchIds, pInFeatures, pInOutFeatueGrads, pStartIndexs, pPackedNeighs, pPDFs, pWeights1Grads,
                 pWeight2Grads, pWeightOutGrads, pBiases1Grads, pBiases2Grads, pBiasesOutGrads, pOutFeatureGrads);
-            cudaDeviceSynchronize();
+
             gpuErrchk(cudaGetLastError());
         }
         else

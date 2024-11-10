@@ -236,12 +236,12 @@ class ConvolutionBuilder (nn.Module):
 
          # Initialize weights and biases
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.weights = nn.Parameter(torch.empty(3, blockSize * numBlocks, dtype=float, device=device))
-        self.biases = nn.Parameter(torch.zeros(blockSize * numBlocks, dtype=float, device=device))
-        self.weights2 = nn.Parameter(torch.empty(blockSize, numBlocks * blockSize, dtype=float, device=device))
-        self.biases2 = nn.Parameter(torch.zeros(numBlocks * blockSize, dtype=float, device=device))
-        self.weights3 = nn.Parameter(torch.empty(blockSize, numBlocks * blockSize, dtype=float, device=device))
-        self.biases3 = nn.Parameter(torch.zeros(numBlocks * blockSize, dtype=float, device=device))
+        self.weights = nn.Parameter(torch.empty(3, blockSize * numBlocks, device=device))
+        self.biases = nn.Parameter(torch.zeros(blockSize * numBlocks, device=device))
+        self.weights2 = nn.Parameter(torch.empty(blockSize, numBlocks * blockSize, device=device))
+        self.biases2 = nn.Parameter(torch.zeros(numBlocks * blockSize, device=device))
+        self.weights3 = nn.Parameter(torch.empty(blockSize, numBlocks * blockSize, device=device))
+        self.biases3 = nn.Parameter(torch.zeros(numBlocks * blockSize, device=device))
 
         init.xavier_normal_(self.weights)
         init.xavier_normal_(self.weights2)
