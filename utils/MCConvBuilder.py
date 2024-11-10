@@ -243,16 +243,9 @@ class ConvolutionBuilder (nn.Module):
         self.weights3 = nn.Parameter(torch.empty(blockSize, numBlocks * blockSize, device=device))
         self.biases3 = nn.Parameter(torch.zeros(numBlocks * blockSize, device=device))
 
-        self.variance_scaling_initializer(self.weights)
-        self.variance_scaling_initializer(self.weights2)
-        self.variance_scaling_initializer(self.weights3)
-
-
-    def variance_scaling_initializer(self, tensor, uniform=True):
-        if uniform:
-            init.kaiming_uniform_(tensor, a=math.sqrt(5), mode='fan_avg', nonlinearity='relu')
-        else:
-            init.kaiming_normal_(tensor, a=math.sqrt(5), mode='fan_avg', nonlinearity='relu')
+        init.xavier_normal_(self.weights)
+        init.xavier_normal_(self.weights2)
+        init.xavier_normal_(self.weights3)
 
     def __compute_dic_keys__(self,
         inPointHierarchy, outPointHierarchy,
