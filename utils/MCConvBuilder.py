@@ -170,7 +170,7 @@ class ConvolutionBuilder (nn.Module):
         multiFeatureConvs = False, 
         
         relativeRadius = True, # use default
-        usePDF = True, # use default
+        usePDF = False, # use default
         useAVG = True, # use default
         decayLossCollection = 'weight_decay_loss'):
         """Constructor.
@@ -235,12 +235,12 @@ class ConvolutionBuilder (nn.Module):
 
          # Initialize weights and biases
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.weights = nn.Parameter(torch.randn(3, blockSize * numBlocks, device=device) * 0.01)
+        self.weights = nn.Parameter(torch.randn(3, blockSize * numBlocks, device=device))
         self.biases = nn.Parameter(torch.zeros(blockSize * numBlocks, device=device))
-        self.weights2 = nn.Parameter(torch.randn(numBlocks, blockSize * blockSize, device=device).view(blockSize, numBlocks * blockSize) * 0.01)
-        self.biases2 = nn.Parameter(torch.zeros(numBlocks * blockSize, device=device).view(numBlocks * blockSize))
-        self.weights3 = nn.Parameter(torch.randn(numBlocks, blockSize, blockSize, device=device).view(blockSize, numBlocks * blockSize) * 0.01)
-        self.biases3 = nn.Parameter(torch.zeros(numBlocks * blockSize, device=device).view(numBlocks * blockSize))
+        self.weights2 = nn.Parameter(torch.randn(blockSize, numBlocks * blockSize, device=device))
+        self.biases2 = nn.Parameter(torch.zeros(numBlocks * blockSize, device=device))
+        self.weights3 = nn.Parameter(torch.randn(blockSize, numBlocks * blockSize, device=device))
+        self.biases3 = nn.Parameter(torch.zeros(numBlocks * blockSize, device=device))
 
 
 
