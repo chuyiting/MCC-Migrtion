@@ -965,7 +965,7 @@ namespace pt_mcc
                 printf("get attribute fail.");
             }
             cudaDeviceSynchronize();
-            cudaMemset(pWeight2Grads, 0, sizeof(float) * BLOCK_MLP_SIZE * numBlocksPerPoint * BLOCK_MLP_SIZE);
+            cudaMemset(pWeight2Grads, 0, 1);
             gpuErrchk(cudaPeekAtLastError());
 
             allocationSize = sizeOfFloat * (pNumOutFeatures * pNumInFeatures) * BLOCK_MLP_SIZE;
