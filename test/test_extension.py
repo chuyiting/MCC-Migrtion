@@ -287,7 +287,7 @@ if __name__ == "__main__":
     in_features = torch.tensor([[1.0, 1.0],
                                 [0.9, 0.8],
                                 [0.6, 0.5],
-                                [0.3, 0.2]], device='cuda', dtype=torch.float32)
+                                [0.3, 0.2]], device='cuda', dtype=torch.float32).requires_grad_()
 
     batch_ids = torch.tensor([[0], [1], [0], [1]], device='cuda', dtype=torch.int32)
 
@@ -295,6 +295,7 @@ if __name__ == "__main__":
 
     in_samples = torch.tensor([[0.1, 0.2, 0.3],
                             [0.4, 0.5, 0.6]], device='cuda', dtype=torch.float32)
+    num_samples = in_samples.shape[0]
 
     start_index = torch.tensor([[0], [1]], device='cuda', dtype=torch.int32)
 
@@ -363,17 +364,19 @@ if __name__ == "__main__":
         num_out_features_tensor, combin_tensor, batch_size_tensor, radius_tensor,
         scale_inv_tensor, avg_tensor
     )
-    output1 = pt_mcc.ops.spatial_conv(
-        in_points, in_features, batch_ids, in_pdfs,
-        in_samples, start_index, packed_neigh, in_aabb_min,
-        in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out,
-        in_bias_hidd1, in_bias_hidd2, in_bias_out,
-        num_out_features_tensor, combin_tensor, batch_size_tensor, radius_tensor,
-        scale_inv_tensor, avg_tensor
-    )
     
     print("Output shape:", output.shape)  # Expected shape: (num_samples, num_out_features)
     print("Output:", output)
-    print(f'stable output: {torch.allclose(output1, output)}')
+
+    grad = torch.ones(num_samples, num_out_features).cuda()
+    output.backward(grad)
+
+    print(in_features.grad)
+    print(in_weights_hidd1.grad)
+    print(in_weights_hidd2.grad)
+    print(in_weights_out.grad)
+    print(in_bias_hidd1.grad)
+    print(in_bias_hidd2.grad)
+    print(in_bias_out.grad)
 
     unittest.main()

@@ -163,6 +163,13 @@ def _spatial_conv_backward(ctx, grad):
         featureGrads, weights1Grads, biases1Grads, weights2Grads, biases2Grads, weightsOutGrads, biasesOutGrads = \
             torch.ops.pt_mcc.spatial_conv_grad(in_points, in_features, batch_ids, in_pdfs, in_samples, start_index, packed_neigh, in_aabb_min, in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out, in_bias_hidd1, in_bias_hidd2, in_bias_out, grad, num_out_features.item(), combin.item(), batch_size.item(), radius.item(), scale_inv.item(), avg.item())
     
+    print(f'feature grad shape: {featureGrads.shape}')
+    print(f'weights1 grad shape: {weights1Grads.shape}')
+    print(f'weights2 grad shape: {weights2Grads.shape}')
+    print(f'weights out grad shape: {weightsOutGrads.shape}')
+    print(f'bias1 grad shape: {biases1Grads.shape}')
+    print(f'bias2 grad shape: {biases2Grads.shape}')
+    print(f'bias out grad shape: {biasesOutGrads.shape}')
     return None, featureGrads, None, None, None, None, None, None, None, weights1Grads, weights2Grads, weightsOutGrads,biases1Grads, biases2Grads, biasesOutGrads, None, None, None, None, None, None
 
 
