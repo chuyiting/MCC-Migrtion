@@ -99,6 +99,10 @@ class PointHierarchy:
         currFeatures = inFeatures
         currBatchIds = inBatchIds
 
+        print(f'curr points require grad {currPts.requires_grad}')
+        print(f'curr features require grad {currFeatures.requires_grad}')
+
+
         # Compute the different levels.
         for level, currRadius in enumerate(radiusList):
 
@@ -111,6 +115,10 @@ class PointHierarchy:
             sortPts, sortBatchs, sortFeatures, cellIndexs = sort_points_step2(currPts, 
                 currBatchIds, currFeatures, keys, indexs, self.aabbMin_, self.aabbMax_, 
                 self.batchSize_, currRadius, self.relativeRadius_)
+            
+            print(f'sort points require grad {sortPts.requires_grad}')
+            print(f'sort features require grad {sortFeatures.requires_grad}')
+
 
             # Use poisson disk sampling algorithm for the given radius.
             sampledPts, sampledBatchsIds, sampledIndexs = poisson_sampling(
@@ -377,7 +385,7 @@ class ConvolutionBuilder (nn.Module):
             currGridTuple = (sortPts, sortBatchs, cellIndexs, indexs)
             print(f'in point need grad: {inPointHierarchy.points_[self.inPointLevel].requires_grad}')
             print(f'sort point need grad: {sortPts.requires_grad}')
-            print(f'sort feature need grad: {sort_features.requires_grad}')
+            print(f'sort feature need grad: {sortFeatures.requires_grad}')
             #self.cacheGrids_[keyGrid] = currGridTuple
 
         # Check if the neighbor information was previously computed.
