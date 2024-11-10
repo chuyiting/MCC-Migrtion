@@ -117,6 +117,17 @@ def git_commit_and_push():
     except subprocess.CalledProcessError as e:
         print(f"Error during git commit/push: {e}")
 
+def get_weights(model):
+    return {name: param.data.clone() for name, param in model.named_parameters()}
+
+# Check which layers have changed weights
+def check_weights_changed(model, initial_weights):
+    changes = []
+    for name, param in model.named_parameters():
+        if torch.equal(param.data, initial_weights[name]):
+            changes.append(name)
+    
+    return changes
 
 model_map = {
     'MCClassS' : MCClassS
@@ -246,6 +257,7 @@ if __name__ == '__main__':
         mTrainDataSet.start_iteration()
         num_iter = 0
         while mTrainDataSet.has_more_batches():
+            initial_weights = get_weights(model)
             _, points, batchIds, features, _, labels, _ = mTrainDataSet.get_next_batch()
             points = torch.from_numpy(points).float().cuda()
             batchIds = torch.from_numpy(batchIds).int().cuda()
@@ -258,6 +270,8 @@ if __name__ == '__main__':
             xentropy_loss.backward()
             optimizer.step()
 
+            not_changed_layers = check_weights_changed(model, initial_weights)
+            print(not_changed_layers)
             accuracy = create_accuracy(logits, labels)
             total_accuracy += accuracy
             if num_iter % 50 == 0:
