@@ -102,6 +102,7 @@ def spatial_conv(in_points, in_features, batch_ids, in_pdfs, in_samples, start_i
     return torch.ops.pt_mcc.spatial_conv(in_points, in_features, batch_ids, in_pdfs, in_samples, start_index, packed_neigh, in_aabb_min, in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out, in_bias_hidd1, in_bias_hidd2, in_bias_out, num_out_features, combin, batch_size, radius, scale_inv, avg)
         
 def _setup_spatial_conv_context(ctx, inputs, output):
+    print(inputs)
     in_points, in_features, batch_ids, in_pdfs, in_samples, start_index, packed_neigh, in_aabb_min, in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out, in_bias_hidd1, in_bias_hidd2, in_bias_out, num_out_features, combin, batch_size, radius, scale_inv, avg = inputs
     saved_points = None
     saved_features = None
