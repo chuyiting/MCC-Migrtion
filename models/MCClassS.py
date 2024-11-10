@@ -36,7 +36,7 @@ class MCClassS(nn.Module):
         self.useConvDropOut = useConvDropOut
         self.useDropOutFull = useDropOutFull
 
-        self.conv1 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_1", inPointLevel=0, outPointLevel=1, inNumFeatures=numInputFeatures, outNumFeatures=k, convRadius= 0.2, multiFeatureConvs=True)
+        self.conv1 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_1", inPointLevel=0, outPointLevel=1, inNumFeatures=numInputFeatures, outNumFeatures=k, convRadius= 0.2, multiFeatureConvs=False)
         self.conv2 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_2", inPointLevel=1, outPointLevel=2, inNumFeatures=k*2, convRadius= 0.8)
         self.conv3 = ConvolutionBuilder(KDEWindow=0.2, convName = "Conv_3", inPointLevel=2, outPointLevel=3, inNumFeatures=k*4, convRadius=math.sqrt(3.0)+0.1)
         
