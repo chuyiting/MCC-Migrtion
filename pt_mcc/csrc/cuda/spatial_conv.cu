@@ -945,7 +945,10 @@ namespace pt_mcc
             cudaMemGetInfo(&freeMem, &totalMem);
             printf("Free GPU memory: %zu bytes, Total GPU memory: %zu bytes\n", freeMem, totalMem);
 
-            assert(pWeights1Grads != nullptr && "pWeights1Grads pointer is null");
+            if (pWeights1Grads == nullptr)
+            {
+                printf("pWeights1Grads pointer is null!\n");
+            }
 
             cudaMemset(pWeights1Grads, 0, sizeof(float) * 3 * numBlocksPerPoint * BLOCK_MLP_SIZE);
             gpuErrchk(cudaPeekAtLastError());
