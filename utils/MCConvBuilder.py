@@ -372,9 +372,6 @@ class ConvolutionBuilder (nn.Module):
                 inPointHierarchy.aabbMin_, inPointHierarchy.aabbMax_, 
                 inPointHierarchy.batchSize_, self.convRadius, currRelativeRadius)
             currGridTuple = (sortPts, sortBatchs, cellIndexs, indexs)
-            print(f'in point need grad: {inPointHierarchy.points_[self.inPointLevel].requires_grad}')
-            print(f'sort point need grad: {sortPts.requires_grad}')
-            print(f'sort feature need grad: {sortFeatures.requires_grad}')
             #self.cacheGrids_[keyGrid] = currGridTuple
 
         # Check if the neighbor information was previously computed.
