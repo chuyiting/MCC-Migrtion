@@ -220,7 +220,7 @@ class ConvolutionBuilder (nn.Module):
         blockSize = get_block_size()
         
         if multiFeatureConvs:
-            numOutNeurons = inNumFeatures * inNumFeatures
+            numOutNeurons = inNumFeatures * outNumFeatures
         else:
             numOutNeurons = inNumFeatures
 
