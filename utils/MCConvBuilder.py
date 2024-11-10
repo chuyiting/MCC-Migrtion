@@ -118,6 +118,10 @@ class PointHierarchy:
             sampledFeatures = get_sampled_features(sampledIndexs, sortFeatures)
             transformedIndexs = transform_indices(sampledIndexs, indexs)
 
+            sampledPts.requires_grad = True
+            sampledBatchsIds.requires_grad = True
+            sampledFeatures.requires_grad = True
+            
             # Save the resulting point cloud.
             self.points_.append(sampledPts)
             self.batchIds_.append(sampledBatchsIds)
