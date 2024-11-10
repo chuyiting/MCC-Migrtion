@@ -9,6 +9,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 import numpy as np
+import subprocess
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 sys.path.append(os.path.join(ROOT_DIR, 'models'))
@@ -97,6 +98,25 @@ def check_deterministic_outputs(model, points, batchIds, feature):
         else:
             print(torch.mean(output1 - output2))
             print("Outputs are not deterministic; dropout may still be active in eval mode.")
+
+
+# Git commit and push process
+def git_commit_and_push():
+    checkpoint_file = 'checkpoint.pth'
+    try:
+        # Add the checkpoint file to the staging area
+        subprocess.run(['git', 'add', checkpoint_file], check=True)
+
+        # Commit the change with a message
+        subprocess.run(['git', 'commit', '-m', 'Update model checkpoint'], check=True)
+
+        # Push the commit to the remote repository
+        subprocess.run(['git', 'push'], check=True)
+
+        print("Checkpoint committed and pushed to GitHub successfully!")
+    except subprocess.CalledProcessError as e:
+        print(f"Error during git commit/push: {e}")
+
 
 model_map = {
     'MCClassS' : MCClassS
@@ -295,3 +315,4 @@ if __name__ == '__main__':
             lr_scheduler.step()
 
     print(f"Training completed. Best test accuracy: {bestTestAccuracy:.4f}")
+    git_commit_and_push()
