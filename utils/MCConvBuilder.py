@@ -412,6 +412,27 @@ class ConvolutionBuilder (nn.Module):
         scale_inv = torch.tensor(currRelativeRadius, dtype=torch.bool).to(device=device)
         avg = torch.tensor(currUseAVG, dtype=torch.bool).to(device=device)
        
+        print(f'pts: {currGridTuple[0]}')
+        print(f'features: {sortFeatures}')
+        print(f'batch ids: {currGridTuple[1]}')
+        print(f'pdf: {currPDFs}')
+        print(f'sample points: {currOutPointHierarchy.points_[currOutPointLevel]}')
+        print(f'neighbor start index: {currNeighTuple[0]}')
+        print(f'packed neighbor: {currNeighTuple[1]}')
+        print(f'aabb min: {inPointHierarchy.aabbMin_}')
+        print(f'aabb_max: {inPointHierarchy.aabbMax_}')
+        print(f'weight: {self.weights}')
+        print(f'weight2: {self.weights2}')
+        print(f'weight3: { self.weights3}')
+        print(f'bias: {self.biases}')
+        print(f'bias2: { self.biases2}')
+        print(f'bias3: { self.biases3}')
+        print(f'num out features: {num_out_features}')
+        print(f'combin: {combin}')
+        print(f'batch size: {batch_size}')
+        print(f'radius: {radius}')
+        print(f'scale inv: {scale_inv}')
+        print(f'avg: {avg}')
         conv1 = spatial_conv(currGridTuple[0], sortFeatures, currGridTuple[1], 
             currPDFs, currOutPointHierarchy.points_[currOutPointLevel], 
             currNeighTuple[0], currNeighTuple[1], 
