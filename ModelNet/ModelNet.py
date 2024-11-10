@@ -270,8 +270,9 @@ if __name__ == '__main__':
             xentropy_loss.backward()
             optimizer.step()
 
-            # not_changed_layers = check_weights_changed(model, initial_weights)
-            # print(not_changed_layers)
+            not_changed_layers = check_weights_changed(model, initial_weights)
+            if len(not_changed_layers) > 0:
+                print(not_changed_layers)
             accuracy = create_accuracy(logits, labels)
             total_accuracy += accuracy
             if num_iter % 50 == 0:
