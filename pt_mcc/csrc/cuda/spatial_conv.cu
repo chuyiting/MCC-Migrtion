@@ -485,7 +485,7 @@ namespace pt_mcc
      *  @param  pBiasOutGrads           Output parameter with the list of gradients for the biases of the output layer.
      *  @param  pPointsGrads            Output parameter with the list of gradients for the points.
      */
-    ___global__ void computedconvj_dKernel(
+    __global__ void computedconvj_dKernel(
         const bool pAvg,
         const bool pScaleInv,
         const int pNumPoints,
@@ -539,11 +539,11 @@ namespace pt_mcc
 
         if (currentNeighborIndex < pNumNeighbors)
         {
+
             int neighborIndex = currentNeighborIndex * 2;
             int currentPointIndex = pNeigbors[neighborIndex];
             int centralPointIndex = pNeigbors[neighborIndex + 1];
             int currBatchId = pBatchIds[currentPointIndex];
-
             // Print debug information on indices
             printf("Debug: currentPointIndex = %d, centralPointIndex = %d, currBatchId = %d\n", currentPointIndex, centralPointIndex, currBatchId);
 
