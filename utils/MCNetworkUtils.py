@@ -28,13 +28,13 @@ class MLP2Hidden(nn.Module):
 
         # Initialize layers
         # self.ln_init = nn.LayerNorm(num_input_features)
-        self.bn_init = nn.BatchNorm1d(num_input_features, momentum=bn_momentum, eps=eps) if use_init_bn else None
+        # self.bn_init = nn.BatchNorm1d(num_input_features, momentum=bn_momentum, eps=eps) if use_init_bn else None
         self.fc1 = nn.Linear(num_input_features, hidden1_units)
         # self.ln1 = nn.LayerNorm(hidden1_units)
-        self.bn1 = nn.BatchNorm1d(hidden1_units, momentum=bn_momentum, eps=eps)
+        # self.bn1 = nn.BatchNorm1d(hidden1_units, momentum=bn_momentum, eps=eps)
         self.fc2 = nn.Linear(hidden1_units, hidden2_units)
         # self.ln2 = nn.LayerNorm(hidden2_units)
-        self.bn2 = nn.BatchNorm1d(hidden2_units, momentum=bn_momentum, eps=eps)
+        # self.bn2 = nn.BatchNorm1d(hidden2_units, momentum=bn_momentum, eps=eps)
         self.fc3 = nn.Linear(hidden2_units, num_out_features)
 
         # Dropout layer
@@ -43,19 +43,19 @@ class MLP2Hidden(nn.Module):
             self.dropout2 = nn.Dropout(p=1 - keep_prob) 
 
     def forward(self, features):
-        if self.use_init_bn:
-            features = self.bn_init(features)
+        # if self.use_init_bn:
+        #     features = self.bn_init(features)
 
         # Hidden layer 1
         x = self.fc1(features)
-        x = self.bn1(x)
+        # x = self.bn1(x)
         x = F.relu(x)
 
         # Hidden layer 2
         if self.use_dropout:
             x = self.dropout(x) 
         x = self.fc2(x)
-        x = self.bn2(x)
+        # x = self.bn2(x)
         x = F.relu(x)
 
         # Output layer
