@@ -15,6 +15,7 @@ import os
 import math
 import torch
 import torch.nn as nn
+import torch.nn.init as init
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 sys.path.append(os.path.join(ROOT_DIR, 'tf_ops'))
@@ -170,7 +171,7 @@ class ConvolutionBuilder (nn.Module):
         multiFeatureConvs = False, 
         
         relativeRadius = True, # use default
-        usePDF = False, # use default
+        usePDF = True, # use default
         useAVG = True, # use default
         decayLossCollection = 'weight_decay_loss'):
         """Constructor.
@@ -235,13 +236,16 @@ class ConvolutionBuilder (nn.Module):
 
          # Initialize weights and biases
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.weights = nn.Parameter(torch.randn(3, blockSize * numBlocks, device=device))
+        self.weights = nn.Parameter(torch.empty(3, blockSize * numBlocks, device=device))
         self.biases = nn.Parameter(torch.zeros(blockSize * numBlocks, device=device))
-        self.weights2 = nn.Parameter(torch.randn(blockSize, numBlocks * blockSize, device=device))
+        self.weights2 = nn.Parameter(torch.empty(blockSize, numBlocks * blockSize, device=device))
         self.biases2 = nn.Parameter(torch.zeros(numBlocks * blockSize, device=device))
-        self.weights3 = nn.Parameter(torch.randn(blockSize, numBlocks * blockSize, device=device))
+        self.weights3 = nn.Parameter(torch.empty(blockSize, numBlocks * blockSize, device=device))
         self.biases3 = nn.Parameter(torch.zeros(numBlocks * blockSize, device=device))
 
+        init.xavier_normal_(self.weights)
+        init.xavier_normal_(self.weights2)
+        init.xavier_normal_(self.weights3)
 
 
     def __compute_dic_keys__(self,
