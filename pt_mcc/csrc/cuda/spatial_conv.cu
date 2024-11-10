@@ -959,7 +959,7 @@ namespace pt_mcc
             cudaMemGetInfo(&freeMem, &totalMem);
             printf("Free GPU memory: %zu bytes, Total GPU memory: %zu bytes\n", freeMem, totalMem);
 
-            if (pWeight2Grad == nullptr)
+            if (pWeight2Grads == nullptr)
             {
                 printf("pWeight2Gradpointer is null!\n");
             }
