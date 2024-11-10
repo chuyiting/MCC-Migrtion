@@ -118,8 +118,8 @@ class PointHierarchy:
             sampledFeatures = get_sampled_features(sampledIndexs, sortFeatures)
             transformedIndexs = transform_indices(sampledIndexs, indexs)
 
-            sampledPts.requires_grad = True
-            sampledFeatures.requires_grad = True
+            print(f'sample points require grad {sampledPts.requires_grad}')
+            print(f'sample features require grad {sampledFeatures.requires_grad}')
 
             # Save the resulting point cloud.
             self.points_.append(sampledPts)
@@ -375,6 +375,9 @@ class ConvolutionBuilder (nn.Module):
                 inPointHierarchy.aabbMin_, inPointHierarchy.aabbMax_, 
                 inPointHierarchy.batchSize_, self.convRadius, currRelativeRadius)
             currGridTuple = (sortPts, sortBatchs, cellIndexs, indexs)
+            print(f'in point need grad: {inPointHierarchy.points_[self.inPointLevel].requires_grad}')
+            print(f'sort point need grad: {sortPts.requires_grad}')
+            print(f'sort feature need grad: {sort_features.requires_grad}')
             #self.cacheGrids_[keyGrid] = currGridTuple
 
         # Check if the neighbor information was previously computed.
