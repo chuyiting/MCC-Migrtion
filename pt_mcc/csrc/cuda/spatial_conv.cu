@@ -943,8 +943,7 @@ namespace pt_mcc
             cudaDeviceSynchronize();
 
             size_t sizeOfFloat = sizeof(float);
-            size_t allocationSize = sizeOfFloat * 3 * numBlocksPerPoint * BLOCK_MLP_SIZE;
-            allocationSize = sizeOfFloat * BLOCK_MLP_SIZE * numBlocksPerPoint * BLOCK_MLP_SIZE;
+            size_t allocationSize = sizeOfFloat * BLOCK_MLP_SIZE * numBlocksPerPoint * BLOCK_MLP_SIZE;
             printf("Calculated allocation size: %zu bytes\n", allocationSize);
 
             cudaDeviceSynchronize();
