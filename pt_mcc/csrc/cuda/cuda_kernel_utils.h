@@ -31,20 +31,26 @@ inline dim3 computeBlockGrid(const unsigned long long int pNumElements, const in
 {
     dim3 finalDimension(pNumElements / pNumThreads, 1, 1);
     finalDimension.x += (pNumElements % pNumThreads != 0) ? 1 : 0;
-    while (finalDimension.x >= 65536)
+
+    // Limit the x dimension to 65535 and increment y if needed
+    while (finalDimension.x > 65535)
     {
         finalDimension.y *= 2;
-        int auxDim = finalDimension.x / 2;
-        auxDim += (finalDimension.x % 2 != 0) ? 1 : 0;
-        finalDimension.x = auxDim;
+        finalDimension.x = (finalDimension.x + 1) / 2; // Ceil division
+
+        // If y also exceeds 65535, move to z dimension
+        if (finalDimension.y > 65535)
+        {
+            finalDimension.z *= 2;
+            finalDimension.y = (finalDimension.y + 1) / 2; // Ceil division
+        }
     }
 
-    while (finalDimension.y >= 65536)
+    // Ensure none of the dimensions exceed 65535, return an error or adjust as needed
+    if (finalDimension.x > 65535 || finalDimension.y > 65535 || finalDimension.z > 65535)
     {
-        finalDimension.z *= 2;
-        int auxDim = finalDimension.y / 2;
-        auxDim += (finalDimension.y % 2 != 0) ? 1 : 0;
-        finalDimension.y = auxDim;
+        printf("Error: Block grid dimensions exceeded the limits!\n");
+        return dim3(65535, 65535, 1); // Limit as a fallback, or handle error
     }
 
     return finalDimension;
