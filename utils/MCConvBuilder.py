@@ -99,10 +99,6 @@ class PointHierarchy:
         currFeatures = inFeatures
         currBatchIds = inBatchIds
 
-        print(f'curr points require grad {currPts.requires_grad}')
-        print(f'curr features require grad {currFeatures.requires_grad}')
-
-
         # Compute the different levels.
         for level, currRadius in enumerate(radiusList):
 
@@ -115,19 +111,12 @@ class PointHierarchy:
             sortPts, sortBatchs, sortFeatures, cellIndexs = sort_points_step2(currPts, 
                 currBatchIds, currFeatures, keys, indexs, self.aabbMin_, self.aabbMax_, 
                 self.batchSize_, currRadius, self.relativeRadius_)
-            
-            print(f'sort points require grad {sortPts.requires_grad}')
-            print(f'sort features require grad {sortFeatures.requires_grad}')
-
 
             # Use poisson disk sampling algorithm for the given radius.
             sampledPts, sampledBatchsIds, sampledIndexs = poisson_sampling(
                 sortPts, sortBatchs, cellIndexs, aabbMin, aabbMax, currRadius, batchSize, self.relativeRadius_)
             sampledFeatures = get_sampled_features(sampledIndexs, sortFeatures)
             transformedIndexs = transform_indices(sampledIndexs, indexs)
-
-            print(f'sample points require grad {sampledPts.requires_grad}')
-            print(f'sample features require grad {sampledFeatures.requires_grad}')
 
             # Save the resulting point cloud.
             self.points_.append(sampledPts)
@@ -426,8 +415,6 @@ class ConvolutionBuilder (nn.Module):
         scale_inv = torch.tensor(currRelativeRadius, dtype=torch.bool).to(device=device)
         avg = torch.tensor(currUseAVG, dtype=torch.bool).to(device=device)
        
-        print(f'require grad pts: {currGridTuple[0].requires_grad}')
-        print(f'require grad features: {sortFeatures.requires_grad}')
         conv1 = spatial_conv(currGridTuple[0], sortFeatures, currGridTuple[1], 
             currPDFs, currOutPointHierarchy.points_[currOutPointLevel], 
             currNeighTuple[0], currNeighTuple[1], 

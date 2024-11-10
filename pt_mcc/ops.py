@@ -125,7 +125,7 @@ def _setup_spatial_conv_context(ctx, inputs, output):
     saved_scale_inv = None
     saved_avg = None
     saved_out_features = None
-    if ctx.needs_input_grad[1] or ctx.needs_input_grad[0] or ctx.needs_input_grad[10] or ctx.needs_input_grad[11]:
+    if ctx.needs_input_grad[1] or ctx.needs_input_grad[9] or ctx.needs_input_grad[10]:
         saved_points = in_points
         saved_features = in_features
         saved_batch_ids = batch_ids
@@ -159,7 +159,7 @@ def _spatial_conv_backward(ctx, grad):
     biases2Grads = None 
     biasesOutGrads = None
     
-    if ctx.needs_input_grad[1] or ctx.needs_input_grad[10] or ctx.needs_input_grad[11]:
+    if ctx.needs_input_grad[1] or ctx.needs_input_grad[9] or ctx.needs_input_grad[10]:
         featureGrads, weights1Grads, biases1Grads, weights2Grads, biases2Grads, weightsOutGrads, biasesOutGrads = \
             torch.ops.pt_mcc.spatial_conv_grad(in_points, in_features, batch_ids, in_pdfs, in_samples, start_index, packed_neigh, in_aabb_min, in_aabb_max, in_weights_hidd1, in_weights_hidd2, in_weights_out, in_bias_hidd1, in_bias_hidd2, in_bias_out, grad, num_out_features.item(), combin.item(), batch_size.item(), radius.item(), scale_inv.item(), avg.item())
     
