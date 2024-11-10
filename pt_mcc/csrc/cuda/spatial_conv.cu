@@ -485,7 +485,7 @@ namespace pt_mcc
      *  @param  pBiasOutGrads           Output parameter with the list of gradients for the biases of the output layer.
      *  @param  pPointsGrads            Output parameter with the list of gradients for the points.
      */
-    __global__ void computedconvj_dKernel(
+    ___global__ void computedconvj_dKernel(
         const bool pAvg,
         const bool pScaleInv,
         const int pNumPoints,
@@ -531,13 +531,21 @@ namespace pt_mcc
         int threadId = threadIdx.x % BLOCK_MLP_SIZE;
         int threadOffset = threadIdx.x - threadId;
 
+        // Debug print for initial values
+        if (threadIdx.x == 0)
+        {
+            printf("Debug: currentIndex = %llu, currentNeighborIndex = %d, offset = %d, threadId = %d\n", currentIndex, currentNeighborIndex, offset, threadId);
+        }
+
         if (currentNeighborIndex < pNumNeighbors)
         {
-
             int neighborIndex = currentNeighborIndex * 2;
             int currentPointIndex = pNeigbors[neighborIndex];
             int centralPointIndex = pNeigbors[neighborIndex + 1];
             int currBatchId = pBatchIds[currentPointIndex];
+
+            // Print debug information on indices
+            printf("Debug: currentPointIndex = %d, centralPointIndex = %d, currBatchId = %d\n", currentPointIndex, centralPointIndex, currBatchId);
 
             float maxAabbSize = max(max(
                                         pAABBMax[currBatchId * 3] - pAABBMin[currBatchId * 3],
@@ -545,16 +553,27 @@ namespace pt_mcc
                                     pAABBMax[currBatchId * 3 + 2] - pAABBMin[currBatchId * 3 + 2]);
 
             float scaledRadius = (pScaleInv) ? pRadius * maxAabbSize : pRadius;
+
+            // Print debug for radius and scaling
+            printf("Debug: maxAabbSize = %f, scaledRadius = %f\n", maxAabbSize, scaledRadius);
+
             float currPointCoords[3] = {
                 (pPoints[currentPointIndex * 3] - pSamples[centralPointIndex * 3]) / scaledRadius,
                 (pPoints[currentPointIndex * 3 + 1] - pSamples[centralPointIndex * 3 + 1]) / scaledRadius,
                 (pPoints[currentPointIndex * 3 + 2] - pSamples[centralPointIndex * 3 + 2]) / scaledRadius};
+
+            // Print for current point coordinates
+            printf("Debug: currPointCoords = {%f, %f, %f}\n", currPointCoords[0], currPointCoords[1], currPointCoords[2]);
+
             float currPDF = pPDFs[currentNeighborIndex];
             int initIter = pStartIndexs[centralPointIndex];
             int endIter = (centralPointIndex < pNumPoints - 1) ? pStartIndexs[centralPointIndex + 1] : pNumNeighbors;
             float numNeighbors = (pAvg) ? (float)(endIter - initIter) : 1.0;
             int featureIndex = currentPointIndex * pNumFeatures;
             int outFeatureIndex = centralPointIndex * pNumOutFeatures;
+
+            // Print for the iteration and feature indices
+            printf("Debug: numNeighbors = %f, featureIndex = %d, outFeatureIndex = %d\n", numNeighbors, featureIndex, outFeatureIndex);
 
             float *temporalMemory1 = &(mlpdconvjIntermediateRes[threadOffset]);
             float *temporalMemory2 = &(mlpdconvjIntermediateRes[EXECUTION_BLOCK_MLP_SIZE + threadOffset]);
