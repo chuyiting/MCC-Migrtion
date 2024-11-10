@@ -393,10 +393,11 @@ class ConvolutionBuilder (nn.Module):
             currPDFs = self.cachePDFs_[keyPDF]
         else:
             if currUsePDF:
-                currPDFs = compute_pdf(currGridTuple[0], currGridTuple[1], 
-                    inPointHierarchy.aabbMin_, inPointHierarchy.aabbMax_, 
-                    currNeighTuple[0], currNeighTuple[1], currKDEWindow, self.convRadius, 
-                    inPointHierarchy.batchSize_, currRelativeRadius)
+                with torch.no_grad():
+                    currPDFs = compute_pdf(currGridTuple[0], currGridTuple[1], 
+                        inPointHierarchy.aabbMin_, inPointHierarchy.aabbMax_, 
+                        currNeighTuple[0], currNeighTuple[1], currKDEWindow, self.convRadius, 
+                        inPointHierarchy.batchSize_, currRelativeRadius)
             else:
                 neighShape = currNeighTuple[1].shape
                 currPDFs = torch.ones((neighShape[0], 1), dtype=torch.float32).cuda()
