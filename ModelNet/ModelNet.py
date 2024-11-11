@@ -156,6 +156,7 @@ if __name__ == '__main__':
     parser.add_argument('--gpu', default='0', help='GPU (default: 0)')
     parser.add_argument('--gpuMem', default=0.5, type=float, help='GPU memory used (default: 0.5)')
     parser.add_argument('--use_pretrain', default=False, action='store_true', help='whether to use pretrain weights')
+    parser.add_argument('--use_pdf', default=True, action='store_false', help='whether to use pdf')
     args = parser.parse_args()
 
     if not os.path.exists(args.logFolder): os.mkdir(args.logFolder)
@@ -199,6 +200,7 @@ if __name__ == '__main__':
     print(f"ptDropOut: {args.ptDropOut}")
     print(f"Augment: {args.augment}")
     print(f"Nonunif: {args.nonunif}")
+    print(f"use pdf: {args.use_pdf}")
 
     # Get train and test datasets
     allowedSamplingsTrain = []
@@ -228,7 +230,7 @@ if __name__ == '__main__':
     model_class = model_map[args.model]
     model = model_class(numInputFeatures=num_input_features, k=k, numOutCat=num_out_cat, 
                                   batch_size=batch_size, keepProbConv=args.dropOutKeepProbConv, keepProbFull=args.dropOutKeepProb, 
-                                  useConvDropOut=args.useDropOutConv, useDropOutFull=args.useDropOut).to(device)
+                                  useConvDropOut=args.useDropOutConv, useDropOutFull=args.useDropOut, use_pdf=args.use_pdf).to(device)
 
     # TODO add learning rate decay per batch
     optimizer = optim.Adam(model.parameters(), lr=args.initLearningRate, weight_decay=args.weightDecay)
